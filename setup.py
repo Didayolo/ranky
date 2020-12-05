@@ -13,6 +13,11 @@ setup(
      long_description=long_description,
      long_description_content_type="text/markdown",
      url="https://github.com/didayolo/ranky",
+     project_urls={
+            "Bug Tracker": "https://github.com/didayolo/ranky/issues",
+            "Documentation": "https://didayolo.github.io/ranky/",
+            "Source Code": "https://github.com/didayolo/ranky",
+     },
      packages=find_packages(),
      include_package_data=True,
      classifiers=[
@@ -20,3 +25,5 @@ setup(
          "Operating System :: Unix",
      ],
  )
+ 
+

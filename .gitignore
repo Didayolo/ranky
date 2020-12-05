@@ -4,3 +4,5 @@ figures/
 *.zip
 update.sh
 dist/
+build/
+ranky.egg-info/
