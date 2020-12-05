@@ -188,7 +188,7 @@ def corr(r1, r2, method='swap', return_p_value=False):
 
 def kendall_w(matrix, axis=0):
     """ Kendall's W coefficient of concordance.
-        /!\ No correction for ties.
+        /!/ No correction for ties.
 
         :param axis: Axis of judges.
     """
