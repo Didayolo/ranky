@@ -6,9 +6,6 @@
 
 ![logo](logo.png)
 
-[Documentation](https://didayolo.github.io/ranky/).
-
-
 # Get started
 
 ```bash
@@ -17,6 +14,8 @@ pip install ranky
 ```python
 import ranky as rk
 ```
+
+Read the [documentation](https://didayolo.github.io/ranky/).
 
 # Main functions
 
