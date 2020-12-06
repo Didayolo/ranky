@@ -1,0 +1,4 @@
+index,judge1,judge2,judge3,judge4
+candidate1,0.4, 0.8, 0.2, 0.2
+candidate2,0.8, 0.7, 0.9, 0.7
+candidate3,0.7,0.7, 0.8, 1

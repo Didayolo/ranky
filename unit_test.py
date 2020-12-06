@@ -33,9 +33,9 @@ def test_generator():
 
 def test_metric():
     print('Testing metrics...')
-    y_true = pd.read_csv('data/test_metric/digits.solution', sep=' ', header=None)
-    y_pred = pd.read_csv('data/test_metric/digits.predict', sep=' ', header=None)
-    y_pred_proba = pd.read_csv('data/test_metric/digits_proba.predict', sep=' ', header=None)
+    y_true = pd.read_csv('data/test_metric/task.solution', sep=' ', header=None)
+    y_pred = pd.read_csv('data/test_metric/task.predict', sep=' ', header=None)
+    y_pred_proba = pd.read_csv('data/test_metric/task_proba.predict', sep=' ', header=None)
     for m in ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']:
         try:
             print('{}: {}'.format(m, rk.metric(y_true, y_pred, method=m)))
