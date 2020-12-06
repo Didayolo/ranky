@@ -64,6 +64,8 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 
 ## Other
 
+* Rank
+* Bootstrap
 * Consensus
 * Concordane
 * Centrality
