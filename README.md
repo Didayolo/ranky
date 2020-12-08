@@ -46,25 +46,21 @@ Rank aggregation methods available:
 * Borda Count. `rk.borda(m)`
 * Majority Judgement. `rk.majority(m)`
 * Condorcet, p-value Condorcet. `rk.condorcet(m)`, `rk.condorcet(m, wins=rk.p_wins)`
-* **Optimal rank aggregation** using any rank metric. `rk.center(m)`, `rk.center(m, method='kendalltau')`. 
+* **Optimal rank aggregation** using any rank metric. `rk.center(m)`, `rk.center(m, method='kendalltau')`. Solver used \[1\].
 * _(Kemeny-Young method is optimal rank aggregation using Kemeny distance as metric.)_
 * _(Optimal rank aggregation using Spearman correlation as metric is equivalent to Borda count.)_
+
+
 
 ## Metrics
 
 Use `any_metric(a, b, method)` to call a metric from **any** of the three categories below.
 
-* **Scoring metrics**: `rk.metric(y_true, y_pred, method='accuracy')`. 
+* **Scoring metrics**: `rk.metric(y_true, y_pred, method='accuracy')`. Currently methods include: `['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']`
 
-Currently methods include: `['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']`
+* **Rank correlation coefficients**: `rk.corr(r1, r2, method='spearman')`. Currently methods include: `['kendalltau', 'spearman', 'pearson']`
 
-* **Rank correlation coefficients**: `rk.corr(r1, r2, method='spearman')`
-
-Currently methods include: `['kendalltau', 'spearman', 'pearson']`
-
-* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`
-
-Currently methods include: `['hamming', 'levenshtein', 'winner', 'euclidean']`
+* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`. Currently methods include: `['hamming', 'levenshtein', 'winner', 'euclidean']`
 
 
 _To add: general edit distances, kemeny distance, regression metrics..._
@@ -104,4 +100,7 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 * Concordance, mean rank distance between all judges of a preference matrix.
 * Centrality, mean rank distance between a ranking and a preference matrix.
 * Kendall's W coefficient of concordance.
+
+
+\[1\] Storn R. and Price K., Differential Evolution - a Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, Journal of Global Optimization, 1997, 11, 341 - 359.
 
