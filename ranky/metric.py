@@ -76,15 +76,22 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         :param reverse_loss: If True, return (1 - score).
         :param missing_score: Value to return if the computation fails.
 
-        Format predictions AutoDL
+        Predictions format:
         [[0.2, 0.3, 0.5]
         [0.1, 0.8, 0.1]]
         ...
 
-        Ground truth
+        Ground truth format:
         [[0, 0, 1]
         [0, 1, 0]]
+        
+        If y_true and y_pred are 1D they'll be converted using to_dense function.
     """
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    if y_true.shape != y_pred.shape:
+        raise Exception('y_true and y_pred must have the same shape. {} != {}'.format(y_true.shape, y_pred.shape))
+    if len(y_true.shape) == 1:
+        y_true, y_pred = to_dense(y_true), to_dense(y_pred)
     # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
     # MISSING SCORE
     score = -1
