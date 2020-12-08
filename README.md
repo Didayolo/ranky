@@ -39,6 +39,8 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 
 ## Ranking systems
 
+Rank aggregation methods available:
+
 * Random Dictator. `rk.dictator(m)`
 * Score Voting. `rk.score(m)`
 * Borda Count. `rk.borda(m)`
@@ -56,11 +58,32 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 
 * Rank distances. `rk.dist(r1, r2, method='levenshtein')`
 
+* To fix: `any_metric(a, b, method)`
+
 
 ## Visualizations
 
-* `rk.show`, 1D or 2D
-* `rk.tsne`, 2D or 3D
+* Use `rk.show` to visualize preference matrix (2D) or ranking ballots (1D).
+
+`rk.show(m)`
+![show example 1](show_example_1.png)
+
+`rk.show(m['judge1'])`
+![show example 2](show_example_2.png)
+
+* Use `rk.mds`, to visualize (in 2D or 3D) the points in a given metric space.
+
+`rk.mds(m, method='euclidean')`
+
+![MDS example 1](mds_example_1.png)
+
+`rk.mds(m, method='spearman', axis=1)`
+
+![MSE example 2](mds_example_2.png)
+
+* You can use `rk.tsne` similarly to `rk.mds`.
+
+
 
 ## Other
 
@@ -70,3 +93,4 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 * Concordane
 * Centrality
 * Kendall's W
+
