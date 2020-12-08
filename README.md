@@ -56,11 +56,11 @@ Rank aggregation methods available:
 
 Use `any_metric(a, b, method)` to call a metric from **any** of the three categories below.
 
-* **Scoring metrics**: `rk.metric(y_true, y_pred, method='accuracy')`. Currently methods include: `['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']`
+* **Scoring metrics**: `rk.metric(y_true, y_pred, method='accuracy')`. Methods include: `['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar']`
 
-* **Rank correlation coefficients**: `rk.corr(r1, r2, method='spearman')`. Currently methods include: `['kendalltau', 'spearman', 'pearson']`
+* **Rank correlation coefficients**: `rk.corr(r1, r2, method='spearman')`. Methods include: `['kendalltau', 'spearman', 'pearson']`
 
-* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`. Currently methods include: `['hamming', 'levenshtein', 'winner', 'euclidean']`
+* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`. Methods include: `['hamming', 'levenshtein', 'winner', 'euclidean']`
 
 
 _To add: general edit distances, kemeny distance, regression metrics..._

@@ -14,12 +14,15 @@ from mpl_toolkits.mplot3d import Axes3D
 sns.set(style = "darkgrid")
 
 def show(m, rotation=90, title=None, size=2):
-    """ If m is 1D: show ballot (bar plot).
-        If m is 2D: show preferences (heatmap).
+    """ Display a ranking or a prefrence matrix.
 
-        :param rotation: x labels rotation.
-        :param title: string - title of the figure.
-        :param size: integer - higher value for a smaller figure.
+    If m is 1D: show ballot (bar plot).
+    If m is 2D: show preferences (heatmap).
+
+    Args:
+        rotation: x labels rotation.
+        title: string - title of the figure.
+        size: integer - higher value for a smaller figure.
     """
     dim = len(m.shape)
     if dim == 1: # 1D
@@ -42,7 +45,8 @@ def show(m, rotation=90, title=None, size=2):
 def show_learning_curve(h):
     """ Display learning curve.
 
-        :param h: list representing the history of scores.
+    Args:
+        h: list representing the history of scores.
     """
     plt.plot(range(len(h)), h)
     plt.xlabel('epochs')
@@ -52,8 +56,9 @@ def show_learning_curve(h):
 def show_graph(matrix, names=None):
     """ Show a directed graph represented by a binary matrix.
 
-        :param matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        :param names: list representing the names of the vertices.
+    Args:
+        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
+        names: list representing the names of the vertices.
     """
     G = nx.DiGraph()
     n = len(matrix)
@@ -67,32 +72,30 @@ def show_graph(matrix, names=None):
                 G.add_edge(nodes[i], nodes[j])
     nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight='bold')
     plt.show()
-    
+
 def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True):
     """ 2D or 3D scatterplot.
-    
-        :param m: data
-        :param dim: 2 or 3.
-        :param fontsize: text font size (integer).
-        :param pointsize: size of data points (integer).
-        :param big_display: plot the figure in a big format if True.
+
+    Args:
+        m: data
+        dim: 2 or 3.
+        fontsize: text font size (integer).
+        pointsize: size of data points (integer).
+        big_display: plot the figure in a big format if True.
     """
     if dim == 2: # 2 dimensions
         x, y = [m[:, i] for i in range(m.shape[1])] # take columns
         scat = sns.scatterplot(x, y, hue=names, legend=False, s=pointsize)
-        # TEXT #
-        for line in range(0, m.shape[0]):
-         scat.text(x[line]+0.01, y[line], 
-                 names[line], horizontalalignment='left', 
-                 fontsize=fontsize, color='black', weight='semibold') # size='medium'
-        ########
-        #plt.legend(loc='right', bbox_to_anchor=(1.25, 0.5), ncol=1)
+        if names is not None: # TEXT #
+            for line in range(0, m.shape[0]):
+                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
+                         fontsize=fontsize, color='black', weight='semibold')
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
         ax = fig.add_subplot(111, projection = '3d')
         x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
         ax.scatter(x, y, z) #, c=range(len(names)))
-        
+
     else:
         raise Exception('dim must be 2 or 3.')
     if big_display:
@@ -103,9 +106,10 @@ def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True
 def tsne(m, axis=0, dim=2, **kwargs):
     """ Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
 
-        :param axis: axis of dimensionality reduction.
-        :param dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
+    Args:
+        axis: axis of dimensionality reduction.
+        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
     """
     names = None
     if axis == 0:
@@ -123,26 +127,32 @@ def tsne(m, axis=0, dim=2, **kwargs):
 
 def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
     """ Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).
-        https://en.wikipedia.org/wiki/Multidimensional_scaling
-    
-        :param m: distance matrix.
-        :param dim: number of dimensions to plot (2 or 3).
-        :param names: names of objects.
-        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: distance matrix.
+        dim: number of dimensions to plot (2 or 3).
+        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
     """
+    if rk.is_dataframe(distance_matrix):
+        names = distance_matrix.columns
     transformer = MDS(n_components=dim, dissimilarity='precomputed')
     m_transformed = transformer.fit_transform(distance_matrix)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)
-        
+
 def mds(m, axis=0, dim=2, method='spearman', **kwargs):
     """ Multidimensional scaling plot from a preference matrix.
-        https://en.wikipedia.org/wiki/Multidimensional_scaling
-    
-        :param m: preference matrix.
-        :param dim: number of dimensions to plot (2 or 3).
-        :param method: any metric method.
-        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: preference matrix.
+        dim: number of dimensions to plot (2 or 3).
+        method: any metric method.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
     """
     names = None
     if axis == 0:

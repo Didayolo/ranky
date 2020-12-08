@@ -47,7 +47,9 @@ class Generator():
 
     def sample(self, n=1, loc=0, scale=1):
         &#34;&#34;&#34; Sample judge according to the function.
-            :param n: number of samples to draw.
+
+        Args:
+            n: number of samples to draw.
         &#34;&#34;&#34;
         #m = [ranking_noise(self.r) for _ in range(n)]
         m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]
@@ -57,10 +59,12 @@ class Generator():
 
 def ranking_noise(r, method=&#39;swap&#39;, n=1, p=1):
     &#34;&#34;&#34; Ranking noise.
-        :param r: the ranking to disturb.
-        :param method: &#39;swap&#39; or &#39;tie&#39;.
-        :param n: number of iterations.
-        :param p: probability of disturbing on each iteration in ]0;1].
+
+    Args:
+        r: the ranking to disturb.
+        method: &#39;swap&#39; or &#39;tie&#39;.
+        n: number of iterations.
+        p: probability of disturbing on each iteration in ]0;1].
     &#34;&#34;&#34;
     if (p &lt;= 0) or (p &gt; 1):
         raise(&#39;p must be in ]0;1]&#39;)
@@ -129,21 +133,30 @@ def identity(r):
 <span>def <span class="ident">ranking_noise</span></span>(<span>r, method='swap', n=1, p=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Ranking noise.
-:param r: the ranking to disturb.
-:param method: 'swap' or 'tie'.
-:param n: number of iterations.
-:param p: probability of disturbing on each iteration in ]0;1].</p></div>
+<div class="desc"><p>Ranking noise.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r</code></strong></dt>
+<dd>the ranking to disturb.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'swap' or 'tie'.</dd>
+<dt><strong><code>n</code></strong></dt>
+<dd>number of iterations.</dd>
+<dt><strong><code>p</code></strong></dt>
+<dd>probability of disturbing on each iteration in ]0;1].</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def ranking_noise(r, method=&#39;swap&#39;, n=1, p=1):
     &#34;&#34;&#34; Ranking noise.
-        :param r: the ranking to disturb.
-        :param method: &#39;swap&#39; or &#39;tie&#39;.
-        :param n: number of iterations.
-        :param p: probability of disturbing on each iteration in ]0;1].
+
+    Args:
+        r: the ranking to disturb.
+        method: &#39;swap&#39; or &#39;tie&#39;.
+        n: number of iterations.
+        p: probability of disturbing on each iteration in ]0;1].
     &#34;&#34;&#34;
     if (p &lt;= 0) or (p &gt; 1):
         raise(&#39;p must be in ]0;1]&#39;)
@@ -188,7 +201,9 @@ def identity(r):
 
     def sample(self, n=1, loc=0, scale=1):
         &#34;&#34;&#34; Sample judge according to the function.
-            :param n: number of samples to draw.
+
+        Args:
+            n: number of samples to draw.
         &#34;&#34;&#34;
         #m = [ranking_noise(self.r) for _ in range(n)]
         m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]
@@ -215,15 +230,21 @@ def identity(r):
 <span>def <span class="ident">sample</span></span>(<span>self, n=1, loc=0, scale=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sample judge according to the function.
-:param n: number of samples to draw.</p></div>
+<div class="desc"><p>Sample judge according to the function.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>n</code></strong></dt>
+<dd>number of samples to draw.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sample(self, n=1, loc=0, scale=1):
     &#34;&#34;&#34; Sample judge according to the function.
-        :param n: number of samples to draw.
+
+    Args:
+        n: number of samples to draw.
     &#34;&#34;&#34;
     #m = [ranking_noise(self.r) for _ in range(n)]
     m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]

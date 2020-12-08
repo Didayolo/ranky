@@ -44,16 +44,20 @@ import ranky as rk
 # Convert to ranking
 def rank(m, axis=0, method=&#39;average&#39;, ascending=False, reverse=False):
     &#34;&#34;&#34; Replace values by their rank in the column.
-        By default, higher is better.
-        TODO: save parameters to add values to an already fitted ranking.
 
-        :param m: Preference matrix.
-        :param axis: Candidates axis.
-        :param method: &#39;average&#39;, &#39;min&#39;, &#39;max&#39;, &#39;dense&#39;, &#39;ordinal&#39;
-        :param ascending: Ascending or descending order.
-        :param reverse: Reverse order.
-        :return: Ranked preference matrix.
-        :rtype: np.ndarray
+    By default, higher is better.
+    TODO: save parameters to add values to an already fitted ranking.
+
+    Args:
+        m: Preference matrix.
+        axis: Candidates axis.
+        method: &#39;average&#39;, &#39;min&#39;, &#39;max&#39;, &#39;dense&#39;, &#39;ordinal&#39;
+        ascending: Ascending or descending order.
+        reverse: Reverse order.
+
+    Returns:
+        np.ndarray, pd.Series, pd.DataFrame
+        Ranked preference matrix.
     &#34;&#34;&#34;
     if isinstance(m, list):
         m = np.array(m)
@@ -70,11 +74,13 @@ def tie(r, threshold=0.1):
 # remove rows (candidates) or columns (voters)
 def bootstrap(m, axis=0, n=None, replace=True):
     &#34;&#34;&#34; Sample with replacement among an axis (and keep the same shape by default).
-        By convention rows reprensent candidates and columns represent voters.
 
-        :param axis: Axis concerned by bootstrap.
-        :param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-        :param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+    By convention rows reprensent candidates and columns represent voters.
+
+    Args:
+        axis: Axis concerned by bootstrap.
+        n: Number of examples to sample. By default it is the size of the matrix among the axis.
+        replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
     &#34;&#34;&#34;
     if n is None:
         n = m.shape[axis]
@@ -83,13 +89,15 @@ def bootstrap(m, axis=0, n=None, replace=True):
 
 def mbootstrap(m_list, axis=0, n=None, replace=True):
     &#34;&#34;&#34; Apply the same bootstrap on all matrices on m_list.
-        TODO: rename or merged with bootstrap function.
-        Sample with replacement among an axis (and keep the same shape by default).
-        By convention rows reprensent candidates and columns represent voters.
 
-        :param axis: Axis concerned by bootstrap.
-        :param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-        :param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+    TODO: rename or merged with bootstrap function.
+    Sample with replacement among an axis (and keep the same shape by default).
+    By convention rows reprensent candidates and columns represent voters.
+
+    Args:
+        axis: Axis concerned by bootstrap.
+        n: Number of examples to sample. By default it is the size of the matrix among the axis.
+        replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
     &#34;&#34;&#34;
     size = m_list[0].shape[axis]
     if n is None:
@@ -121,9 +129,6 @@ def process_vote(m, r, axis=1):
         r = pd.Series(r, m.index)
     return r
 
-def arr_to_str(a):
-    return &#34;&#34;.join(str(x) for x in a)
-
 #################################
 ####### RANKING SYSTEMS #########
 #################################
@@ -143,8 +148,9 @@ def dictator(m, axis=1):
 def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
     &#34;&#34;&#34; Borda count.
 
-        :param method: &#39;mean&#39; or &#39;median&#39;.
-        :param reverse: reverse the ranking.
+    Args:
+        method: &#39;mean&#39; or &#39;median&#39;.
+        reverse: reverse the ranking.
     &#34;&#34;&#34;
     ranking = rank(m)
     if reverse:
@@ -171,7 +177,9 @@ def score(m, axis=1):
 
 def uninominal(m, axis=1, turns=1):
     &#34;&#34;&#34; Uninominal.
-        :param turns: number of turns.
+
+    Args:
+        turns: number of turns.
     &#34;&#34;&#34;
     if turns &gt; 1:
         raise(Exception(&#39;Uninominal system is currently implemented only in one turn setting.&#39;))
@@ -182,11 +190,13 @@ def uninominal(m, axis=1, turns=1):
 
 def hard_wins(a, b, reverse=False):
     &#34;&#34;&#34; Function returning True if a wins against b.
-        Useful for Condorcet method.
 
-        :param a: Ballot representing one candidate.
-        :param b: Ballot representing one candidate.
-        :param reverse: If True, lower is better.
+    Useful for to compute Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate.
+        b: Ballot representing one candidate.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
@@ -196,13 +206,15 @@ def hard_wins(a, b, reverse=False):
 
 def p_wins(a, b, pval=0.05, reverse=False):
     &#34;&#34;&#34; Function returning True if a wins against b.
-        Useful for Condorcet method.
 
-        :param a: Ballot representing one candidate.
-        :param b: Ballot representing one candidate.
-        :param pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
+    Useful for Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate.
+        b: Ballot representing one candidate.
+        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
                      If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        :param reverse: If True, lower is better.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
@@ -215,10 +227,11 @@ def p_wins(a, b, pval=0.05, reverse=False):
 def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
     &#34;&#34;&#34; Condorcet method.
 
-        :param m: Preference matrix.
-        :param axis: Judge axis.
-        :param wins: Function returning True if a wins against b.
-        :param return_graph: If True, returns the 1-1 matches result matrix.
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        wins: Function returning True if a wins against b.
+        return_graph: If True, returns the 1-1 matches result matrix.
     &#34;&#34;&#34;
     ranking = rank(m, axis=1-axis)
     n = len(ranking)
@@ -241,10 +254,12 @@ def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
 # Based on optimization.
 
 def brute_force(m, axis=0, method=&#39;swap&#39;):
-    &#34;&#34;&#34; TODO:
-            - keep all optimal solutions.
-            - ties
-            - docs
+    &#34;&#34;&#34; Brute force search.
+
+    TODO:
+        - keep all optimal solutions.
+        - ties
+        - docs
     &#34;&#34;&#34;
     best_score = -1
     best_r = np.take(m, 0, axis=axis)
@@ -257,10 +272,12 @@ def brute_force(m, axis=0, method=&#39;swap&#39;):
 
 def random_swap(r, n=1, tie=0.1):
     &#34;&#34;&#34; Swap randomly two values in r.
-        Used by evolution_strategy function.
 
-        :param n: number of consecutive changes
-        :param tie: probability of tie instead of swap
+    Used by evolution_strategy function.
+
+    Args:
+        n: number of consecutive changes
+        tie: probability of tie instead of swap
     &#34;&#34;&#34;
     _r = r.copy()
     for _ in range(n):
@@ -273,17 +290,19 @@ def random_swap(r, n=1, tie=0.1):
 
 def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#39;swap&#39;, history=False, verbose=False):
     &#34;&#34;&#34; Use evolution strategy to search the best quality ranking.
-        Return the best ranking (and the best score of each generation if needed).
 
-        :param axis: candidates axis.
-        :param mu: population size.
-        :param l: mu * l = offspring size.
-        :param epochs: number of iterations.
-        :param n: number of swaps performed during a single mutation.
-        :param tie: probability of performing a tie instead of a swap during mutation process.
-        :param method: method used to compute quality of the ranking.
-        :param history: if True, return a tuple (ranking, history).
-        :param verbose: if True, plot the learning curve.
+    Return the best ranking (and the best score of each generation if needed).
+
+    Args:
+        axis: candidates axis.
+        mu: population size.
+        l: mu * l = offspring size.
+        epochs: number of iterations.
+        n: number of swaps performed during a single mutation.
+        tie: probability of performing a tie instead of a swap during mutation process.
+        method: method used to compute quality of the ranking.
+        history: if True, return a tuple (ranking, history).
+        verbose: if True, plot the learning curve.
     &#34;&#34;&#34;
     r = np.arange(m.shape[axis])
     h = []
@@ -308,11 +327,14 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#
 
 def center_old(m, axis=0, method=&#39;euclidean&#39;, verbose=True):
     &#34;&#34;&#34; DEPRECATED.
-        Find the geometric median or 1-center.
-        Solve the metric facility location problem.
-        :param axis: judges axis.
-        :param method: distance or correlation method used as metric.
-        :param verbose: show optimization termination message.
+
+    Find the geometric median or 1-center.
+    Solve the metric facility location problem.
+
+    Args:
+        axis: judges axis.
+        method: distance or correlation method used as metric.
+        verbose: show optimization termination message.
     &#34;&#34;&#34;
     # gradient based optimization, should work for euclidean case but seems to not work
     r0 = np.take(m, 0, axis=axis)
@@ -323,11 +345,15 @@ def center_old(m, axis=0, method=&#39;euclidean&#39;, verbose=True):
 
 def center(m, axis=1, method=&#39;euclidean&#39;, verbose=True):
     &#34;&#34;&#34; Find the geometric median or 1-center.
-        Solve the metric facility location problem.
-        Find the ranking maximizing the centrality.
-        :param axis: judges axis.
-        :param method: distance or correlation method used as metric.
-        :param verbose: show optimization termination message.
+
+    Solve the metric facility location problem.
+    Find the ranking maximizing the centrality.
+    Also called optimal rank aggregation.
+
+    Args:
+        axis: judges axis.
+        method: distance or correlation method used as metric.
+        verbose: show optimization termination message.
     &#34;&#34;&#34;
     # Finds the global minimum of a multivariate function.
     # Differential Evolution is stochastic in nature (does not use gradient methods) to find the minimium, and can search large areas of candidate space,
@@ -335,7 +361,7 @@ def center(m, axis=1, method=&#39;euclidean&#39;, verbose=True):
     # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method)) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
     #return res.x
@@ -371,39 +397,34 @@ def consensus(m, axis=0):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="ranky.ranking.arr_to_str"><code class="name flex">
-<span>def <span class="ident">arr_to_str</span></span>(<span>a)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def arr_to_str(a):
-    return &#34;&#34;.join(str(x) for x in a)</code></pre>
-</details>
-</dd>
 <dt id="ranky.ranking.bootstrap"><code class="name flex">
 <span>def <span class="ident">bootstrap</span></span>(<span>m, axis=0, n=None, replace=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sample with replacement among an axis (and keep the same shape by default).
-By convention rows reprensent candidates and columns represent voters.</p>
-<p>:param axis: Axis concerned by bootstrap.
-:param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-:param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.</p></div>
+<div class="desc"><p>Sample with replacement among an axis (and keep the same shape by default).</p>
+<p>By convention rows reprensent candidates and columns represent voters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis concerned by bootstrap.</dd>
+<dt><strong><code>n</code></strong></dt>
+<dd>Number of examples to sample. By default it is the size of the matrix among the axis.</dd>
+<dt><strong><code>replace</code></strong></dt>
+<dd>Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def bootstrap(m, axis=0, n=None, replace=True):
     &#34;&#34;&#34; Sample with replacement among an axis (and keep the same shape by default).
-        By convention rows reprensent candidates and columns represent voters.
 
-        :param axis: Axis concerned by bootstrap.
-        :param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-        :param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+    By convention rows reprensent candidates and columns represent voters.
+
+    Args:
+        axis: Axis concerned by bootstrap.
+        n: Number of examples to sample. By default it is the size of the matrix among the axis.
+        replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
     &#34;&#34;&#34;
     if n is None:
         n = m.shape[axis]
@@ -416,8 +437,13 @@ By convention rows reprensent candidates and columns represent voters.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Borda count.</p>
-<p>:param method: 'mean' or 'median'.
-:param reverse: reverse the ranking.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>'mean' or 'median'.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>reverse the ranking.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -425,8 +451,9 @@ By convention rows reprensent candidates and columns represent voters.</p>
 <pre><code class="python">def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
     &#34;&#34;&#34; Borda count.
 
-        :param method: &#39;mean&#39; or &#39;median&#39;.
-        :param reverse: reverse the ranking.
+    Args:
+        method: &#39;mean&#39; or &#39;median&#39;.
+        reverse: reverse the ranking.
     &#34;&#34;&#34;
     ranking = rank(m)
     if reverse:
@@ -444,19 +471,24 @@ By convention rows reprensent candidates and columns represent voters.</p>
 <span>def <span class="ident">brute_force</span></span>(<span>m, axis=0, method='swap')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>TODO:
-- keep all optimal solutions.
-- ties
-- docs</p></div>
+<div class="desc"><p>Brute force search.</p>
+<h2 id="todo">Todo</h2>
+<ul>
+<li>keep all optimal solutions.</li>
+<li>ties</li>
+<li>docs</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def brute_force(m, axis=0, method=&#39;swap&#39;):
-    &#34;&#34;&#34; TODO:
-            - keep all optimal solutions.
-            - ties
-            - docs
+    &#34;&#34;&#34; Brute force search.
+
+    TODO:
+        - keep all optimal solutions.
+        - ties
+        - docs
     &#34;&#34;&#34;
     best_score = -1
     best_r = np.take(m, 0, axis=axis)
@@ -472,23 +504,34 @@ By convention rows reprensent candidates and columns represent voters.</p>
 <span>def <span class="ident">center</span></span>(<span>m, axis=1, method='euclidean', verbose=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Find the geometric median or 1-center.
-Solve the metric facility location problem.
+<div class="desc"><p>Find the geometric median or 1-center.</p>
+<p>Solve the metric facility location problem.
 Find the ranking maximizing the centrality.
-:param axis: judges axis.
-:param method: distance or correlation method used as metric.
-:param verbose: show optimization termination message.</p></div>
+Also called optimal rank aggregation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>judges axis.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>distance or correlation method used as metric.</dd>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>show optimization termination message.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def center(m, axis=1, method=&#39;euclidean&#39;, verbose=True):
     &#34;&#34;&#34; Find the geometric median or 1-center.
-        Solve the metric facility location problem.
-        Find the ranking maximizing the centrality.
-        :param axis: judges axis.
-        :param method: distance or correlation method used as metric.
-        :param verbose: show optimization termination message.
+
+    Solve the metric facility location problem.
+    Find the ranking maximizing the centrality.
+    Also called optimal rank aggregation.
+
+    Args:
+        axis: judges axis.
+        method: distance or correlation method used as metric.
+        verbose: show optimization termination message.
     &#34;&#34;&#34;
     # Finds the global minimum of a multivariate function.
     # Differential Evolution is stochastic in nature (does not use gradient methods) to find the minimium, and can search large areas of candidate space,
@@ -496,7 +539,7 @@ Find the ranking maximizing the centrality.
     # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method)) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
     #return res.x
@@ -508,23 +551,32 @@ Find the ranking maximizing the centrality.
 <span>def <span class="ident">center_old</span></span>(<span>m, axis=0, method='euclidean', verbose=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>DEPRECATED.
-Find the geometric median or 1-center.
-Solve the metric facility location problem.
-:param axis: judges axis.
-:param method: distance or correlation method used as metric.
-:param verbose: show optimization termination message.</p></div>
+<div class="desc"><p>DEPRECATED.</p>
+<p>Find the geometric median or 1-center.
+Solve the metric facility location problem.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>judges axis.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>distance or correlation method used as metric.</dd>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>show optimization termination message.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def center_old(m, axis=0, method=&#39;euclidean&#39;, verbose=True):
     &#34;&#34;&#34; DEPRECATED.
-        Find the geometric median or 1-center.
-        Solve the metric facility location problem.
-        :param axis: judges axis.
-        :param method: distance or correlation method used as metric.
-        :param verbose: show optimization termination message.
+
+    Find the geometric median or 1-center.
+    Solve the metric facility location problem.
+
+    Args:
+        axis: judges axis.
+        method: distance or correlation method used as metric.
+        verbose: show optimization termination message.
     &#34;&#34;&#34;
     # gradient based optimization, should work for euclidean case but seems to not work
     r0 = np.take(m, 0, axis=axis)
@@ -539,10 +591,17 @@ Solve the metric facility location problem.
 </code></dt>
 <dd>
 <div class="desc"><p>Condorcet method.</p>
-<p>:param m: Preference matrix.
-:param axis: Judge axis.
-:param wins: Function returning True if a wins against b.
-:param return_graph: If True, returns the 1-1 matches result matrix.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Judge axis.</dd>
+<dt><strong><code>wins</code></strong></dt>
+<dd>Function returning True if a wins against b.</dd>
+<dt><strong><code>return_graph</code></strong></dt>
+<dd>If True, returns the 1-1 matches result matrix.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -550,10 +609,11 @@ Solve the metric facility location problem.
 <pre><code class="python">def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
     &#34;&#34;&#34; Condorcet method.
 
-        :param m: Preference matrix.
-        :param axis: Judge axis.
-        :param wins: Function returning True if a wins against b.
-        :param return_graph: If True, returns the 1-1 matches result matrix.
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        wins: Function returning True if a wins against b.
+        return_graph: If True, returns the 1-1 matches result matrix.
     &#34;&#34;&#34;
     ranking = rank(m, axis=1-axis)
     n = len(ranking)
@@ -610,34 +670,48 @@ Solve the metric facility location problem.
 <span>def <span class="ident">evolution_strategy</span></span>(<span>m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='swap', history=False, verbose=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Use evolution strategy to search the best quality ranking.
-Return the best ranking (and the best score of each generation if needed).</p>
-<p>:param axis: candidates axis.
-:param mu: population size.
-:param l: mu * l = offspring size.
-:param epochs: number of iterations.
-:param n: number of swaps performed during a single mutation.
-:param tie: probability of performing a tie instead of a swap during mutation process.
-:param method: method used to compute quality of the ranking.
-:param history: if True, return a tuple (ranking, history).
-:param verbose: if True, plot the learning curve.</p></div>
+<div class="desc"><p>Use evolution strategy to search the best quality ranking.</p>
+<p>Return the best ranking (and the best score of each generation if needed).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>candidates axis.</dd>
+<dt><strong><code>mu</code></strong></dt>
+<dd>population size.</dd>
+<dt><strong><code>l</code></strong></dt>
+<dd>mu * l = offspring size.</dd>
+<dt><strong><code>epochs</code></strong></dt>
+<dd>number of iterations.</dd>
+<dt><strong><code>n</code></strong></dt>
+<dd>number of swaps performed during a single mutation.</dd>
+<dt><strong><code>tie</code></strong></dt>
+<dd>probability of performing a tie instead of a swap during mutation process.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>method used to compute quality of the ranking.</dd>
+<dt><strong><code>history</code></strong></dt>
+<dd>if True, return a tuple (ranking, history).</dd>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>if True, plot the learning curve.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#39;swap&#39;, history=False, verbose=False):
     &#34;&#34;&#34; Use evolution strategy to search the best quality ranking.
-        Return the best ranking (and the best score of each generation if needed).
 
-        :param axis: candidates axis.
-        :param mu: population size.
-        :param l: mu * l = offspring size.
-        :param epochs: number of iterations.
-        :param n: number of swaps performed during a single mutation.
-        :param tie: probability of performing a tie instead of a swap during mutation process.
-        :param method: method used to compute quality of the ranking.
-        :param history: if True, return a tuple (ranking, history).
-        :param verbose: if True, plot the learning curve.
+    Return the best ranking (and the best score of each generation if needed).
+
+    Args:
+        axis: candidates axis.
+        mu: population size.
+        l: mu * l = offspring size.
+        epochs: number of iterations.
+        n: number of swaps performed during a single mutation.
+        tie: probability of performing a tie instead of a swap during mutation process.
+        method: method used to compute quality of the ranking.
+        history: if True, return a tuple (ranking, history).
+        verbose: if True, plot the learning curve.
     &#34;&#34;&#34;
     r = np.arange(m.shape[axis])
     h = []
@@ -665,22 +739,30 @@ Return the best ranking (and the best score of each generation if needed).</p>
 <span>def <span class="ident">hard_wins</span></span>(<span>a, b, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function returning True if a wins against b.
-Useful for Condorcet method.</p>
-<p>:param a: Ballot representing one candidate.
-:param b: Ballot representing one candidate.
-:param reverse: If True, lower is better.</p></div>
+<div class="desc"><p>Function returning True if a wins against b.</p>
+<p>Useful for to compute Condorcet method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>Ballot representing one candidate.</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Ballot representing one candidate.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def hard_wins(a, b, reverse=False):
     &#34;&#34;&#34; Function returning True if a wins against b.
-        Useful for Condorcet method.
 
-        :param a: Ballot representing one candidate.
-        :param b: Ballot representing one candidate.
-        :param reverse: If True, lower is better.
+    Useful for to compute Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate.
+        b: Ballot representing one candidate.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
@@ -735,26 +817,34 @@ Useful for Condorcet method.</p>
 <span>def <span class="ident">mbootstrap</span></span>(<span>m_list, axis=0, n=None, replace=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Apply the same bootstrap on all matrices on m_list.
-TODO: rename or merged with bootstrap function.
+<div class="desc"><p>Apply the same bootstrap on all matrices on m_list.</p>
+<p>TODO: rename or merged with bootstrap function.
 Sample with replacement among an axis (and keep the same shape by default).
 By convention rows reprensent candidates and columns represent voters.</p>
-<p>:param axis: Axis concerned by bootstrap.
-:param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-:param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis concerned by bootstrap.</dd>
+<dt><strong><code>n</code></strong></dt>
+<dd>Number of examples to sample. By default it is the size of the matrix among the axis.</dd>
+<dt><strong><code>replace</code></strong></dt>
+<dd>Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mbootstrap(m_list, axis=0, n=None, replace=True):
     &#34;&#34;&#34; Apply the same bootstrap on all matrices on m_list.
-        TODO: rename or merged with bootstrap function.
-        Sample with replacement among an axis (and keep the same shape by default).
-        By convention rows reprensent candidates and columns represent voters.
 
-        :param axis: Axis concerned by bootstrap.
-        :param n: Number of examples to sample. By default it is the size of the matrix among the axis.
-        :param replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+    TODO: rename or merged with bootstrap function.
+    Sample with replacement among an axis (and keep the same shape by default).
+    By convention rows reprensent candidates and columns represent voters.
+
+    Args:
+        axis: Axis concerned by bootstrap.
+        n: Number of examples to sample. By default it is the size of the matrix among the axis.
+        replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
     &#34;&#34;&#34;
     size = m_list[0].shape[axis]
     if n is None:
@@ -767,26 +857,35 @@ By convention rows reprensent candidates and columns represent voters.</p>
 <span>def <span class="ident">p_wins</span></span>(<span>a, b, pval=0.05, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function returning True if a wins against b.
-Useful for Condorcet method.</p>
-<p>:param a: Ballot representing one candidate.
-:param b: Ballot representing one candidate.
-:param pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-If pval is set to 1, then p_wins is equivalent to hard_wins function.
-:param reverse: If True, lower is better.</p></div>
+<div class="desc"><p>Function returning True if a wins against b.</p>
+<p>Useful for Condorcet method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>Ballot representing one candidate.</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Ballot representing one candidate.</dd>
+<dt><strong><code>pval</code></strong></dt>
+<dd>A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
+If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def p_wins(a, b, pval=0.05, reverse=False):
     &#34;&#34;&#34; Function returning True if a wins against b.
-        Useful for Condorcet method.
 
-        :param a: Ballot representing one candidate.
-        :param b: Ballot representing one candidate.
-        :param pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
+    Useful for Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate.
+        b: Ballot representing one candidate.
+        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
                      If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        :param reverse: If True, lower is better.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
@@ -826,20 +925,27 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.
 <span>def <span class="ident">random_swap</span></span>(<span>r, n=1, tie=0.1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Swap randomly two values in r.
-Used by evolution_strategy function.</p>
-<p>:param n: number of consecutive changes
-:param tie: probability of tie instead of swap</p></div>
+<div class="desc"><p>Swap randomly two values in r.</p>
+<p>Used by evolution_strategy function.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>n</code></strong></dt>
+<dd>number of consecutive changes</dd>
+<dt><strong><code>tie</code></strong></dt>
+<dd>probability of tie instead of swap</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def random_swap(r, n=1, tie=0.1):
     &#34;&#34;&#34; Swap randomly two values in r.
-        Used by evolution_strategy function.
 
-        :param n: number of consecutive changes
-        :param tie: probability of tie instead of swap
+    Used by evolution_strategy function.
+
+    Args:
+        n: number of consecutive changes
+        tie: probability of tie instead of swap
     &#34;&#34;&#34;
     _r = r.copy()
     for _ in range(n):
@@ -855,32 +961,45 @@ Used by evolution_strategy function.</p>
 <span>def <span class="ident">rank</span></span>(<span>m, axis=0, method='average', ascending=False, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Replace values by their rank in the column.
-By default, higher is better.
+<div class="desc"><p>Replace values by their rank in the column.</p>
+<p>By default, higher is better.
 TODO: save parameters to add values to an already fitted ranking.</p>
-<p>:param m: Preference matrix.
-:param axis: Candidates axis.
-:param method: 'average', 'min', 'max', 'dense', 'ordinal'
-:param ascending: Ascending or descending order.
-:param reverse: Reverse order.
-:return: Ranked preference matrix.
-:rtype: np.ndarray</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Candidates axis.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'average', 'min', 'max', 'dense', 'ordinal'</dd>
+<dt><strong><code>ascending</code></strong></dt>
+<dd>Ascending or descending order.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>Reverse order.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>np.ndarray, pd.Series, pd.DataFrame
+Ranked preference matrix.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rank(m, axis=0, method=&#39;average&#39;, ascending=False, reverse=False):
     &#34;&#34;&#34; Replace values by their rank in the column.
-        By default, higher is better.
-        TODO: save parameters to add values to an already fitted ranking.
 
-        :param m: Preference matrix.
-        :param axis: Candidates axis.
-        :param method: &#39;average&#39;, &#39;min&#39;, &#39;max&#39;, &#39;dense&#39;, &#39;ordinal&#39;
-        :param ascending: Ascending or descending order.
-        :param reverse: Reverse order.
-        :return: Ranked preference matrix.
-        :rtype: np.ndarray
+    By default, higher is better.
+    TODO: save parameters to add values to an already fitted ranking.
+
+    Args:
+        m: Preference matrix.
+        axis: Candidates axis.
+        method: &#39;average&#39;, &#39;min&#39;, &#39;max&#39;, &#39;dense&#39;, &#39;ordinal&#39;
+        ascending: Ascending or descending order.
+        reverse: Reverse order.
+
+    Returns:
+        np.ndarray, pd.Series, pd.DataFrame
+        Ranked preference matrix.
     &#34;&#34;&#34;
     if isinstance(m, list):
         m = np.array(m)
@@ -925,15 +1044,21 @@ TODO: save parameters to add values to an already fitted ranking.</p>
 <span>def <span class="ident">uninominal</span></span>(<span>m, axis=1, turns=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Uninominal.
-:param turns: number of turns.</p></div>
+<div class="desc"><p>Uninominal.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>turns</code></strong></dt>
+<dd>number of turns.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def uninominal(m, axis=1, turns=1):
     &#34;&#34;&#34; Uninominal.
-        :param turns: number of turns.
+
+    Args:
+        turns: number of turns.
     &#34;&#34;&#34;
     if turns &gt; 1:
         raise(Exception(&#39;Uninominal system is currently implemented only in one turn setting.&#39;))
@@ -961,7 +1086,6 @@ TODO: save parameters to add values to an already fitted ranking.</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="ranky.ranking.arr_to_str" href="#ranky.ranking.arr_to_str">arr_to_str</a></code></li>
 <li><code><a title="ranky.ranking.bootstrap" href="#ranky.ranking.bootstrap">bootstrap</a></code></li>
 <li><code><a title="ranky.ranking.borda" href="#ranky.ranking.borda">borda</a></code></li>
 <li><code><a title="ranky.ranking.brute_force" href="#ranky.ranking.brute_force">brute_force</a></code></li>

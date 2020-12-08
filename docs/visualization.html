@@ -35,19 +35,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import networkx as nx
-import ranky.ranking as rk
-from sklearn.manifold import TSNE
+import ranky as rk
+from sklearn.manifold import TSNE, MDS
 from mpl_toolkits.mplot3d import Axes3D
 
 sns.set(style = &#34;darkgrid&#34;)
 
 def show(m, rotation=90, title=None, size=2):
-    &#34;&#34;&#34; If m is 1D: show ballot (bar plot).
-        If m is 2D: show preferences (heatmap).
+    &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
-        :param rotation: x labels rotation.
-        :param title: string - title of the figure.
-        :param size: integer - higher value for a smaller figure.
+    If m is 1D: show ballot (bar plot).
+    If m is 2D: show preferences (heatmap).
+
+    Args:
+        rotation: x labels rotation.
+        title: string - title of the figure.
+        size: integer - higher value for a smaller figure.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
@@ -70,7 +73,8 @@ def show(m, rotation=90, title=None, size=2):
 def show_learning_curve(h):
     &#34;&#34;&#34; Display learning curve.
 
-        :param h: list representing the history of scores.
+    Args:
+        h: list representing the history of scores.
     &#34;&#34;&#34;
     plt.plot(range(len(h)), h)
     plt.xlabel(&#39;epochs&#39;)
@@ -80,8 +84,9 @@ def show_learning_curve(h):
 def show_graph(matrix, names=None):
     &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
 
-        :param matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        :param names: list representing the names of the vertices.
+    Args:
+        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
+        names: list representing the names of the vertices.
     &#34;&#34;&#34;
     G = nx.DiGraph()
     n = len(matrix)
@@ -96,11 +101,43 @@ def show_graph(matrix, names=None):
     nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;)
     plt.show()
 
-def tsne(m, axis=0, dim=2):
+def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True):
+    &#34;&#34;&#34; 2D or 3D scatterplot.
+
+    Args:
+        m: data
+        dim: 2 or 3.
+        fontsize: text font size (integer).
+        pointsize: size of data points (integer).
+        big_display: plot the figure in a big format if True.
+    &#34;&#34;&#34;
+    if dim == 2: # 2 dimensions
+        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
+        scat = sns.scatterplot(x, y, hue=names, legend=False, s=pointsize)
+        if names is not None: # TEXT #
+            for line in range(0, m.shape[0]):
+                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
+                         fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
+    elif dim == 3: # 3 dimensions
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
+        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
+        ax.scatter(x, y, z) #, c=range(len(names)))
+
+    else:
+        raise Exception(&#39;dim must be 2 or 3.&#39;)
+    if big_display:
+        fi = plt.gcf()
+        fi.set_size_inches(12, 8) # change plot size
+    plt.show()
+
+def tsne(m, axis=0, dim=2, **kwargs):
     &#34;&#34;&#34; Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
 
-        :param axis: axis of dimensionality reduction.
-        :param dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+    Args:
+        axis: axis of dimensionality reduction.
+        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -113,18 +150,52 @@ def tsne(m, axis=0, dim=2):
     else:
         raise Excpetion(&#39;axis must be 0 or 1.&#39;)
     m_transformed = TSNE(n_components=dim).fit_transform(m)
-    if dim == 2: # 2 dimensions
-        x, y = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        sns.scatterplot(x, y, hue=names)
-        plt.legend(loc=&#39;right&#39;, bbox_to_anchor=(1.25, 0.5), ncol=1)
-    elif dim == 3: # 3 dimensions
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
-        x, y, z = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        ax.scatter(x, y, z)
-        plt.show()
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
+
+def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
+    &#34;&#34;&#34; Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: distance matrix.
+        dim: number of dimensions to plot (2 or 3).
+        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
+    &#34;&#34;&#34;
+    if rk.is_dataframe(distance_matrix):
+        names = distance_matrix.columns
+    transformer = MDS(n_components=dim, dissimilarity=&#39;precomputed&#39;)
+    m_transformed = transformer.fit_transform(distance_matrix)
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
+
+def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
+    &#34;&#34;&#34; Multidimensional scaling plot from a preference matrix.
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: preference matrix.
+        dim: number of dimensions to plot (2 or 3).
+        method: any metric method.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
+    &#34;&#34;&#34;
+    names = None
+    if axis == 0:
+        if rk.is_dataframe(m):
+            names = m.columns
+        m = m.T # transpose
+    elif axis == 1:
+        if rk.is_dataframe(m):
+            names = m.index
     else:
-        raise Exception(&#39;dim must be 2 or 3.&#39;)
+        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
+    # Compute pairwise distances
+    dist_matrix = rk.distance_matrix(m, method=method)
+    # Call the plot functions
+    mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
 
 # Critical difference diagrams
@@ -138,26 +209,177 @@ def tsne(m, axis=0, dim=2):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="ranky.visualization.mds"><code class="name flex">
+<span>def <span class="ident">mds</span></span>(<span>m, axis=0, dim=2, method='spearman', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Multidimensional scaling plot from a preference matrix.</p>
+<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>preference matrix.</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>number of dimensions to plot (2 or 3).</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>any metric method.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>arguments for scatterplot function (e.g. fontsize).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
+    &#34;&#34;&#34; Multidimensional scaling plot from a preference matrix.
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: preference matrix.
+        dim: number of dimensions to plot (2 or 3).
+        method: any metric method.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
+    &#34;&#34;&#34;
+    names = None
+    if axis == 0:
+        if rk.is_dataframe(m):
+            names = m.columns
+        m = m.T # transpose
+    elif axis == 1:
+        if rk.is_dataframe(m):
+            names = m.index
+    else:
+        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
+    # Compute pairwise distances
+    dist_matrix = rk.distance_matrix(m, method=method)
+    # Call the plot functions
+    mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.mds_from_dist_matrix"><code class="name flex">
+<span>def <span class="ident">mds_from_dist_matrix</span></span>(<span>distance_matrix, dim=2, names=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).</p>
+<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>distance matrix.</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>number of dimensions to plot (2 or 3).</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>arguments for scatterplot function (e.g. fontsize).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
+    &#34;&#34;&#34; Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).
+
+    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
+
+    Args:
+        m: distance matrix.
+        dim: number of dimensions to plot (2 or 3).
+        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
+    &#34;&#34;&#34;
+    if rk.is_dataframe(distance_matrix):
+        names = distance_matrix.columns
+    transformer = MDS(n_components=dim, dissimilarity=&#39;precomputed&#39;)
+    m_transformed = transformer.fit_transform(distance_matrix)
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.scatterplot"><code class="name flex">
+<span>def <span class="ident">scatterplot</span></span>(<span>m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>2D or 3D scatterplot.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>data</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>2 or 3.</dd>
+<dt><strong><code>fontsize</code></strong></dt>
+<dd>text font size (integer).</dd>
+<dt><strong><code>pointsize</code></strong></dt>
+<dd>size of data points (integer).</dd>
+<dt><strong><code>big_display</code></strong></dt>
+<dd>plot the figure in a big format if True.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True):
+    &#34;&#34;&#34; 2D or 3D scatterplot.
+
+    Args:
+        m: data
+        dim: 2 or 3.
+        fontsize: text font size (integer).
+        pointsize: size of data points (integer).
+        big_display: plot the figure in a big format if True.
+    &#34;&#34;&#34;
+    if dim == 2: # 2 dimensions
+        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
+        scat = sns.scatterplot(x, y, hue=names, legend=False, s=pointsize)
+        if names is not None: # TEXT #
+            for line in range(0, m.shape[0]):
+                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
+                         fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
+    elif dim == 3: # 3 dimensions
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
+        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
+        ax.scatter(x, y, z) #, c=range(len(names)))
+
+    else:
+        raise Exception(&#39;dim must be 2 or 3.&#39;)
+    if big_display:
+        fi = plt.gcf()
+        fi.set_size_inches(12, 8) # change plot size
+    plt.show()</code></pre>
+</details>
+</dd>
 <dt id="ranky.visualization.show"><code class="name flex">
 <span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>If m is 1D: show ballot (bar plot).
+<div class="desc"><p>Display a ranking or a prefrence matrix.</p>
+<p>If m is 1D: show ballot (bar plot).
 If m is 2D: show preferences (heatmap).</p>
-<p>:param rotation: x labels rotation.
-:param title: string - title of the figure.
-:param size: integer - higher value for a smaller figure.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>rotation</code></strong></dt>
+<dd>x labels rotation.</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>string - title of the figure.</dd>
+<dt><strong><code>size</code></strong></dt>
+<dd>integer - higher value for a smaller figure.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show(m, rotation=90, title=None, size=2):
-    &#34;&#34;&#34; If m is 1D: show ballot (bar plot).
-        If m is 2D: show preferences (heatmap).
+    &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
-        :param rotation: x labels rotation.
-        :param title: string - title of the figure.
-        :param size: integer - higher value for a smaller figure.
+    If m is 1D: show ballot (bar plot).
+    If m is 2D: show preferences (heatmap).
+
+    Args:
+        rotation: x labels rotation.
+        title: string - title of the figure.
+        size: integer - higher value for a smaller figure.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
@@ -183,8 +405,13 @@ If m is 2D: show preferences (heatmap).</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Show a directed graph represented by a binary matrix.</p>
-<p>:param matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-:param names: list representing the names of the vertices.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>matrix</code></strong></dt>
+<dd>binary matrix. matrix[i, j] = 1 indicates an edge from i to j.</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>list representing the names of the vertices.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -192,8 +419,9 @@ If m is 2D: show preferences (heatmap).</p>
 <pre><code class="python">def show_graph(matrix, names=None):
     &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
 
-        :param matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        :param names: list representing the names of the vertices.
+    Args:
+        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
+        names: list representing the names of the vertices.
     &#34;&#34;&#34;
     G = nx.DiGraph()
     n = len(matrix)
@@ -214,7 +442,11 @@ If m is 2D: show preferences (heatmap).</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Display learning curve.</p>
-<p>:param h: list representing the history of scores.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>h</code></strong></dt>
+<dd>list representing the history of scores.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -222,7 +454,8 @@ If m is 2D: show preferences (heatmap).</p>
 <pre><code class="python">def show_learning_curve(h):
     &#34;&#34;&#34; Display learning curve.
 
-        :param h: list representing the history of scores.
+    Args:
+        h: list representing the history of scores.
     &#34;&#34;&#34;
     plt.plot(range(len(h)), h)
     plt.xlabel(&#39;epochs&#39;)
@@ -231,21 +464,30 @@ If m is 2D: show preferences (heatmap).</p>
 </details>
 </dd>
 <dt id="ranky.visualization.tsne"><code class="name flex">
-<span>def <span class="ident">tsne</span></span>(<span>m, axis=0, dim=2)</span>
+<span>def <span class="ident">tsne</span></span>(<span>m, axis=0, dim=2, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.</p>
-<p>:param axis: axis of dimensionality reduction.
-:param dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.</p></div>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>axis</code></strong></dt>
+<dd>axis of dimensionality reduction.</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>number of dimensions. 2 for 2D plot, 3 for 3D plot.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>arguments for scatterplot function (e.g. fontsize).</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def tsne(m, axis=0, dim=2):
+<pre><code class="python">def tsne(m, axis=0, dim=2, **kwargs):
     &#34;&#34;&#34; Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
 
-        :param axis: axis of dimensionality reduction.
-        :param dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+    Args:
+        axis: axis of dimensionality reduction.
+        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        **kwargs: arguments for scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -258,18 +500,8 @@ If m is 2D: show preferences (heatmap).</p>
     else:
         raise Excpetion(&#39;axis must be 0 or 1.&#39;)
     m_transformed = TSNE(n_components=dim).fit_transform(m)
-    if dim == 2: # 2 dimensions
-        x, y = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        sns.scatterplot(x, y, hue=names)
-        plt.legend(loc=&#39;right&#39;, bbox_to_anchor=(1.25, 0.5), ncol=1)
-    elif dim == 3: # 3 dimensions
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
-        x, y, z = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        ax.scatter(x, y, z)
-        plt.show()
-    else:
-        raise Exception(&#39;dim must be 2 or 3.&#39;)</code></pre>
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>
@@ -290,6 +522,9 @@ If m is 2D: show preferences (heatmap).</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="ranky.visualization.mds" href="#ranky.visualization.mds">mds</a></code></li>
+<li><code><a title="ranky.visualization.mds_from_dist_matrix" href="#ranky.visualization.mds_from_dist_matrix">mds_from_dist_matrix</a></code></li>
+<li><code><a title="ranky.visualization.scatterplot" href="#ranky.visualization.scatterplot">scatterplot</a></code></li>
 <li><code><a title="ranky.visualization.show" href="#ranky.visualization.show">show</a></code></li>
 <li><code><a title="ranky.visualization.show_graph" href="#ranky.visualization.show_graph">show_graph</a></code></li>
 <li><code><a title="ranky.visualization.show_learning_curve" href="#ranky.visualization.show_learning_curve">show_learning_curve</a></code></li>

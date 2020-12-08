@@ -3,6 +3,7 @@
 #######################################
 
 import numpy as np
+import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
@@ -14,7 +15,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_pre
 # error bars
 # bootstrap
 
-METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']
+METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
 DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean']
 
@@ -23,8 +24,9 @@ def arr_to_str(a):
 
 def to_dense(y):
     """ Format predictions/solutions from sparse format (1D) to dense format (2D).
-        Sparse = 'argmax',
-        Dense = 'one-hot'
+
+    Sparse = 'argmax',
+    Dense = 'one-hot'
     """
     y = np.array(y)
     if len(y.shape) == 1:
@@ -37,8 +39,9 @@ def to_dense(y):
 
 def to_sparse(y, axis=1):
     """ Format predictions/solutions from dense format (2D) to sparse format (1D).
-        Sparse = 'argmax',
-        Dense = 'one-hot'
+
+    Sparse = 'argmax',
+    Dense = 'one-hot'
     """
     y = np.array(y)
     if len(y.shape) == 2:
@@ -49,43 +52,50 @@ def to_sparse(y, axis=1):
 
 def to_binary(y, threshold=0.5):
     """ Format predictions/solutions from probabilities to binary.
-        1 if the value is stricly greater than the threshold, 0 otherwise.
+
+    1 if the value is stricly greater than the threshold, 0 otherwise.
+
+    Args:
+        threshold: threshold for binarization (0 if below, 1 if strictly above).
     """
     return np.where(y > 0.5, 1, 0)
-    
-def any_metric(a, b, method):
+
+def any_metric(a, b, method, **kwargs):
     """ Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
-    
-        :param method: 'accuracy', ..., 'levenshtein', ..., 'spearman', ...
+
+    Args:
+        method: 'accuracy', ..., 'levenshtein', ..., 'spearman', ...
+        **kwargs: keyword arguments to pass to the metric function.
     """
     if method in METRIC_METHODS:
-        return metric(a, b, method=method)
+        return metric(a, b, method=method, **kwargs)
     elif method in DIST_METHODS:
-        return dist(a, b, method=method)
+        return dist(a, b, method=method, **kwargs)
     elif method in CORR_METHODS:
-        return corr(a, b, method=method)
+        return corr(a, b, method=method, **kwargs)
     else:
         raise Exception('Unknown method: {}'.format(method))
 
 def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1):
     """ Compute a classification scoring metric between y_true and y_pred.
 
-        :param y_true: Ground truth (format?)
-        :param y_pred: Predictions (format?)
-        :param method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
-        :param reverse_loss: If True, return (1 - score).
-        :param missing_score: Value to return if the computation fails.
+    Predictions format:
+    [[0.2, 0.3, 0.5]
+    [0.1, 0.8, 0.1]]
+    ...
 
-        Predictions format:
-        [[0.2, 0.3, 0.5]
-        [0.1, 0.8, 0.1]]
-        ...
+    Ground truth format:
+    [[0, 0, 1]
+    [0, 1, 0]]
 
-        Ground truth format:
-        [[0, 0, 1]
-        [0, 1, 0]]
-        
-        If y_true and y_pred are 1D they'll be converted using to_dense function.
+    If y_true and y_pred are 1D they'll be converted using to_dense function.
+
+    Args:
+        y_true: Ground truth (format?)
+        y_pred: Predictions (format?)
+        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
+        reverse_loss: If True, return (1 - score).
+        missing_score: Value to return if the computation fails.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
@@ -140,11 +150,13 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
 
 def combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean'):
     """ Combine several metrics as one.
-        For example, you can compute SAR metric by calling:
-        combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rms'])
 
-        :param metrics: List of metric names.
-        :param ranking: A ranking system from ranky.
+    For example, you can compute SAR metric by calling:
+    combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rms'])
+
+    Args:
+        metrics: List of metric names.
+        ranking: A ranking system from ranky.
     """
     score = -1
     scores = [metric(y_true, y_pred, m, reverse_loss=True) for m in metrics]
@@ -158,9 +170,11 @@ def combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], met
 
 def dist(r1, r2, method='hamming'):
     """ Levenshtein/Wasserstein type distance between two ranked ballots.
-        0, 1
 
-        :param method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake'.
+    0, 1
+
+    Args:
+        method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake'.
     """
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -194,10 +208,12 @@ def dist(r1, r2, method='hamming'):
 
 def corr(r1, r2, method='swap', return_p_value=False):
     """ Levenshtein/Wasserstein type correlation between two ordinal distributions.
-        -1, 0, 1
 
-        :param method: 'swap', 'spearman', 'pearson'
-        :param p_value: If True, return a tuple (score, p_value)
+    -1, 0, 1
+
+    Args:
+        method: 'swap', 'spearman', 'pearson'
+        p_value: If True, return a tuple (score, p_value)
     """
     if method in ['swap', 'kendalltau']: # Kendalltau: swap distance
         c, p_value = kendalltau(r1, r2)
@@ -213,9 +229,11 @@ def corr(r1, r2, method='swap', return_p_value=False):
 
 def kendall_w(matrix, axis=0):
     """ Kendall's W coefficient of concordance.
-        /!/ No correction for ties.
 
-        :param axis: Axis of judges.
+    /!/ No correction for ties.
+
+    Args:
+        axis: Axis of judges.
     """
     matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
     m = matrix.shape[axis] # judges
@@ -227,9 +245,11 @@ def kendall_w(matrix, axis=0):
 
 def kendall_w_ties(matrix, axis=0):
     """ Kendall's W coefficient of concordance.
-        /!\ STILL TODO
 
-        :param axis: Axis of raters.
+    /!/ STILL TODO
+
+    Args:
+        axis: Axis of raters.
     """
     # TODO kendall W with tie correction
     # https://en.wikipedia.org/wiki/Kendall%27s_W
@@ -243,10 +263,12 @@ def kendall_w_ties(matrix, axis=0):
 
 def concordance(m, method='spearman', axis=0):
     """ Coefficient of concordance between ballots.
-        This is a measure of agreement between raters.
-        The computation is the mean of the correlation between all possible pairs of judges.
 
-        :param axis: Axis of raters.
+    This is a measure of agreement between raters.
+    The computation is the mean of the correlation between all possible pairs of judges.
+
+    Args:
+        axis: Axis of raters.
     """
     # Idea: Kendall's W - linearly related to spearman between all pairwise
     if rk.is_dataframe(m):
@@ -259,15 +281,28 @@ def concordance(m, method='spearman', axis=0):
         c, p_value = corr(r1, r2, method=method, return_p_value=True)
         scores.append(c)
     return np.mean(scores)
-    
-def distance_matrix(m, method='spearman', axis=0):
+
+def distance_matrix(m, method='spearman', axis=0, names=None, **kwargs):
     """ Compute all pairwise distances.
-        Distances can be dist, corr, metric
-        
-        :param method: metric, distance or correlation to use.
-        :param axis: axis of items to compare.
+
+    Distances can be dist, corr, metric.
+
+    Args:
+        method: metric, distance or correlation to use.
+        axis: axis of items to compare (0 for rows or 1 for columns).
+        names: list of size m[axis] of names of objects to compare.
+                      Will be overwritten by index or columns if m is a pd.DataFrame.
+        **kwargs: keywords argument for the metric function.
     """
+    dataframe = False
     if rk.is_dataframe(m):
+        dataframe = True
+        if axis == 0:
+            names = m.index
+        elif axis == 1:
+            names = m.columns
+        else:
+            raise Exception('axis must be 0 or 1.')
         m = np.array(m)
     n = m.shape[axis]
     idx = range(n)
@@ -276,15 +311,20 @@ def distance_matrix(m, method='spearman', axis=0):
         i, j = pair[0], pair[1]
         r1 = np.take(m, i, axis=axis)
         r2 = np.take(m, j, axis=axis)
-        d = any_metric(r1, r2, method=method)
+        d = any_metric(r1, r2, method=method, **kwargs)
         dist_matrix[i, j] = d
+    if dataframe: # if m was originally a pd.DataFrame
+        dist_matrix = pd.DataFrame(dist_matrix)
+        if names is not None:
+            dist_matrix.columns = names
+            dist_matrix.index = names
     return dist_matrix
 
 def auc_step(X, Y):
     """ Compute area under curve using step function (in 'post' mode).
 
-        :param X: List of timestamps of size n
-        :param Y: List of scores of size n
+    X: List of timestamps of size n
+    Y: List of scores of size n
     """
     # Log scale
     def transform_time(t, T=1200, t0=60):
@@ -310,8 +350,11 @@ def auc_step(X, Y):
 
 def quality(m, r, axis=0, method='swap'):
     """ Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
-        Also called centrality.
-        :param method: 'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.
+
+    Also called centrality.
+
+    Args:
+        method: 'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.
     """
     if method in CORR_METHODS: # correlation
         scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
@@ -326,7 +369,8 @@ def mean_distance(r, m, axis, method):
 
 def correct_metric(metric, model, X_test, y_test, average='weighted', multi_class='ovo'):
     """ Compute the model's score by making predictions on X_test and comparing them with y_test.
-        Try different configuration to be robust to all sklearn metrics.
+
+    Try different configuration to be robust to all sklearn metrics.
     """
     ### /!\ TODO: CLEAN CODE BELOW /!\ ###
     # TODO: Vector case and one-hot case

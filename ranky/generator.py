@@ -19,7 +19,9 @@ class Generator():
 
     def sample(self, n=1, loc=0, scale=1):
         """ Sample judge according to the function.
-            :param n: number of samples to draw.
+
+        Args:
+            n: number of samples to draw.
         """
         #m = [ranking_noise(self.r) for _ in range(n)]
         m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]
@@ -29,10 +31,12 @@ class Generator():
 
 def ranking_noise(r, method='swap', n=1, p=1):
     """ Ranking noise.
-        :param r: the ranking to disturb.
-        :param method: 'swap' or 'tie'.
-        :param n: number of iterations.
-        :param p: probability of disturbing on each iteration in ]0;1].
+
+    Args:
+        r: the ranking to disturb.
+        method: 'swap' or 'tie'.
+        n: number of iterations.
+        p: probability of disturbing on each iteration in ]0;1].
     """
     if (p <= 0) or (p > 1):
         raise('p must be in ]0;1]')
