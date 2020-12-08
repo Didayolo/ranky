@@ -264,7 +264,7 @@ def brute_force(m, axis=0, method=&#39;swap&#39;):
     best_score = -1
     best_r = np.take(m, 0, axis=axis)
     for r in tqdm(list(it.permutations(range(m.shape[axis])))): # all possible rankings
-        score = quality(m, r, axis=axis, method=method)
+        score = centrality(m, r, axis=axis, method=method)
         if score &gt; best_score:
             best_score = score
             best_r = r
@@ -289,7 +289,7 @@ def random_swap(r, n=1, tie=0.1):
     return _r
 
 def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#39;swap&#39;, history=False, verbose=False):
-    &#34;&#34;&#34; Use evolution strategy to search the best quality ranking.
+    &#34;&#34;&#34; Use evolution strategy to search the best centrality ranking.
 
     Return the best ranking (and the best score of each generation if needed).
 
@@ -300,7 +300,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#
         epochs: number of iterations.
         n: number of swaps performed during a single mutation.
         tie: probability of performing a tie instead of a swap during mutation process.
-        method: method used to compute quality of the ranking.
+        method: method used to compute centrality of the ranking.
         history: if True, return a tuple (ranking, history).
         verbose: if True, plot the learning curve.
     &#34;&#34;&#34;
@@ -311,7 +311,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#
     for epoch in tqdm(range(epochs)):
         offspring = [random_swap(x, n=n, tie=tie) for x in population*l] # random swaps to generate new ranked ballots
         offspring.append(best_ranking) # add the previous best to the offspring to avoid losing it if no children beat it
-        scores = [quality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
+        scores = [centrality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
         idx_best = np.argsort(scores)[len(scores)-mu:]
         population = list(np.array(offspring)[idx_best]) # select the mu best ballots
         argmax = idx_best[-1]
@@ -320,7 +320,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#
     r = process_vote(m, best_ranking, axis=1-axis)
     if verbose:
         show_learning_curve(h)
-        print(&#39;Best quality score: {}&#39;.format(h[-1]))
+        print(&#39;Best centrality score: {}&#39;.format(h[-1]))
     if history:
         return r, h # return the best ranking and its score
     return r
@@ -493,7 +493,7 @@ def consensus(m, axis=0):
     best_score = -1
     best_r = np.take(m, 0, axis=axis)
     for r in tqdm(list(it.permutations(range(m.shape[axis])))): # all possible rankings
-        score = quality(m, r, axis=axis, method=method)
+        score = centrality(m, r, axis=axis, method=method)
         if score &gt; best_score:
             best_score = score
             best_r = r
@@ -670,7 +670,7 @@ Solve the metric facility location problem.</p>
 <span>def <span class="ident">evolution_strategy</span></span>(<span>m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='swap', history=False, verbose=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Use evolution strategy to search the best quality ranking.</p>
+<div class="desc"><p>Use evolution strategy to search the best centrality ranking.</p>
 <p>Return the best ranking (and the best score of each generation if needed).</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -687,7 +687,7 @@ Solve the metric facility location problem.</p>
 <dt><strong><code>tie</code></strong></dt>
 <dd>probability of performing a tie instead of a swap during mutation process.</dd>
 <dt><strong><code>method</code></strong></dt>
-<dd>method used to compute quality of the ranking.</dd>
+<dd>method used to compute centrality of the ranking.</dd>
 <dt><strong><code>history</code></strong></dt>
 <dd>if True, return a tuple (ranking, history).</dd>
 <dt><strong><code>verbose</code></strong></dt>
@@ -698,7 +698,7 @@ Solve the metric facility location problem.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method=&#39;swap&#39;, history=False, verbose=False):
-    &#34;&#34;&#34; Use evolution strategy to search the best quality ranking.
+    &#34;&#34;&#34; Use evolution strategy to search the best centrality ranking.
 
     Return the best ranking (and the best score of each generation if needed).
 
@@ -709,7 +709,7 @@ Solve the metric facility location problem.</p>
         epochs: number of iterations.
         n: number of swaps performed during a single mutation.
         tie: probability of performing a tie instead of a swap during mutation process.
-        method: method used to compute quality of the ranking.
+        method: method used to compute centrality of the ranking.
         history: if True, return a tuple (ranking, history).
         verbose: if True, plot the learning curve.
     &#34;&#34;&#34;
@@ -720,7 +720,7 @@ Solve the metric facility location problem.</p>
     for epoch in tqdm(range(epochs)):
         offspring = [random_swap(x, n=n, tie=tie) for x in population*l] # random swaps to generate new ranked ballots
         offspring.append(best_ranking) # add the previous best to the offspring to avoid losing it if no children beat it
-        scores = [quality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
+        scores = [centrality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
         idx_best = np.argsort(scores)[len(scores)-mu:]
         population = list(np.array(offspring)[idx_best]) # select the mu best ballots
         argmax = idx_best[-1]
@@ -729,7 +729,7 @@ Solve the metric facility location problem.</p>
     r = process_vote(m, best_ranking, axis=1-axis)
     if verbose:
         show_learning_curve(h)
-        print(&#39;Best quality score: {}&#39;.format(h[-1]))
+        print(&#39;Best centrality score: {}&#39;.format(h[-1]))
     if history:
         return r, h # return the best ranking and its score
     return r</code></pre>

@@ -236,7 +236,7 @@ def brute_force(m, axis=0, method='swap'):
     best_score = -1
     best_r = np.take(m, 0, axis=axis)
     for r in tqdm(list(it.permutations(range(m.shape[axis])))): # all possible rankings
-        score = quality(m, r, axis=axis, method=method)
+        score = centrality(m, r, axis=axis, method=method)
         if score > best_score:
             best_score = score
             best_r = r
@@ -261,7 +261,7 @@ def random_swap(r, n=1, tie=0.1):
     return _r
 
 def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='swap', history=False, verbose=False):
-    """ Use evolution strategy to search the best quality ranking.
+    """ Use evolution strategy to search the best centrality ranking.
 
     Return the best ranking (and the best score of each generation if needed).
 
@@ -272,7 +272,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
         epochs: number of iterations.
         n: number of swaps performed during a single mutation.
         tie: probability of performing a tie instead of a swap during mutation process.
-        method: method used to compute quality of the ranking.
+        method: method used to compute centrality of the ranking.
         history: if True, return a tuple (ranking, history).
         verbose: if True, plot the learning curve.
     """
@@ -283,7 +283,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
     for epoch in tqdm(range(epochs)):
         offspring = [random_swap(x, n=n, tie=tie) for x in population*l] # random swaps to generate new ranked ballots
         offspring.append(best_ranking) # add the previous best to the offspring to avoid losing it if no children beat it
-        scores = [quality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
+        scores = [centrality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
         idx_best = np.argsort(scores)[len(scores)-mu:]
         population = list(np.array(offspring)[idx_best]) # select the mu best ballots
         argmax = idx_best[-1]
@@ -292,7 +292,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
     r = process_vote(m, best_ranking, axis=1-axis)
     if verbose:
         show_learning_curve(h)
-        print('Best quality score: {}'.format(h[-1]))
+        print('Best centrality score: {}'.format(h[-1]))
     if history:
         return r, h # return the best ranking and its score
     return r

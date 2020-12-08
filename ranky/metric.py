@@ -348,7 +348,7 @@ def auc_step(X, Y):
 #TODO
 #def relative_consensus or consensus_graph
 
-def quality(m, r, axis=0, method='swap'):
+def centrality(m, r, axis=0, method='swap'):
     """ Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
 
     Also called centrality.
@@ -365,7 +365,7 @@ def quality(m, r, axis=0, method='swap'):
 def mean_distance(r, m, axis, method):
     """ Mean distance between r and all points in m.
     """
-    return - quality(m, r, axis=axis, method=method)
+    return - centrality(m, r, axis=axis, method=method)
 
 def correct_metric(metric, model, X_test, y_test, average='weighted', multi_class='ovo'):
     """ Compute the model's score by making predictions on X_test and comparing them with y_test.

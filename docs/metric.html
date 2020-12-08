@@ -376,7 +376,7 @@ def auc_step(X, Y):
 #TODO
 #def relative_consensus or consensus_graph
 
-def quality(m, r, axis=0, method=&#39;swap&#39;):
+def centrality(m, r, axis=0, method=&#39;swap&#39;):
     &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
 
     Also called centrality.
@@ -393,7 +393,7 @@ def quality(m, r, axis=0, method=&#39;swap&#39;):
 def mean_distance(r, m, axis, method):
     &#34;&#34;&#34; Mean distance between r and all points in m.
     &#34;&#34;&#34;
-    return - quality(m, r, axis=axis, method=method)
+    return - centrality(m, r, axis=axis, method=method)
 
 def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, multi_class=&#39;ovo&#39;):
     &#34;&#34;&#34; Compute the model&#39;s score by making predictions on X_test and comparing them with y_test.
@@ -515,6 +515,36 @@ Y: List of scores of size n</p></div>
         delta_X = X[i + 1] - X[i]
         area += delta_X * Y[i]
     return area</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.centrality"><code class="name flex">
+<span>def <span class="ident">centrality</span></span>(<span>m, r, axis=0, method='swap')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.</p>
+<p>Also called centrality.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def centrality(m, r, axis=0, method=&#39;swap&#39;):
+    &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
+
+    Also called centrality.
+
+    Args:
+        method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
+    &#34;&#34;&#34;
+    if method in CORR_METHODS: # correlation
+        scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
+    else: # distance
+        scores = - np.apply_along_axis(dist, axis, m, r, method) # minus because higher is better, best 0
+    return scores.mean()</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.combined_metric"><code class="name flex">
@@ -868,7 +898,7 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
 <pre><code class="python">def mean_distance(r, m, axis, method):
     &#34;&#34;&#34; Mean distance between r and all points in m.
     &#34;&#34;&#34;
-    return - quality(m, r, axis=axis, method=method)</code></pre>
+    return - centrality(m, r, axis=axis, method=method)</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.metric"><code class="name flex">
@@ -974,36 +1004,6 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
     return score</code></pre>
 </details>
 </dd>
-<dt id="ranky.metric.quality"><code class="name flex">
-<span>def <span class="ident">quality</span></span>(<span>m, r, axis=0, method='swap')</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.</p>
-<p>Also called centrality.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def quality(m, r, axis=0, method=&#39;swap&#39;):
-    &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
-
-    Also called centrality.
-
-    Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
-    &#34;&#34;&#34;
-    if method in CORR_METHODS: # correlation
-        scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
-    else: # distance
-        scores = - np.apply_along_axis(dist, axis, m, r, method) # minus because higher is better, best 0
-    return scores.mean()</code></pre>
-</details>
-</dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
 <span>def <span class="ident">to_binary</span></span>(<span>y, threshold=0.5)</span>
 </code></dt>
@@ -1103,6 +1103,7 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.any_metric" href="#ranky.metric.any_metric">any_metric</a></code></li>
 <li><code><a title="ranky.metric.arr_to_str" href="#ranky.metric.arr_to_str">arr_to_str</a></code></li>
 <li><code><a title="ranky.metric.auc_step" href="#ranky.metric.auc_step">auc_step</a></code></li>
+<li><code><a title="ranky.metric.centrality" href="#ranky.metric.centrality">centrality</a></code></li>
 <li><code><a title="ranky.metric.combined_metric" href="#ranky.metric.combined_metric">combined_metric</a></code></li>
 <li><code><a title="ranky.metric.concordance" href="#ranky.metric.concordance">concordance</a></code></li>
 <li><code><a title="ranky.metric.corr" href="#ranky.metric.corr">corr</a></code></li>
@@ -1113,7 +1114,6 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.kendall_w_ties" href="#ranky.metric.kendall_w_ties">kendall_w_ties</a></code></li>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>
 <li><code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric</a></code></li>
-<li><code><a title="ranky.metric.quality" href="#ranky.metric.quality">quality</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
 <li><code><a title="ranky.metric.to_sparse" href="#ranky.metric.to_sparse">to_sparse</a></code></li>
