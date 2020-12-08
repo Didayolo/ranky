@@ -66,20 +66,22 @@ Rank aggregation methods available:
 * Use `rk.show` to visualize preference matrix (2D) or ranking ballots (1D).
 
 `rk.show(m)`
-![show example 1](show_example_1.png)
+
+![show example 1](img/show_example_1.png)
 
 `rk.show(m['judge1'])`
-![show example 2](show_example_2.png)
+
+![show example 2](img/show_example_2.png)
 
 * Use `rk.mds`, to visualize (in 2D or 3D) the points in a given metric space.
 
 `rk.mds(m, method='euclidean')`
 
-![MDS example 1](mds_example_1.png)
+![MDS example 1](img/mds_example_1.png)
 
 `rk.mds(m, method='spearman', axis=1)`
 
-![MSE example 2](mds_example_2.png)
+![MSE example 2](img/mds_example_2.png)
 
 * You can use `rk.tsne` similarly to `rk.mds`.
 
