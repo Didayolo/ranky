@@ -15,7 +15,7 @@ pip install ranky
 import ranky as rk
 ```
 
-Read the [documentation](https://didayolo.github.io/ranky/).
+Read the **[documentation](https://didayolo.github.io/ranky/)**.
 
 # Main functions
 
@@ -41,12 +41,12 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 
 Rank aggregation methods available:
 
-* Random Dictator. `rk.dictator(m)`
-* Score Voting. `rk.score(m)`
-* Borda Count. `rk.borda(m)`
-* Majority Judgement. `rk.majority(m)`
-* Condorcet, p-value Condorcet. `rk.condorcet(m)`, `rk.condorcet(m, wins=rk.p_wins)`
-* **Optimal rank aggregation** using any rank metric. `rk.center(m)`, `rk.center(m, method='kendalltau')`. Solver used \[1\].
+* Random Dictator: `rk.dictator(m)`
+* Score Voting: `rk.score(m)`
+* Borda Count: `rk.borda(m)`
+* Majority Judgement: `rk.majority(m)`
+* Condorcet, p-value Condorcet: `rk.condorcet(m)`, `rk.condorcet(m, wins=rk.p_wins)`
+* **Optimal rank aggregation** using any rank metric: `rk.center(m)`, `rk.center(m, method='kendalltau')`. Solver used \[1\].
 * _(Kemeny-Young method is optimal rank aggregation using Kemeny distance as metric.)_
 * _(Optimal rank aggregation using Spearman correlation as metric is equivalent to Borda count.)_
 
@@ -94,12 +94,12 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 ## Other
 
-* Rank, convert a 1D score ballot to ranking.
-* Bootstrap, sample a given axis.
-* Consensus, check if ranking exactly agree.
-* Concordance, mean rank distance between all judges of a preference matrix.
-* Centrality, mean rank distance between a ranking and a preference matrix.
-* Kendall's W coefficient of concordance.
+* Rank, `rk.rank`, convert a 1D score ballot to ranking.
+* Bootstrap, `rk.bootstrap`, sample a given axis.
+* Consensus, `rk.consensus`, check if ranking exactly agree.
+* Concordance, ,`rk.concordance`, mean rank distance between all judges of a preference matrix.
+* Centrality, `rk.centrality`, mean rank distance between a ranking and a preference matrix.
+* Kendall's W, `rk.kendall_w`, coefficient of concordance.
 
 
 \[1\] Storn R. and Price K., Differential Evolution - a Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, Journal of Global Optimization, 1997, 11, 341 - 359.
