@@ -14,8 +14,12 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_pre
 # error bars
 # bootstrap
 
+METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
 DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean']
+
+def arr_to_str(a):
+    return "".join(str(x) for x in a)
 
 def to_dense(y):
     """ Format predictions/solutions from sparse format (1D) to dense format (2D).
@@ -48,6 +52,20 @@ def to_binary(y, threshold=0.5):
         1 if the value is stricly greater than the threshold, 0 otherwise.
     """
     return np.where(y > 0.5, 1, 0)
+    
+def any_metric(a, b, method):
+    """ Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
+    
+        :param method: 'accuracy', ..., 'levenshtein', ..., 'spearman', ...
+    """
+    if method in METRIC_METHODS:
+        return metric(a, b, method=method)
+    elif method in DIST_METHODS:
+        return dist(a, b, method=method)
+    elif method in CORR_METHODS:
+        return corr(a, b, method=method)
+    else:
+        raise Exception('Unknown method: {}'.format(method))
 
 def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1):
     """ Compute a classification scoring metric between y_true and y_pred.
@@ -234,6 +252,26 @@ def concordance(m, method='spearman', axis=0):
         c, p_value = corr(r1, r2, method=method, return_p_value=True)
         scores.append(c)
     return np.mean(scores)
+    
+def distance_matrix(m, method='spearman', axis=0):
+    """ Compute all pairwise distances.
+        Distances can be dist, corr, metric
+        
+        :param method: metric, distance or correlation to use.
+        :param axis: axis of items to compare.
+    """
+    if rk.is_dataframe(m):
+        m = np.array(m)
+    n = m.shape[axis]
+    idx = range(n)
+    dist_matrix = np.zeros((n, n))
+    for pair in it.permutations(idx, 2):
+        i, j = pair[0], pair[1]
+        r1 = np.take(m, i, axis=axis)
+        r2 = np.take(m, j, axis=axis)
+        d = any_metric(r1, r2, method=method)
+        dist_matrix[i, j] = d
+    return dist_matrix
 
 def auc_step(X, Y):
     """ Compute area under curve using step function (in 'post' mode).
@@ -267,8 +305,6 @@ def quality(m, r, axis=0, method='swap'):
     """ Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
         Also called centrality.
         :param method: 'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.
-
-        TODO: pairwise corr/dist between all ballots?
     """
     if method in CORR_METHODS: # correlation
         scores = np.apply_along_axis(corr, axis, m, r, method) # best 1

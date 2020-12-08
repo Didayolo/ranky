@@ -93,9 +93,6 @@ def process_vote(m, r, axis=1):
         r = pd.Series(r, m.index)
     return r
 
-def arr_to_str(a):
-    return "".join(str(x) for x in a)
-
 #################################
 ####### RANKING SYSTEMS #########
 #################################
@@ -307,7 +304,7 @@ def center(m, axis=1, method='euclidean', verbose=True):
     # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method)) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
     #return res.x

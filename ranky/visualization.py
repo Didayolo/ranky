@@ -7,8 +7,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import networkx as nx
-import ranky.ranking as rk
-from sklearn.manifold import TSNE
+import ranky as rk
+from sklearn.manifold import TSNE, MDS
 from mpl_toolkits.mplot3d import Axes3D
 
 sns.set(style = "darkgrid")
@@ -67,12 +67,45 @@ def show_graph(matrix, names=None):
                 G.add_edge(nodes[i], nodes[j])
     nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight='bold')
     plt.show()
+    
+def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True):
+    """ 2D or 3D scatterplot.
+    
+        :param m: data
+        :param dim: 2 or 3.
+        :param fontsize: text font size (integer).
+        :param pointsize: size of data points (integer).
+        :param big_display: plot the figure in a big format if True.
+    """
+    if dim == 2: # 2 dimensions
+        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
+        scat = sns.scatterplot(x, y, hue=names, legend=False, s=pointsize)
+        # TEXT #
+        for line in range(0, m.shape[0]):
+         scat.text(x[line]+0.01, y[line], 
+                 names[line], horizontalalignment='left', 
+                 fontsize=fontsize, color='black', weight='semibold') # size='medium'
+        ########
+        #plt.legend(loc='right', bbox_to_anchor=(1.25, 0.5), ncol=1)
+    elif dim == 3: # 3 dimensions
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection = '3d')
+        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
+        ax.scatter(x, y, z) #, c=range(len(names)))
+        
+    else:
+        raise Exception('dim must be 2 or 3.')
+    if big_display:
+        fi = plt.gcf()
+        fi.set_size_inches(12, 8) # change plot size
+    plt.show()
 
-def tsne(m, axis=0, dim=2):
+def tsne(m, axis=0, dim=2, **kwargs):
     """ Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
 
         :param axis: axis of dimensionality reduction.
         :param dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
     """
     names = None
     if axis == 0:
@@ -85,18 +118,46 @@ def tsne(m, axis=0, dim=2):
     else:
         raise Excpetion('axis must be 0 or 1.')
     m_transformed = TSNE(n_components=dim).fit_transform(m)
-    if dim == 2: # 2 dimensions
-        x, y = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        sns.scatterplot(x, y, hue=names)
-        plt.legend(loc='right', bbox_to_anchor=(1.25, 0.5), ncol=1)
-    elif dim == 3: # 3 dimensions
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection = '3d')
-        x, y, z = [m_transformed[:, i] for i in range(m_transformed.shape[1])] # take columns
-        ax.scatter(x, y, z)
-        plt.show()
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
+
+def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
+    """ Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).
+        https://en.wikipedia.org/wiki/Multidimensional_scaling
+    
+        :param m: distance matrix.
+        :param dim: number of dimensions to plot (2 or 3).
+        :param names: names of objects.
+        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
+    """
+    transformer = MDS(n_components=dim, dissimilarity='precomputed')
+    m_transformed = transformer.fit_transform(distance_matrix)
+    # Display
+    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
+        
+def mds(m, axis=0, dim=2, method='spearman', **kwargs):
+    """ Multidimensional scaling plot from a preference matrix.
+        https://en.wikipedia.org/wiki/Multidimensional_scaling
+    
+        :param m: preference matrix.
+        :param dim: number of dimensions to plot (2 or 3).
+        :param method: any metric method.
+        :param **kwargs: arguments for scatterplot function (e.g. fontsize).
+    """
+    names = None
+    if axis == 0:
+        if rk.is_dataframe(m):
+            names = m.columns
+        m = m.T # transpose
+    elif axis == 1:
+        if rk.is_dataframe(m):
+            names = m.index
     else:
-        raise Exception('dim must be 2 or 3.')
+        raise Excpetion('axis must be 0 or 1.')
+    # Compute pairwise distances
+    dist_matrix = rk.distance_matrix(m, method=method)
+    # Call the plot functions
+    mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
 
 # Critical difference diagrams

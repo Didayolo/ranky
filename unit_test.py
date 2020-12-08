@@ -8,6 +8,18 @@ import pandas as pd
 #from ranky import *
 import ranky as rk
 
+def test_distance_matrix():
+    print('Distance matrix...')
+    m_template = pd.read_csv('data/matrix.csv')
+    m_template.index = m_template['index']
+    m_template = m_template.drop('index', axis=1).rename_axis(None, axis = 0)
+    print('Default')
+    dist_matrix = rk.distance_matrix(m_template)
+    print(dist_matrix)
+    print('Levenshtein')
+    dist_matrix = rk.distance_matrix(m_template, method='levenshtein')
+    print(dist_matrix)
+
 def test_generator():
     print('Testing generator...')
     G = rk.Generator()
@@ -32,6 +44,9 @@ def test_generator():
     print('kendall tau correlation: {}'.format(correlation))
 
 def test_metric():
+    """ This simply test if the metrics got computed withtout error.
+        It is not an unit testing.
+    """
     print('Testing metrics...')
     y_true = pd.read_csv('data/test_metric/task.solution', sep=' ', header=None)
     y_pred = pd.read_csv('data/test_metric/task.predict', sep=' ', header=None)
@@ -70,6 +85,17 @@ class Test(unittest.TestCase):
         np.testing.assert_array_equal(rk.consensus(rank_M, axis=1), np.array([True, False, False]))
     def test_winner_distance(self):
         self.assertEqual(rk.dist([1, 2, 3], [2, 1, 3], method='winner'), 1)
+    def test_optimal_spearman_is_borda(self):
+        """ Check that Borda count and Spearman optimal rank aggregation returns the same output on the template matrix.
+        """
+        m_template = pd.read_csv('data/matrix.csv')
+        m_template.index = m_template['index']
+        m_template = m_template.drop('index', axis=1).rename_axis(None, axis = 0)
+        borda_rank = rk.rank(rk.borda(m_template), reverse=True)
+        optimal_spearman_rank = rk.rank(rk.center(m_template, method='spearman'))
+        print(borda_rank)
+        print(optimal_spearman_rank)
+        np.testing.assert_array_equal(borda_rank, optimal_spearman_rank)
 
 if __name__ == '__main__':
     print('Compute various measures...')
@@ -86,6 +112,7 @@ if __name__ == '__main__':
     test_generator()
     test_metric()
     test_utilities()
+    test_distance_matrix()
 
     print('Unit testing...')
     unittest.main()
