@@ -73,23 +73,32 @@ def show_graph(matrix, names=None):
     nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight='bold')
     plt.show()
 
-def scatterplot(m, dim=2, names=None, fontsize=8, pointsize=42, big_display=True):
+def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=42, big_display=True, legend=False, legend_loc='best'):
     """ 2D or 3D scatterplot.
 
     Args:
         m: data
         dim: 2 or 3.
+        names: vector of names to display on each point.
+        colors: vector of numbers or categories of the size of the number of points.
+                If None it will be replaced by names.
         fontsize: text font size (integer).
         pointsize: size of data points (integer).
         big_display: plot the figure in a big format if True.
+        legend: if True, add legend of colors.
+        legend_loc: location of legend. See matplotlib.pyplot.legend for details.
     """
+    if colors is None:
+        colors = names
     if dim == 2: # 2 dimensions
         x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x, y, hue=names, legend=False, s=pointsize)
+        scat = sns.scatterplot(x, y, hue=colors, s=pointsize, legend=(legend and 'brief'))
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
                          fontsize=fontsize, color='black', weight='semibold')
+        if legend:
+            plt.legend(colors, loc=legend_loc)
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
         ax = fig.add_subplot(111, projection = '3d')
