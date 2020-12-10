@@ -29,7 +29,7 @@ Let's consider the following preference matrix:
 
 Each row is a candidate and each column is a judge. Here is the results of `rk.borda(matrix)`, computing the mean rank of each candidate:
 
-![borda](img/borda_example.png) 
+![borda](img/borda_example.png)
 
 We can see that candidate2 has the best average rank among the four judges.
 
@@ -79,7 +79,7 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 ![show example 2](img/show_example_2.png)
 
-* Use `rk.mds`, to visualize (in 2D or 3D) the points in a given metric space.
+* Use `rk.mds`, to visualize (in 2D or 3D) the points in a given metric space. _See `rk.scatterplot` documentation for display arguments._
 
 `>>> rk.mds(m, method='euclidean')`
 
@@ -105,4 +105,3 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 
 \[1\] Storn R. and Price K., Differential Evolution - a Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, Journal of Global Optimization, 1997, 11, 341 - 359.
-

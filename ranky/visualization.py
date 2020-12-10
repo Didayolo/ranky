@@ -73,7 +73,7 @@ def show_graph(matrix, names=None):
     nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight='bold')
     plt.show()
 
-def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=42, big_display=True, legend=False, legend_loc='best'):
+def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc='best'):
     """ 2D or 3D scatterplot.
 
     Args:
@@ -104,7 +104,6 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=42, big
         ax = fig.add_subplot(111, projection = '3d')
         x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
         ax.scatter(x, y, z) #, c=range(len(names)))
-
     else:
         raise Exception('dim must be 2 or 3.')
     if big_display:

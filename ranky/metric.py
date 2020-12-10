@@ -88,14 +88,14 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     [[0, 0, 1]
     [0, 1, 0]]
 
-    If y_true and y_pred are 1D they'll be converted using to_dense function.
+    If y_true and y_pred are 1D they'll be converted using `to_dense` function.
 
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
         method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
         reverse_loss: If True, return (1 - score).
-        missing_score: Value to return if the computation fails.
+        missing_score: (DEPRECATED) Value to return if the computation fails. 
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
@@ -103,8 +103,6 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     if len(y_true.shape) == 1:
         y_true, y_pred = to_dense(y_true), to_dense(y_pred)
     # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
-    # MISSING SCORE
-    score = -1
     # PARAMETERS
     average = 'binary'
     if y_true.shape[1] > 2: # target is not binary
@@ -115,6 +113,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
     elif method in ['mse', 'rmse']: # sparse format but keep probabilities
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+    #try:
     # COMPUTE SCORE
     if method == 'accuracy':
         score = accuracy_score(y_true, y_pred)
@@ -142,9 +141,12 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         score = combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean')
     else:
         raise Exception('Unknown method: {}'.format(method))
+    #except Exception as e: # could not compute the score
+    #    print('Could not compute {}. Retuning missing_score. Error: {}'.format(method, e))
+    #    return missing_score # MISSING SCORE
     # REVERSE LOSS
     is_loss = method in ['mxe', 'mse', 'rmse']
-    if reverse_loss and (score != missing_score) and is_loss:
+    if reverse_loss and is_loss:
         score = 1 - score
     return score
 
@@ -307,7 +309,7 @@ def distance_matrix(m, method='spearman', axis=0, names=None, **kwargs):
     n = m.shape[axis]
     idx = range(n)
     dist_matrix = np.zeros((n, n))
-    for pair in it.permutations(idx, 2):
+    for pair in it.product(idx, repeat=2):
         i, j = pair[0], pair[1]
         r1 = np.take(m, i, axis=axis)
         r2 = np.take(m, j, axis=axis)
