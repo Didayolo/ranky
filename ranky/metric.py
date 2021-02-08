@@ -58,7 +58,7 @@ def to_binary(y, threshold=0.5):
     Args:
         threshold: threshold for binarization (0 if below, 1 if strictly above).
     """
-    return np.where(y > 0.5, 1, 0)
+    return np.where(y > threshold, 1, 0)
 
 def any_metric(a, b, method, **kwargs):
     """ Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
@@ -95,7 +95,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         y_pred: Predictions (format?)
         method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
         reverse_loss: If True, return (1 - score).
-        missing_score: (DEPRECATED) Value to return if the computation fails. 
+        missing_score: (DEPRECATED) Value to return if the computation fails.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
@@ -223,6 +223,8 @@ def corr(r1, r2, method='swap', return_p_value=False):
         c, p_value = spearmanr(r1, r2)
     elif method in ['pearson', 'pearsonr']: # Pearson correlation
         c, p_value = pearsonr(r1, r2)
+    # Add weightedtau
+    # Add weightedspearman
     else:
         raise(Exception('Unknown correlation method: {}'.format(method)))
     if return_p_value:

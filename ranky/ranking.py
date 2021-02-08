@@ -38,6 +38,21 @@ def rank(m, axis=0, method='average', ascending=False, reverse=False):
     r = np.apply_along_axis(rankdata, axis, m, method=method) # convert values to ranking in all rows or columns
     return process_vote(m, r)
 
+def weigher(r, method='hyperbolic'):
+    """ The weigher function.
+
+    Must map nonnegative integers (zero representing the most important element) to a nonnegative weight.
+    The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r is mapped to weight 1/(r+1)
+
+    Args:
+        r: Integer value (supposedly a rank) to weight
+        method: Weighing method. 'hyperbolic'
+    """
+    if method == 'hyperbolic':
+        return 1 / (r + 1)
+    else:
+        raise Exception('Unknown method: {}'.format(method))
+
 def tie(r, threshold=0.1):
     """ TODO: merge close values.
     """

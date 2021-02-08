@@ -95,7 +95,7 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 ## Other
 
-* Rank, `rk.rank`, convert a 1D score ballot to ranking.
+* Rank, `rk.rank`, convert a 1D score ballot into a ranking.
 * Bootstrap, `rk.bootstrap`, sample a given axis.
 * Consensus, `rk.consensus`, check if ranking exactly agree.
 * Concordance, ,`rk.concordance`, mean rank distance between all judges of a preference matrix.
