@@ -7,3 +7,4 @@ seaborn
 networkx
 python-Levenshtein
 tqdm
+baycomp
