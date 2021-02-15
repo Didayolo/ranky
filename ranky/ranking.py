@@ -12,7 +12,7 @@ from tqdm import tqdm
 import itertools as it
 #import ranky.metric as metric
 import ranky as rk
-from baycomp import two_on_multiple
+from baycomp import two_on_single, two_on_multiple
 
 # Convert to ranking
 def rank(m, axis=0, method='average', ascending=False, reverse=False):
@@ -212,16 +212,20 @@ def p_wins(a, b, pval=0.05, reverse=False):
     wins = Wa > Wb
     return significant and wins # count only significant wins
 
-def bayes_wins(a, b, width=0.1):
+def bayes_wins(a, b, width=0.1, independant=False):
     """ Compare a and b using a Bayesian signed-ranks test.
 
     Args:
         a: Ballot representing one candidate.
         b: Ballot representing one candidate.
         width: the width of the region of practical equivalence.
+        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
     """
     a, b = np.array(a), np.array(b)
-    p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
+    if independant:
+        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
+    else:
+        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
     return p_a == max([p_a, p_tie, p_b])
 
 def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
