@@ -50,15 +50,31 @@ def to_sparse(y, axis=1):
     else:
         raise Exception('y must be 2-dimensional')
 
-def to_binary(y, threshold=0.5):
-    """ Format predictions/solutions from probabilities to binary.
+def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
+    """ Format predictions/solutions from probabilities to binary {0, 1}.
 
-    1 if the value is stricly greater than the threshold, 0 otherwise.
+    Behaviour:
+    If unilabel is False: 1 if the value is stricly greater than the threshold, 0 otherwise.
+    If unilabel is True: argmax 1, other values 0.
 
     Args:
+        y: vector or matrix to binarize. If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.
         threshold: threshold for binarization (0 if below, 1 if strictly above).
+        unilabel: If True, return only one 1 for each row.
+        at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
     """
-    return np.where(y > threshold, 1, 0)
+    if unilabel == True or at_least_one_class == True:
+        if len(y.shape) != 2:
+            raise Exception('If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.')
+    n = y.shape[0]
+    if unilabel:
+        y_binary = np.zeros(y.shape, dtype=int)
+        y_binary[np.arange(n), np.argmax(y, axis=1)] = 1
+    else: # multi-label
+        y_binary = np.where(y > threshold, 1, 0)
+        if at_least_one_class:
+            y_binary[np.arange(n), np.argmax(y, axis=1)] = 1
+    return y_binary
 
 def any_metric(a, b, method, **kwargs):
     """ Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
@@ -76,7 +92,7 @@ def any_metric(a, b, method, **kwargs):
     else:
         raise Exception('Unknown method: {}'.format(method))
 
-def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1):
+def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1, unilabel=False):
     """ Compute a classification scoring metric between y_true and y_pred.
 
     Predictions format:
@@ -96,6 +112,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
+        unilabel: If True, only one label per example. If False it's multi-label case.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
@@ -108,10 +125,9 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     if y_true.shape[1] > 2: # target is not binary
         average = 'micro'
     # PREPROCESSING
-    if method in ['accuracy', 'balanced_accuracy', 'precision', 'f1_score', 'recall', 'jaccard']: # convert to sparse and binarize with 0.5 threshold
-        y_true, y_pred = to_binary(y_true), to_binary(y_pred)
-        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-    elif method in ['mse', 'rmse']: # sparse format but keep probabilities
+    if method in ['accuracy', 'balanced_accuracy', 'precision', 'f1_score', 'recall', 'jaccard']: # binarize with 0.5 threshold
+        y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
+    if method in ['mse', 'rmse', 'balanced_accuracy'] or average == 'binary': # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
     #try:
     # COMPUTE SCORE

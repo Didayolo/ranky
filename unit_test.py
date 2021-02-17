@@ -61,7 +61,7 @@ def test_metric():
     print('Combined loss (SAR by default)')
     print('{}'.format(rk.combined_metric(y_true, y_pred)))
     print('{}'.format(rk.combined_metric(y_true, y_pred_proba)))
-    
+
 def test_utilities():
     print('Testing utilities...')
     leaderboard = rk.read_codalab_csv('data/chems.csv')
@@ -116,3 +116,30 @@ if __name__ == '__main__':
 
     print('Unit testing...')
     unittest.main()
+
+
+'''
+TODO to_binary
+>>> m = np.array([[0.2, 0.3, 0.1], [0.5, 0.6, 0.7]])
+>>> m
+array([[0.2, 0.3, 0.1],
+       [0.5, 0.6, 0.7]])
+>>> rk.to_binary(m)
+array([[0, 0, 0],
+       [0, 1, 1]])
+>>> rk.to_binary(m, unilabel=True)
+array([[0, 1, 0],
+       [0, 0, 1]])
+>>> rk.to_binary(m, unilabel=True, at_least_one_class=True)
+array([[0, 1, 0],
+       [0, 0, 1]])
+>>> rk.to_binary(m, unilabel=False, at_least_one_class=True)
+array([[0, 1, 0],
+       [0, 1, 1]])
+>>> m
+array([[0.2, 0.3, 0.1],
+       [0.5, 0.6, 0.7]])
+>>> rk.to_binary(m, unilabel=False, at_least_one_class=False)
+array([[0, 0, 0],
+       [0, 1, 1]])
+'''
