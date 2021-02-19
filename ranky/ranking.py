@@ -75,10 +75,9 @@ def bootstrap(m, axis=0, n=None, replace=True):
     idx = np.random.choice(m.shape[axis], n, replace=replace)
     return np.take(m, idx, axis=axis)
 
-def mbootstrap(m_list, axis=0, n=None, replace=True):
+def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     """ Apply the same bootstrap on all matrices on m_list.
 
-    TODO: rename or merged with bootstrap function.
     Sample with replacement among an axis (and keep the same shape by default).
     By convention rows reprensent candidates and columns represent voters.
 
