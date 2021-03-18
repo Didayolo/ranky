@@ -118,6 +118,37 @@ def any_metric(a, b, method, **kwargs):
     else:
         raise Exception(&#39;Unknown method: {}&#39;.format(method))
 
+def balanced_accuracy(y_true, y_pred):
+    &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    &#34;&#34;&#34;
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    recip_y_true = 1 - y_true
+    recip_y_pred = 1 - y_pred
+    sensitivity = np.sum(y_true * y_pred, axis=0) / np.sum(y_true, axis=0)
+    specificity = np.sum(recip_y_true * recip_y_pred, axis=0) / np.sum(recip_y_true, axis=0)
+    balanced_acc = np.mean((sensitivity + specificity) / 2.)
+    return balanced_acc
+
+def accuracy_multilabel(y_true,y_pred):
+    &#34;&#34;&#34; Soft multi-label accuracy.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    &#34;&#34;&#34;
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true.shape)==1:
+        x = np.where(y_true-y_pred == 0)[0]
+        return(len(x) / y_true.shape[0])
+    inter = np.sum(y_true * y_pred, axis=1)
+    union = np.sum(np.maximum(y_true,y_pred), axis=1)
+    return np.mean(inter / union)
+
 def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missing_score=-1, unilabel=False):
     &#34;&#34;&#34; Compute a classification scoring metric between y_true and y_pred.
 
@@ -135,7 +166,7 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
+        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it&#39;s multi-label case.
@@ -151,15 +182,17 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
     if y_true.shape[1] &gt; 2: # target is not binary
         average = &#39;micro&#39;
     # PREPROCESSING
-    if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
+    if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    if method in [&#39;mse&#39;, &#39;rmse&#39;, &#39;balanced_accuracy&#39;] or average == &#39;binary&#39;: # sparse format
+    if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
     #try:
     # COMPUTE SCORE
     if method == &#39;accuracy&#39;:
         score = accuracy_score(y_true, y_pred)
     elif method == &#39;balanced_accuracy&#39;:
+        score = balanced_accuracy(y_true, y_pred)
+    elif method == &#39;balanced_accuracy_sklearn&#39;:
         score = balanced_accuracy_score(y_true, y_pred)
     elif method == &#39;precision&#39;:
         score = precision_score(y_true, y_pred, average=average)
@@ -391,6 +424,22 @@ def auc_step(X, Y):
         area += delta_X * Y[i]
     return area
 
+def get_valid_columns(solution):
+    &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
+    This is necessary when computing BAC or AUC which involves true positive and
+    true negative in the denominator. When some class is missing, these scores
+    don&#39;t make sense (or you have to add an epsilon to remedy the situation).
+
+    Args:
+        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
+    Returns:
+        valid_columns: a list of indices for which the column has more than one class.
+    &#34;&#34;&#34;
+    num_examples = solution.shape[0]
+    col_sum = np.sum(solution, axis=0)
+    valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
+    return valid_columns
+
 #TODO
 #def relative_consensus or consensus_graph
 
@@ -452,6 +501,39 @@ def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, mu
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="ranky.metric.accuracy_multilabel"><code class="name flex">
+<span>def <span class="ident">accuracy_multilabel</span></span>(<span>y_true, y_pred)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Soft multi-label accuracy.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth in 2D dense format.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions in 2D dense format.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def accuracy_multilabel(y_true,y_pred):
+    &#34;&#34;&#34; Soft multi-label accuracy.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    &#34;&#34;&#34;
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true.shape)==1:
+        x = np.where(y_true-y_pred == 0)[0]
+        return(len(x) / y_true.shape[0])
+    inter = np.sum(y_true * y_pred, axis=1)
+    union = np.sum(np.maximum(y_true,y_pred), axis=1)
+    return np.mean(inter / union)</code></pre>
+</details>
+</dd>
 <dt id="ranky.metric.any_metric"><code class="name flex">
 <span>def <span class="ident">any_metric</span></span>(<span>a, b, method, **kwargs)</span>
 </code></dt>
@@ -533,6 +615,38 @@ Y: List of scores of size n</p></section>
         delta_X = X[i + 1] - X[i]
         area += delta_X * Y[i]
     return area</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.balanced_accuracy"><code class="name flex">
+<span>def <span class="ident">balanced_accuracy</span></span>(<span>y_true, y_pred)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compute balanced accuracy between y_true and y_pred.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth in 2D dense format.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions in 2D dense format.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def balanced_accuracy(y_true, y_pred):
+    &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    &#34;&#34;&#34;
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    recip_y_true = 1 - y_true
+    recip_y_pred = 1 - y_pred
+    sensitivity = np.sum(y_true * y_pred, axis=0) / np.sum(y_true, axis=0)
+    specificity = np.sum(recip_y_true * recip_y_pred, axis=0) / np.sum(recip_y_true, axis=0)
+    balanced_acc = np.mean((sensitivity + specificity) / 2.)
+    return balanced_acc</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.centrality"><code class="name flex">
@@ -840,6 +954,45 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
     return dist_matrix</code></pre>
 </details>
 </dd>
+<dt id="ranky.metric.get_valid_columns"><code class="name flex">
+<span>def <span class="ident">get_valid_columns</span></span>(<span>solution)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get a list of column indices for which the column has more than one class.
+This is necessary when computing BAC or AUC which involves true positive and
+true negative in the denominator. When some class is missing, these scores
+don't make sense (or you have to add an epsilon to remedy the situation).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>solution</code></strong></dt>
+<dd>array, a matrix of binary entries, of shape (num_examples, num_features)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>valid_columns</code></strong></dt>
+<dd>a list of indices for which the column has more than one class.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_valid_columns(solution):
+    &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
+    This is necessary when computing BAC or AUC which involves true positive and
+    true negative in the denominator. When some class is missing, these scores
+    don&#39;t make sense (or you have to add an epsilon to remedy the situation).
+
+    Args:
+        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
+    Returns:
+        valid_columns: a list of indices for which the column has more than one class.
+    &#34;&#34;&#34;
+    num_examples = solution.shape[0]
+    col_sum = np.sum(solution, axis=0)
+    valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
+    return valid_columns</code></pre>
+</details>
+</dd>
 <dt id="ranky.metric.kendall_w"><code class="name flex">
 <span>def <span class="ident">kendall_w</span></span>(<span>matrix, axis=0)</span>
 </code></dt>
@@ -941,7 +1094,7 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
 <dt><strong><code>y_pred</code></strong></dt>
 <dd>Predictions (format?)</dd>
 <dt><strong><code>method</code></strong></dt>
-<dd>Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'</dd>
+<dd>Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'</dd>
 <dt><strong><code>reverse_loss</code></strong></dt>
 <dd>If True, return (1 - score).</dd>
 <dt><strong><code>missing_score</code></strong></dt>
@@ -970,7 +1123,7 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
+        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it&#39;s multi-label case.
@@ -986,15 +1139,17 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
     if y_true.shape[1] &gt; 2: # target is not binary
         average = &#39;micro&#39;
     # PREPROCESSING
-    if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
+    if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    if method in [&#39;mse&#39;, &#39;rmse&#39;, &#39;balanced_accuracy&#39;] or average == &#39;binary&#39;: # sparse format
+    if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
     #try:
     # COMPUTE SCORE
     if method == &#39;accuracy&#39;:
         score = accuracy_score(y_true, y_pred)
     elif method == &#39;balanced_accuracy&#39;:
+        score = balanced_accuracy(y_true, y_pred)
+    elif method == &#39;balanced_accuracy_sklearn&#39;:
         score = balanced_accuracy_score(y_true, y_pred)
     elif method == &#39;precision&#39;:
         score = precision_score(y_true, y_pred, average=average)
@@ -1148,9 +1303,11 @@ Dense = 'one-hot'</p></section>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="ranky.metric.accuracy_multilabel" href="#ranky.metric.accuracy_multilabel">accuracy_multilabel</a></code></li>
 <li><code><a title="ranky.metric.any_metric" href="#ranky.metric.any_metric">any_metric</a></code></li>
 <li><code><a title="ranky.metric.arr_to_str" href="#ranky.metric.arr_to_str">arr_to_str</a></code></li>
 <li><code><a title="ranky.metric.auc_step" href="#ranky.metric.auc_step">auc_step</a></code></li>
+<li><code><a title="ranky.metric.balanced_accuracy" href="#ranky.metric.balanced_accuracy">balanced_accuracy</a></code></li>
 <li><code><a title="ranky.metric.centrality" href="#ranky.metric.centrality">centrality</a></code></li>
 <li><code><a title="ranky.metric.combined_metric" href="#ranky.metric.combined_metric">combined_metric</a></code></li>
 <li><code><a title="ranky.metric.concordance" href="#ranky.metric.concordance">concordance</a></code></li>
@@ -1158,6 +1315,7 @@ Dense = 'one-hot'</p></section>
 <li><code><a title="ranky.metric.correct_metric" href="#ranky.metric.correct_metric">correct_metric</a></code></li>
 <li><code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist</a></code></li>
 <li><code><a title="ranky.metric.distance_matrix" href="#ranky.metric.distance_matrix">distance_matrix</a></code></li>
+<li><code><a title="ranky.metric.get_valid_columns" href="#ranky.metric.get_valid_columns">get_valid_columns</a></code></li>
 <li><code><a title="ranky.metric.kendall_w" href="#ranky.metric.kendall_w">kendall_w</a></code></li>
 <li><code><a title="ranky.metric.kendall_w_ties" href="#ranky.metric.kendall_w_ties">kendall_w_ties</a></code></li>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>

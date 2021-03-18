@@ -92,6 +92,37 @@ def any_metric(a, b, method, **kwargs):
     else:
         raise Exception('Unknown method: {}'.format(method))
 
+def balanced_accuracy(y_true, y_pred):
+    """ Compute balanced accuracy between y_true and y_pred.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    """
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    recip_y_true = 1 - y_true
+    recip_y_pred = 1 - y_pred
+    sensitivity = np.sum(y_true * y_pred, axis=0) / np.sum(y_true, axis=0)
+    specificity = np.sum(recip_y_true * recip_y_pred, axis=0) / np.sum(recip_y_true, axis=0)
+    balanced_acc = np.mean((sensitivity + specificity) / 2.)
+    return balanced_acc
+
+def accuracy_multilabel(y_true,y_pred):
+    """ Soft multi-label accuracy.
+
+        Args:
+            y_true: Ground truth in 2D dense format.
+            y_pred: Predictions in 2D dense format.
+    """
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    if len(y_true.shape)==1:
+        x = np.where(y_true-y_pred == 0)[0]
+        return(len(x) / y_true.shape[0])
+    inter = np.sum(y_true * y_pred, axis=1)
+    union = np.sum(np.maximum(y_true,y_pred), axis=1)
+    return np.mean(inter / union)
+
 def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1, unilabel=False):
     """ Compute a classification scoring metric between y_true and y_pred.
 
@@ -109,7 +140,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
+        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it's multi-label case.
@@ -125,15 +156,17 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     if y_true.shape[1] > 2: # target is not binary
         average = 'micro'
     # PREPROCESSING
-    if method in ['accuracy', 'balanced_accuracy', 'precision', 'f1_score', 'recall', 'jaccard']: # binarize with 0.5 threshold
+    if method in ['accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'f1_score', 'recall', 'jaccard']: # binarize with 0.5 threshold
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    if method in ['mse', 'rmse', 'balanced_accuracy'] or average == 'binary': # sparse format
+    if method in ['balanced_accuracy_sklearn'] or average == 'binary': # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
     #try:
     # COMPUTE SCORE
     if method == 'accuracy':
         score = accuracy_score(y_true, y_pred)
     elif method == 'balanced_accuracy':
+        score = balanced_accuracy(y_true, y_pred)
+    elif method == 'balanced_accuracy_sklearn':
         score = balanced_accuracy_score(y_true, y_pred)
     elif method == 'precision':
         score = precision_score(y_true, y_pred, average=average)
@@ -364,6 +397,22 @@ def auc_step(X, Y):
         delta_X = X[i + 1] - X[i]
         area += delta_X * Y[i]
     return area
+
+def get_valid_columns(solution):
+    """ Get a list of column indices for which the column has more than one class.
+    This is necessary when computing BAC or AUC which involves true positive and
+    true negative in the denominator. When some class is missing, these scores
+    don't make sense (or you have to add an epsilon to remedy the situation).
+
+    Args:
+        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
+    Returns:
+        valid_columns: a list of indices for which the column has more than one class.
+    """
+    num_examples = solution.shape[0]
+    col_sum = np.sum(solution, axis=0)
+    valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
+    return valid_columns
 
 #TODO
 #def relative_consensus or consensus_graph
