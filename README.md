@@ -112,7 +112,8 @@ Please cite ranky in your publications if this is useful for your research. Here
 @misc{pavao2020ranky,
   title={ranky},
   author={Adrien Pavao},
-  year={2020},   howpublished={\url{https://github.com/didayolo/ranky}},
+  year={2020},
+  howpublished={\url{https://github.com/didayolo/ranky}},
 }
 ```
 
