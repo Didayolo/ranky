@@ -19,6 +19,8 @@ def show(m, rotation=90, title=None, size=2):
     If m is 1D: show ballot (bar plot).
     If m is 2D: show preferences (heatmap).
 
+    TODO: annot argument adding the values in the plot.
+
     Args:
         rotation: x labels rotation.
         title: string - title of the figure.

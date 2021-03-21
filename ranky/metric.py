@@ -95,9 +95,9 @@ def any_metric(a, b, method, **kwargs):
 def balanced_accuracy(y_true, y_pred):
     """ Compute balanced accuracy between y_true and y_pred.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     recip_y_true = 1 - y_true
@@ -110,9 +110,9 @@ def balanced_accuracy(y_true, y_pred):
 def accuracy_multilabel(y_true,y_pred):
     """ Soft multi-label accuracy.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     """
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
@@ -400,6 +400,7 @@ def auc_step(X, Y):
 
 def get_valid_columns(solution):
     """ Get a list of column indices for which the column has more than one class.
+    
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don't make sense (or you have to add an epsilon to remedy the situation).

@@ -249,6 +249,20 @@ def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
         return r, graph
     return r
 
+def kemeny_young(m, axis=1, **kwargs):
+    """ Kemeny-Young method.
+
+    This function is an alias of calling "center" function with Kendall tau as the metric.
+    Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
+    according to Kendall's distance.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to "center" function.
+    """
+    return center(m, axis=axis, method='kendalltau', **kwargs)
+
 
 #################################
 ### 2. COMPUTATIONAL METHODS ####
@@ -367,7 +381,6 @@ def center(m, axis=1, method='euclidean', verbose=True):
     res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
-    #return res.x
     r = res.x
     return process_vote(m, r, axis=axis)
 
