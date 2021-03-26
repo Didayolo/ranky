@@ -9,13 +9,13 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 # METRICS #
 # error bars
 # bootstrap
 
-METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar']
+METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
 DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean']
 
@@ -140,7 +140,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'
+        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae'
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it's multi-label case.
@@ -186,6 +186,8 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         score = mean_squared_error(y_true, y_pred)
     elif method == 'rmse':
         score = mean_squared_error(y_true, y_pred, squared=False)
+    elif method == 'mae':
+        score = mean_absolute_error(y_true, y_pred)
     elif method == 'sar':
         score = combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean')
     else:
@@ -400,7 +402,7 @@ def auc_step(X, Y):
 
 def get_valid_columns(solution):
     """ Get a list of column indices for which the column has more than one class.
-    
+
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don't make sense (or you have to add an epsilon to remedy the situation).
