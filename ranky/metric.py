@@ -63,6 +63,8 @@ def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
         unilabel: If True, return only one 1 for each row.
         at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
     """
+    # TODO: keep index and column names if y is a pd.DataFrame
+    y = np.array(y)
     if unilabel == True or at_least_one_class == True:
         if len(y.shape) != 2:
             raise Exception('If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.')
@@ -122,6 +124,42 @@ def accuracy_multilabel(y_true,y_pred):
     inter = np.sum(y_true * y_pred, axis=1)
     union = np.sum(np.maximum(y_true,y_pred), axis=1)
     return np.mean(inter / union)
+
+def loss(x, y, method='absolute'):
+    """ Compute the error between two scalars or vectors.
+
+        Args:
+            x: float, usually representing a ground truth value.
+            y: float, usually representing a single prediction.
+            method: 'absolute', 'squared', ...
+    """
+    # TODO
+    if method == 'absolute':
+        return np.abs(x - y)
+    elif method == 'squared':
+        return (x - y) ** 2
+    else:
+        raise Exception('Unknown method: {}'.format(method))
+
+def relative_metric(y_true, y_pred_list, loss='absolute', ranking_function=None, **kwargs):
+    """ ...
+
+    For example you can compute the Mean Rank of Absolute Error (averaged by class)
+    by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_function=rk.borda, reverse=True)
+
+    Args:
+        y_true: Ground truth (format?)
+        y_pred_list: List of predictions (format?)
+        loss: 'method' argument to be passed to the function 'loss'
+        ranking_function: Ranking method from rk.ranking. rk.score by default.
+        **kwargs: Arguments to be passed to the ranking function.
+    """
+    # TODO
+    if ranking_function is None:
+        ranking_function = rk.score
+    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
+    m = pd.DataFrame(np.array(m), index=None)
+    return ranking_function(m, reverse=True, **kwargs)
 
 def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1, unilabel=False):
     """ Compute a classification scoring metric between y_true and y_pred.
