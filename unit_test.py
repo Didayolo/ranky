@@ -96,6 +96,12 @@ class Test(unittest.TestCase):
         print(borda_rank)
         print(optimal_spearman_rank)
         np.testing.assert_array_equal(borda_rank, optimal_spearman_rank)
+    def test_kendall_w(self):
+        M2 = np.array([[1, 2.5, 2.5, 4], [1, 2.5, 2.5, 4], [1, 2.5, 2.5, 4]])
+        M3 = np.array([[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 2]])
+        self.assertEqual(rk.kendall_w(M2), 0.9)
+        self.assertEqual(rk.kendall_w(M2, ties=True), 1.0)
+        self.assertEqual(rk.kendall_w(M3), 0.0)
 
 if __name__ == '__main__':
     print('Compute various measures...')

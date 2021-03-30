@@ -320,14 +320,18 @@ def corr(r1, r2, method='swap', return_p_value=False):
         return c, p_value
     return c
 
-def kendall_w(matrix, axis=0):
+def kendall_w(matrix, axis=0, ties=False):
     """ Kendall's W coefficient of concordance.
 
-    /!/ No correction for ties.
+    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
 
     Args:
+        matrix: Preference matrix.
         axis: Axis of judges.
+        ties: If True, apply the correction for ties
     """
+    if ties:
+        return kendall_w_ties(matrix, axis=axis)
     matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
     m = matrix.shape[axis] # judges
     n = matrix.shape[1-axis] # candidates
@@ -337,22 +341,28 @@ def kendall_w(matrix, axis=0):
     return 12 * S / denominator
 
 def kendall_w_ties(matrix, axis=0):
-    """ Kendall's W coefficient of concordance.
+    """ Kendall's W coefficient of concordance with correction for ties.
 
-    /!/ STILL TODO
+    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
 
     Args:
-        axis: Axis of raters.
+        matrix: Preference matrix.
+        axis: Axis of judges.
     """
-    # TODO kendall W with tie correction
-    # https://en.wikipedia.org/wiki/Kendall%27s_W
-    matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
-    m = matrix.shape[axis] #raters
-    n = matrix.shape[1-axis] # items rated
-    denominator = m**2 * (n**3 - n)
-    rating_sums = np.sum(matrix, axis=axis)
-    S = n * np.var(rating_sums)
-    return 12 * S / denominator
+    if axis == 1:
+        matrix = matrix.T
+    m = matrix.shape[0] # judges
+    n = matrix.shape[1] # candidates
+    matrix = rk.rank(matrix, axis=1) # compute on ranks
+    T = [] # correction factors, one by judge
+    for j in range(m):
+        _, counts = np.unique(matrix[j], return_counts=True) # tied groups
+        correction = np.sum([(t**3 - t) for t in counts])
+        T.append(correction)
+    denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
+    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
+    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
+    return numerator / denominator
 
 def concordance(m, method='spearman', axis=0):
     """ Coefficient of concordance between ballots.
