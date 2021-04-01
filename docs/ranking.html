@@ -275,6 +275,20 @@ def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
         return r, graph
     return r
 
+def kemeny_young(m, axis=1, **kwargs):
+    &#34;&#34;&#34; Kemeny-Young method.
+
+    This function is an alias of calling &#34;center&#34; function with Kendall tau as the metric.
+    Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
+    according to Kendall&#39;s distance.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to &#34;center&#34; function.
+    &#34;&#34;&#34;
+    return center(m, axis=axis, method=&#39;kendalltau&#39;, **kwargs)
+
 
 #################################
 ### 2. COMPUTATIONAL METHODS ####
@@ -393,7 +407,6 @@ def center(m, axis=1, method=&#39;euclidean&#39;, verbose=True):
     res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
-    #return res.x
     r = res.x
     return process_vote(m, r, axis=axis)
 
@@ -608,7 +621,6 @@ Also called optimal rank aggregation.</p>
     res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
     if verbose:
         print(res.message)
-    #return res.x
     r = res.x
     return process_vote(m, r, axis=axis)</code></pre>
 </details>
@@ -899,6 +911,42 @@ By convention rows reprensent candidates and columns represent voters.</p>
         n = size
     idx = np.random.choice(size, n, replace=replace)
     return [np.take(m, idx, axis=axis) for m in m_list]</code></pre>
+</details>
+</dd>
+<dt id="ranky.ranking.kemeny_young"><code class="name flex">
+<span>def <span class="ident">kemeny_young</span></span>(<span>m, axis=1, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Kemeny-Young method.</p>
+<p>This function is an alias of calling "center" function with Kendall tau as the metric.
+Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
+according to Kendall's distance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Judge axis.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments to be passed to "center" function.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def kemeny_young(m, axis=1, **kwargs):
+    &#34;&#34;&#34; Kemeny-Young method.
+
+    This function is an alias of calling &#34;center&#34; function with Kendall tau as the metric.
+    Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
+    according to Kendall&#39;s distance.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to &#34;center&#34; function.
+    &#34;&#34;&#34;
+    return center(m, axis=axis, method=&#39;kendalltau&#39;, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.majority"><code class="name flex">
@@ -1201,6 +1249,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.is_dataframe" href="#ranky.ranking.is_dataframe">is_dataframe</a></code></li>
 <li><code><a title="ranky.ranking.is_series" href="#ranky.ranking.is_series">is_series</a></code></li>
 <li><code><a title="ranky.ranking.joint_bootstrap" href="#ranky.ranking.joint_bootstrap">joint_bootstrap</a></code></li>
+<li><code><a title="ranky.ranking.kemeny_young" href="#ranky.ranking.kemeny_young">kemeny_young</a></code></li>
 <li><code><a title="ranky.ranking.majority" href="#ranky.ranking.majority">majority</a></code></li>
 <li><code><a title="ranky.ranking.p_wins" href="#ranky.ranking.p_wins">p_wins</a></code></li>
 <li><code><a title="ranky.ranking.process_vote" href="#ranky.ranking.process_vote">process_vote</a></code></li>

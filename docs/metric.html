@@ -35,13 +35,13 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 # METRICS #
 # error bars
 # bootstrap
 
-METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;]
+METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
 CORR_METHODS = [&#39;swap&#39;, &#39;kendalltau&#39;, &#39;spearman&#39;, &#39;spearmanr&#39;, &#39;pearson&#39;, &#39;pearsonr&#39;]
 DIST_METHODS = [&#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;]
 
@@ -89,6 +89,8 @@ def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
         unilabel: If True, return only one 1 for each row.
         at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
     &#34;&#34;&#34;
+    # TODO: keep index and column names if y is a pd.DataFrame
+    y = np.array(y)
     if unilabel == True or at_least_one_class == True:
         if len(y.shape) != 2:
             raise Exception(&#39;If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.&#39;)
@@ -121,9 +123,9 @@ def any_metric(a, b, method, **kwargs):
 def balanced_accuracy(y_true, y_pred):
     &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     &#34;&#34;&#34;
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     recip_y_true = 1 - y_true
@@ -136,9 +138,9 @@ def balanced_accuracy(y_true, y_pred):
 def accuracy_multilabel(y_true,y_pred):
     &#34;&#34;&#34; Soft multi-label accuracy.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     &#34;&#34;&#34;
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
@@ -148,6 +150,42 @@ def accuracy_multilabel(y_true,y_pred):
     inter = np.sum(y_true * y_pred, axis=1)
     union = np.sum(np.maximum(y_true,y_pred), axis=1)
     return np.mean(inter / union)
+
+def loss(x, y, method=&#39;absolute&#39;):
+    &#34;&#34;&#34; Compute the error between two scalars or vectors.
+
+        Args:
+            x: float, usually representing a ground truth value.
+            y: float, usually representing a single prediction.
+            method: &#39;absolute&#39;, &#39;squared&#39;, ...
+    &#34;&#34;&#34;
+    # TODO
+    if method == &#39;absolute&#39;:
+        return np.abs(x - y)
+    elif method == &#39;squared&#39;:
+        return (x - y) ** 2
+    else:
+        raise Exception(&#39;Unknown method: {}&#39;.format(method))
+
+def relative_metric(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=None, **kwargs):
+    &#34;&#34;&#34; ...
+
+    For example you can compute the Mean Rank of Absolute Error (averaged by class)
+    by calling relative_metrics(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=rk.borda, reverse=True)
+
+    Args:
+        y_true: Ground truth (format?)
+        y_pred_list: List of predictions (format?)
+        loss: &#39;method&#39; argument to be passed to the function &#39;loss&#39;
+        ranking_function: Ranking method from rk.ranking. rk.score by default.
+        **kwargs: Arguments to be passed to the ranking function.
+    &#34;&#34;&#34;
+    # TODO
+    if ranking_function is None:
+        ranking_function = rk.score
+    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
+    m = pd.DataFrame(np.array(m), index=None)
+    return ranking_function(m, reverse=True, **kwargs)
 
 def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missing_score=-1, unilabel=False):
     &#34;&#34;&#34; Compute a classification scoring metric between y_true and y_pred.
@@ -166,7 +204,7 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
+        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it&#39;s multi-label case.
@@ -212,6 +250,8 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
         score = mean_squared_error(y_true, y_pred)
     elif method == &#39;rmse&#39;:
         score = mean_squared_error(y_true, y_pred, squared=False)
+    elif method == &#39;mae&#39;:
+        score = mean_absolute_error(y_true, y_pred)
     elif method == &#39;sar&#39;:
         score = combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;)
     else:
@@ -306,14 +346,18 @@ def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
         return c, p_value
     return c
 
-def kendall_w(matrix, axis=0):
+def kendall_w(matrix, axis=0, ties=False):
     &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
 
-    /!/ No correction for ties.
+    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
 
     Args:
+        matrix: Preference matrix.
         axis: Axis of judges.
+        ties: If True, apply the correction for ties
     &#34;&#34;&#34;
+    if ties:
+        return kendall_w_ties(matrix, axis=axis)
     matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
     m = matrix.shape[axis] # judges
     n = matrix.shape[1-axis] # candidates
@@ -323,22 +367,28 @@ def kendall_w(matrix, axis=0):
     return 12 * S / denominator
 
 def kendall_w_ties(matrix, axis=0):
-    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
+    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance with correction for ties.
 
-    /!/ STILL TODO
+    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
 
     Args:
-        axis: Axis of raters.
+        matrix: Preference matrix.
+        axis: Axis of judges.
     &#34;&#34;&#34;
-    # TODO kendall W with tie correction
-    # https://en.wikipedia.org/wiki/Kendall%27s_W
-    matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
-    m = matrix.shape[axis] #raters
-    n = matrix.shape[1-axis] # items rated
-    denominator = m**2 * (n**3 - n)
-    rating_sums = np.sum(matrix, axis=axis)
-    S = n * np.var(rating_sums)
-    return 12 * S / denominator
+    if axis == 1:
+        matrix = matrix.T
+    m = matrix.shape[0] # judges
+    n = matrix.shape[1] # candidates
+    matrix = rk.rank(matrix, axis=1) # compute on ranks
+    T = [] # correction factors, one by judge
+    for j in range(m):
+        _, counts = np.unique(matrix[j], return_counts=True) # tied groups
+        correction = np.sum([(t**3 - t) for t in counts])
+        T.append(correction)
+    denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
+    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
+    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
+    return numerator / denominator
 
 def concordance(m, method=&#39;spearman&#39;, axis=0):
     &#34;&#34;&#34; Coefficient of concordance between ballots.
@@ -426,6 +476,7 @@ def auc_step(X, Y):
 
 def get_valid_columns(solution):
     &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
+
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don&#39;t make sense (or you have to add an epsilon to remedy the situation).
@@ -520,9 +571,9 @@ def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, mu
 <pre><code class="python">def accuracy_multilabel(y_true,y_pred):
     &#34;&#34;&#34; Soft multi-label accuracy.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     &#34;&#34;&#34;
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
@@ -636,9 +687,9 @@ Y: List of scores of size n</p></section>
 <pre><code class="python">def balanced_accuracy(y_true, y_pred):
     &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
 
-        Args:
-            y_true: Ground truth in 2D dense format.
-            y_pred: Predictions in 2D dense format.
+    Args:
+        y_true: Ground truth in 2D dense format.
+        y_pred: Predictions in 2D dense format.
     &#34;&#34;&#34;
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     recip_y_true = 1 - y_true
@@ -958,8 +1009,8 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
 <span>def <span class="ident">get_valid_columns</span></span>(<span>solution)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Get a list of column indices for which the column has more than one class.
-This is necessary when computing BAC or AUC which involves true positive and
+<section class="desc"><p>Get a list of column indices for which the column has more than one class.</p>
+<p>This is necessary when computing BAC or AUC which involves true positive and
 true negative in the denominator. When some class is missing, these scores
 don't make sense (or you have to add an epsilon to remedy the situation).</p>
 <h2 id="args">Args</h2>
@@ -978,6 +1029,7 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 </summary>
 <pre><code class="python">def get_valid_columns(solution):
     &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
+
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don&#39;t make sense (or you have to add an epsilon to remedy the situation).
@@ -994,28 +1046,36 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 </details>
 </dd>
 <dt id="ranky.metric.kendall_w"><code class="name flex">
-<span>def <span class="ident">kendall_w</span></span>(<span>matrix, axis=0)</span>
+<span>def <span class="ident">kendall_w</span></span>(<span>matrix, axis=0, ties=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Kendall's W coefficient of concordance.</p>
-<p>/!/ No correction for ties.</p>
+<p>See <a href="https://en.wikipedia.org/wiki/Kendall%27s_W">https://en.wikipedia.org/wiki/Kendall%27s_W</a> for more information.</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>matrix</code></strong></dt>
+<dd>Preference matrix.</dd>
 <dt><strong><code>axis</code></strong></dt>
 <dd>Axis of judges.</dd>
+<dt><strong><code>ties</code></strong></dt>
+<dd>If True, apply the correction for ties</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def kendall_w(matrix, axis=0):
+<pre><code class="python">def kendall_w(matrix, axis=0, ties=False):
     &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
 
-    /!/ No correction for ties.
+    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
 
     Args:
+        matrix: Preference matrix.
         axis: Axis of judges.
+        ties: If True, apply the correction for ties
     &#34;&#34;&#34;
+    if ties:
+        return kendall_w_ties(matrix, axis=axis)
     matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
     m = matrix.shape[axis] # judges
     n = matrix.shape[1-axis] # candidates
@@ -1029,34 +1089,77 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 <span>def <span class="ident">kendall_w_ties</span></span>(<span>matrix, axis=0)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Kendall's W coefficient of concordance.</p>
-<p>/!/ STILL TODO</p>
+<section class="desc"><p>Kendall's W coefficient of concordance with correction for ties.</p>
+<p>The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>matrix</code></strong></dt>
+<dd>Preference matrix.</dd>
 <dt><strong><code>axis</code></strong></dt>
-<dd>Axis of raters.</dd>
+<dd>Axis of judges.</dd>
 </dl></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def kendall_w_ties(matrix, axis=0):
-    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
+    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance with correction for ties.
 
-    /!/ STILL TODO
+    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
 
     Args:
-        axis: Axis of raters.
+        matrix: Preference matrix.
+        axis: Axis of judges.
     &#34;&#34;&#34;
-    # TODO kendall W with tie correction
-    # https://en.wikipedia.org/wiki/Kendall%27s_W
-    matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
-    m = matrix.shape[axis] #raters
-    n = matrix.shape[1-axis] # items rated
-    denominator = m**2 * (n**3 - n)
-    rating_sums = np.sum(matrix, axis=axis)
-    S = n * np.var(rating_sums)
-    return 12 * S / denominator</code></pre>
+    if axis == 1:
+        matrix = matrix.T
+    m = matrix.shape[0] # judges
+    n = matrix.shape[1] # candidates
+    matrix = rk.rank(matrix, axis=1) # compute on ranks
+    T = [] # correction factors, one by judge
+    for j in range(m):
+        _, counts = np.unique(matrix[j], return_counts=True) # tied groups
+        correction = np.sum([(t**3 - t) for t in counts])
+        T.append(correction)
+    denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
+    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
+    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
+    return numerator / denominator</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.loss"><code class="name flex">
+<span>def <span class="ident">loss</span></span>(<span>x, y, method='absolute')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compute the error between two scalars or vectors.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong></dt>
+<dd>float, usually representing a ground truth value.</dd>
+<dt><strong><code>y</code></strong></dt>
+<dd>float, usually representing a single prediction.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'absolute', 'squared', &hellip;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loss(x, y, method=&#39;absolute&#39;):
+    &#34;&#34;&#34; Compute the error between two scalars or vectors.
+
+        Args:
+            x: float, usually representing a ground truth value.
+            y: float, usually representing a single prediction.
+            method: &#39;absolute&#39;, &#39;squared&#39;, ...
+    &#34;&#34;&#34;
+    # TODO
+    if method == &#39;absolute&#39;:
+        return np.abs(x - y)
+    elif method == &#39;squared&#39;:
+        return (x - y) ** 2
+    else:
+        raise Exception(&#39;Unknown method: {}&#39;.format(method))</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.mean_distance"><code class="name flex">
@@ -1094,7 +1197,7 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 <dt><strong><code>y_pred</code></strong></dt>
 <dd>Predictions (format?)</dd>
 <dt><strong><code>method</code></strong></dt>
-<dd>Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse'</dd>
+<dd>Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae'</dd>
 <dt><strong><code>reverse_loss</code></strong></dt>
 <dd>If True, return (1 - score).</dd>
 <dt><strong><code>missing_score</code></strong></dt>
@@ -1123,7 +1226,7 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
     Args:
         y_true: Ground truth (format?)
         y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;
+        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;
         reverse_loss: If True, return (1 - score).
         missing_score: (DEPRECATED) Value to return if the computation fails.
         unilabel: If True, only one label per example. If False it&#39;s multi-label case.
@@ -1169,6 +1272,8 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
         score = mean_squared_error(y_true, y_pred)
     elif method == &#39;rmse&#39;:
         score = mean_squared_error(y_true, y_pred, squared=False)
+    elif method == &#39;mae&#39;:
+        score = mean_absolute_error(y_true, y_pred)
     elif method == &#39;sar&#39;:
         score = combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;)
     else:
@@ -1181,6 +1286,51 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
     if reverse_loss and is_loss:
         score = 1 - score
     return score</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.relative_metric"><code class="name flex">
+<span>def <span class="ident">relative_metric</span></span>(<span>y_true, y_pred_list, loss='absolute', ranking_function=None, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>&hellip;</p>
+<p>For example you can compute the Mean Rank of Absolute Error (averaged by class)
+by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_function=rk.borda, reverse=True)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth (format?)</dd>
+<dt><strong><code>y_pred_list</code></strong></dt>
+<dd>List of predictions (format?)</dd>
+<dt><strong><a title="ranky.metric.loss" href="#ranky.metric.loss"><code>loss()</code></a></strong></dt>
+<dd>'method' argument to be passed to the function 'loss'</dd>
+<dt><strong><code>ranking_function</code></strong></dt>
+<dd>Ranking method from rk.ranking. rk.score by default.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments to be passed to the ranking function.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def relative_metric(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=None, **kwargs):
+    &#34;&#34;&#34; ...
+
+    For example you can compute the Mean Rank of Absolute Error (averaged by class)
+    by calling relative_metrics(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=rk.borda, reverse=True)
+
+    Args:
+        y_true: Ground truth (format?)
+        y_pred_list: List of predictions (format?)
+        loss: &#39;method&#39; argument to be passed to the function &#39;loss&#39;
+        ranking_function: Ranking method from rk.ranking. rk.score by default.
+        **kwargs: Arguments to be passed to the ranking function.
+    &#34;&#34;&#34;
+    # TODO
+    if ranking_function is None:
+        ranking_function = rk.score
+    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
+    m = pd.DataFrame(np.array(m), index=None)
+    return ranking_function(m, reverse=True, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
@@ -1219,6 +1369,8 @@ If unilabel is True: argmax 1, other values 0.</p>
         unilabel: If True, return only one 1 for each row.
         at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
     &#34;&#34;&#34;
+    # TODO: keep index and column names if y is a pd.DataFrame
+    y = np.array(y)
     if unilabel == True or at_least_one_class == True:
         if len(y.shape) != 2:
             raise Exception(&#39;If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.&#39;)
@@ -1318,8 +1470,10 @@ Dense = 'one-hot'</p></section>
 <li><code><a title="ranky.metric.get_valid_columns" href="#ranky.metric.get_valid_columns">get_valid_columns</a></code></li>
 <li><code><a title="ranky.metric.kendall_w" href="#ranky.metric.kendall_w">kendall_w</a></code></li>
 <li><code><a title="ranky.metric.kendall_w_ties" href="#ranky.metric.kendall_w_ties">kendall_w_ties</a></code></li>
+<li><code><a title="ranky.metric.loss" href="#ranky.metric.loss">loss</a></code></li>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>
 <li><code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric</a></code></li>
+<li><code><a title="ranky.metric.relative_metric" href="#ranky.metric.relative_metric">relative_metric</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
 <li><code><a title="ranky.metric.to_sparse" href="#ranky.metric.to_sparse">to_sparse</a></code></li>
