@@ -13,7 +13,17 @@ from mpl_toolkits.mplot3d import Axes3D
 
 sns.set(style = "darkgrid")
 
-def show(m, rotation=90, title=None, size=2):
+def autolabel(rects, values, round=2):
+    """ Function used by `rk.show` to annotate bar plots.
+    """
+    values = np.round(values, round)
+    for idx,rect in enumerate(rects):
+        height = rect.get_height()
+        plt.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+                values[idx],
+                ha='center', va='bottom', rotation=0)
+
+def show(m, rotation=90, title=None, size=2, annot=False, round=2):
     """ Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -25,16 +35,20 @@ def show(m, rotation=90, title=None, size=2):
         rotation: x labels rotation.
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
+        annot: If True, write the values.
+        round: Number of decimals to display if annot is True.
     """
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        plt.bar(x, m, align='center')
+        bar_plot = plt.bar(x, m, align='center')
+        if annot:
+            autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax)
+        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt='0.'+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
