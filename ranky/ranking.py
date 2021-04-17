@@ -227,7 +227,21 @@ def bayes_wins(a, b, width=0.1, independant=False):
         p_a, p_tie, p_b = two_on_single(a, b, rope=width)
     return p_a == max([p_a, p_tie, p_b])
 
-def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
+def weighted_wins(a, b, reverse=False):
+    """ Returns the frequency of a > b.
+
+    Args:
+        a: Ballot representing one candidate.
+        b: Ballot representing one candidate.
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a > b), np.sum(b > a)
+    if reverse:
+        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    return Wa / len(a) # hard comparisons
+
+def condorcet(m, axis=1, wins=hard_wins, return_graph=False, score=False, **kwargs):
     """ Condorcet method.
 
     Args:
@@ -235,6 +249,8 @@ def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
         axis: Judge axis.
         wins: Function returning True if a wins against b.
         return_graph: If True, returns the 1-1 matches result matrix.
+        score: If True, produce the 'Condorcet score' by dividing the results by (n - 1)
+               with n the number of candidates.
     """
     ranking = rank(m, axis=1-axis)
     n = len(ranking)
@@ -245,6 +261,8 @@ def condorcet(m, axis=1, wins=hard_wins, return_graph=False, **kwargs):
             graph[i][j] = wins(r[i], r[j], **kwargs)
     r = np.sum(graph, axis=1-axis)
     r = process_vote(m, r, axis=axis)
+    if score:
+        r = r / (n - 1)
     if return_graph:
         return r, graph
     return r

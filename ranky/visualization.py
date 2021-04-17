@@ -133,7 +133,7 @@ def tsne(m, axis=0, dim=2, **kwargs):
     Args:
         axis: axis of dimensionality reduction.
         dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
     """
     names = None
     if axis == 0:
