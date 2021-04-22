@@ -10,6 +10,7 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr, binom_test
 import ranky.ranking as rk
 import itertools as it
+from baycomp import two_on_single, two_on_multiple
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
@@ -499,8 +500,8 @@ def bayes_wins(a, b, width=0.1, independant=False):
         p_a, p_tie, p_b = two_on_single(a, b, rope=width)
     return p_a == max([p_a, p_tie, p_b])
 
-def frequency_wins(a, b, reverse=False):
-    """ Returns the frequency of a > b.
+def success_rate(a, b, reverse=False):
+    """ Returns the frequency (rate) of a > b.
 
     Args:
         a: Ballot representing one candidate (array-like).

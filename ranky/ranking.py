@@ -12,7 +12,6 @@ from tqdm import tqdm
 import itertools as it
 #import ranky.metric as metric
 import ranky as rk
-from baycomp import two_on_single, two_on_multiple
 
 # Convert to ranking
 def rank(m, axis=0, method='average', ascending=False, reverse=False):

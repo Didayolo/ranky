@@ -38,6 +38,7 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr, binom_test
 import ranky.ranking as rk
 import itertools as it
+from baycomp import two_on_single, two_on_multiple
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
@@ -527,8 +528,8 @@ def bayes_wins(a, b, width=0.1, independant=False):
         p_a, p_tie, p_b = two_on_single(a, b, rope=width)
     return p_a == max([p_a, p_tie, p_b])
 
-def frequency_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the frequency of a &gt; b.
+def success_rate(a, b, reverse=False):
+    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -549,10 +550,13 @@ def relative_difference(a, b, reverse=False):
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
     &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    s = [(a[i] - b[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+    a, b = np.array(a, dtype=&#39;float&#39;), np.array(b, dtype=&#39;float&#39;)
     if reverse:
-        s = [(b[i] - a[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+        num = b - a
+    else:
+        num = a - b
+    denom = a + b
+    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
     return np.mean(s)
 ################################################
 ################################################
@@ -1125,39 +1129,6 @@ Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
     return dist_matrix</code></pre>
 </details>
 </dd>
-<dt id="ranky.metric.frequency_wins"><code class="name flex">
-<span>def <span class="ident">frequency_wins</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the frequency of a &gt; b.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def frequency_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the frequency of a &gt; b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa / len(a) # hard comparisons</code></pre>
-</details>
-</dd>
 <dt id="ranky.metric.get_valid_columns"><code class="name flex">
 <span>def <span class="ident">get_valid_columns</span></span>(<span>solution)</span>
 </code></dt>
@@ -1546,10 +1517,13 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
     &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    s = [(a[i] - b[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+    a, b = np.array(a, dtype=&#39;float&#39;), np.array(b, dtype=&#39;float&#39;)
     if reverse:
-        s = [(b[i] - a[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+        num = b - a
+    else:
+        num = a - b
+    denom = a + b
+    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
     return np.mean(s)</code></pre>
 </details>
 </dd>
@@ -1596,6 +1570,39 @@ by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_functi
     m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
     m = pd.DataFrame(np.array(m), index=None)
     return ranking_function(m, reverse=True, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.success_rate"><code class="name flex">
+<span>def <span class="ident">success_rate</span></span>(<span>a, b, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the frequency (rate) of a &gt; b.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def success_rate(a, b, reverse=False):
+    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        reverse: If True, lower is better.
+    &#34;&#34;&#34;
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
+    if reverse:
+        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
+    return Wa / len(a) # hard comparisons</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
@@ -1733,7 +1740,6 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.correct_metric" href="#ranky.metric.correct_metric">correct_metric</a></code></li>
 <li><code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist</a></code></li>
 <li><code><a title="ranky.metric.distance_matrix" href="#ranky.metric.distance_matrix">distance_matrix</a></code></li>
-<li><code><a title="ranky.metric.frequency_wins" href="#ranky.metric.frequency_wins">frequency_wins</a></code></li>
 <li><code><a title="ranky.metric.get_valid_columns" href="#ranky.metric.get_valid_columns">get_valid_columns</a></code></li>
 <li><code><a title="ranky.metric.hard_wins" href="#ranky.metric.hard_wins">hard_wins</a></code></li>
 <li><code><a title="ranky.metric.kendall_w" href="#ranky.metric.kendall_w">kendall_w</a></code></li>
@@ -1744,6 +1750,7 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.p_wins" href="#ranky.metric.p_wins">p_wins</a></code></li>
 <li><code><a title="ranky.metric.relative_difference" href="#ranky.metric.relative_difference">relative_difference</a></code></li>
 <li><code><a title="ranky.metric.relative_metric" href="#ranky.metric.relative_metric">relative_metric</a></code></li>
+<li><code><a title="ranky.metric.success_rate" href="#ranky.metric.success_rate">success_rate</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
 <li><code><a title="ranky.metric.to_sparse" href="#ranky.metric.to_sparse">to_sparse</a></code></li>
