@@ -521,10 +521,13 @@ def relative_difference(a, b, reverse=False):
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
     """
-    a, b = np.array(a), np.array(b)
-    s = [(a[i] - b[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+    a, b = np.array(a, dtype='float'), np.array(b, dtype='float')
     if reverse:
-        s = [(b[i] - a[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+        num = b - a
+    else:
+        num = a - b
+    denom = a + b
+    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
     return np.mean(s)
 ################################################
 ################################################

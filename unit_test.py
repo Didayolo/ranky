@@ -103,6 +103,8 @@ class Test(unittest.TestCase):
         self.assertEqual(rk.kendall_w(M2, ties=True), 1.0)
         self.assertEqual(rk.kendall_w(M3), 0.0)
     def test_relative_difference(self):
+        rd = rk.relative_difference([0, 0, 1], [0, 0, 1])
+        self.assertEqual(rd, 0)
         rd = rk.relative_difference([0, 0], [0, 0])
         self.assertEqual(rd, 0)
         rd = rk.relative_difference([0.8, 0.1, 0.8], [0.2, 0.1, 0.2])
