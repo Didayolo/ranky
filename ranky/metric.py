@@ -1,19 +1,16 @@
 #######################################
 ### EVALUATION, COMPARISON, METRICS ###
 #######################################
+# Metrics, error bars, bootstrap
 
 import numpy as np
 import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
-from scipy.stats import kendalltau, spearmanr, pearsonr
+from scipy.stats import kendalltau, spearmanr, pearsonr, binom_test
 import ranky.ranking as rk
 import itertools as it
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
-
-# METRICS #
-# error bars
-# bootstrap
 
 METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
@@ -447,6 +444,90 @@ def auc_step(X, Y):
         delta_X = X[i + 1] - X[i]
         area += delta_X * Y[i]
     return area
+
+################################################
+#### Pairwise metrics for Condorcet methods ####
+def hard_wins(a, b, reverse=False):
+    """ Function returning True if a wins against b.
+
+    Useful for to compute Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a > b), np.sum(b > a)
+    if reverse:
+        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    return Wa > Wb # hard comparisons
+
+def p_wins(a, b, pval=0.05, reverse=False):
+    """ Function returning True if a wins against b.
+
+    Useful for Condorcet method.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
+                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a > b), np.sum(b > a)
+    if reverse:
+        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    significant = binom_test(Wa, n=len(a), p=0.5) <= pval
+    wins = Wa > Wb
+    return significant and wins # count only significant wins
+
+def bayes_wins(a, b, width=0.1, independant=False):
+    """ Compare a and b using a Bayesian signed-ranks test.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        width: the width of the region of practical equivalence.
+        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
+    """
+    a, b = np.array(a), np.array(b)
+    if independant:
+        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
+    else:
+        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
+    return p_a == max([p_a, p_tie, p_b])
+
+def frequency_wins(a, b, reverse=False):
+    """ Returns the frequency of a > b.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a > b), np.sum(b > a)
+    if reverse:
+        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    return Wa / len(a) # hard comparisons
+
+def relative_difference(a, b, reverse=False):
+    """ Returns the mean relative difference between a and b.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    s = [(a[i] - b[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+    if reverse:
+        s = [(b[i] - a[i]) / (a[i] + b[i]) if (a[i] != b[i]) else 0 for i in range(len(a))]
+    return np.mean(s)
+################################################
+################################################
 
 def get_valid_columns(solution):
     """ Get a list of column indices for which the column has more than one class.

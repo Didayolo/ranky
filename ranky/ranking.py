@@ -4,7 +4,7 @@
 
 import numpy as np
 import pandas as pd
-from scipy.stats import rankdata, binom_test
+from scipy.stats import rankdata
 from scipy.optimize import minimize
 from scipy.optimize import differential_evolution
 from random import random as _random
@@ -175,83 +175,19 @@ def uninominal(m, axis=1, turns=1):
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
     return process_vote(m, r, axis=axis)
 
-def hard_wins(a, b, reverse=False):
-    """ Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate.
-        b: Ballot representing one candidate.
-        reverse: If True, lower is better.
-    """
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a > b), np.sum(b > a)
-    if reverse:
-        Wa, Wb = np.sum(a < b), np.sum(b < a)
-    return Wa > Wb # hard comparisons
-
-def p_wins(a, b, pval=0.05, reverse=False):
-    """ Function returning True if a wins against b.
-
-    Useful for Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate.
-        b: Ballot representing one candidate.
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        reverse: If True, lower is better.
-    """
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a > b), np.sum(b > a)
-    if reverse:
-        Wa, Wb = np.sum(a < b), np.sum(b < a)
-    significant = binom_test(Wa, n=len(a), p=0.5) <= pval
-    wins = Wa > Wb
-    return significant and wins # count only significant wins
-
-def bayes_wins(a, b, width=0.1, independant=False):
-    """ Compare a and b using a Bayesian signed-ranks test.
-
-    Args:
-        a: Ballot representing one candidate.
-        b: Ballot representing one candidate.
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-    """
-    a, b = np.array(a), np.array(b)
-    if independant:
-        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
-    else:
-        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
-    return p_a == max([p_a, p_tie, p_b])
-
-def weighted_wins(a, b, reverse=False):
-    """ Returns the frequency of a > b.
-
-    Args:
-        a: Ballot representing one candidate.
-        b: Ballot representing one candidate.
-        reverse: If True, lower is better.
-    """
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a > b), np.sum(b > a)
-    if reverse:
-        Wa, Wb = np.sum(a < b), np.sum(b < a)
-    return Wa / len(a) # hard comparisons
-
-def condorcet(m, axis=1, wins=hard_wins, return_graph=False, score=False, **kwargs):
+def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     """ Condorcet method.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        wins: Function returning True if a wins against b.
+        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
         return_graph: If True, returns the 1-1 matches result matrix.
         score: If True, produce the 'Condorcet score' by dividing the results by (n - 1)
                with n the number of candidates.
     """
+    if wins is None:
+        wins = rk.hard_wins
     ranking = rank(m, axis=1-axis)
     n = len(ranking)
     r = np.array(ranking)
@@ -359,24 +295,6 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
     if history:
         return r, h # return the best ranking and its score
     return r
-
-def center_old(m, axis=0, method='euclidean', verbose=True):
-    """ DEPRECATED.
-
-    Find the geometric median or 1-center.
-    Solve the metric facility location problem.
-
-    Args:
-        axis: judges axis.
-        method: distance or correlation method used as metric.
-        verbose: show optimization termination message.
-    """
-    # gradient based optimization, should work for euclidean case but seems to not work
-    r0 = np.take(m, 0, axis=axis)
-    res = minimize(rk.mean_distance, r0, (m, 1-axis, method)) # from scipy.optimize
-    if verbose:
-        print(res.message)
-    return res.x
 
 def center(m, axis=1, method='euclidean', verbose=True):
     """ Find the geometric median or 1-center.

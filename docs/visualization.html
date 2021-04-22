@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>ranky.visualization API documentation</title>
 <meta name="description" content="" />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
 <main>
@@ -39,7 +41,17 @@ from mpl_toolkits.mplot3d import Axes3D
 
 sns.set(style = &#34;darkgrid&#34;)
 
-def show(m, rotation=90, title=None, size=2):
+def autolabel(rects, values, round=2):
+    &#34;&#34;&#34; Function used by `rk.show` to annotate bar plots.
+    &#34;&#34;&#34;
+    values = np.round(values, round)
+    for idx,rect in enumerate(rects):
+        height = rect.get_height()
+        plt.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+                values[idx],
+                ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)
+
+def show(m, rotation=90, title=None, size=2, annot=False, round=2):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -51,16 +63,20 @@ def show(m, rotation=90, title=None, size=2):
         rotation: x labels rotation.
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
+        annot: If True, write the values.
+        round: Number of decimals to display if annot is True.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        plt.bar(x, m, align=&#39;center&#39;)
+        bar_plot = plt.bar(x, m, align=&#39;center&#39;)
+        if annot:
+            autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax)
+        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt=&#39;0.&#39;+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
@@ -145,7 +161,7 @@ def tsne(m, axis=0, dim=2, **kwargs):
     Args:
         axis: axis of dimensionality reduction.
         dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -217,11 +233,31 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="ranky.visualization.autolabel"><code class="name flex">
+<span>def <span class="ident">autolabel</span></span>(<span>rects, values, round=2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Function used by <code>rk.show</code> to annotate bar plots.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def autolabel(rects, values, round=2):
+    &#34;&#34;&#34; Function used by `rk.show` to annotate bar plots.
+    &#34;&#34;&#34;
+    values = np.round(values, round)
+    for idx,rect in enumerate(rects):
+        height = rect.get_height()
+        plt.text(rect.get_x() + rect.get_width()/2., 1.05*height,
+                values[idx],
+                ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)</code></pre>
+</details>
+</dd>
 <dt id="ranky.visualization.mds"><code class="name flex">
 <span>def <span class="ident">mds</span></span>(<span>m, axis=0, dim=2, method='spearman', **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Multidimensional scaling plot from a preference matrix.</p>
+<div class="desc"><p>Multidimensional scaling plot from a preference matrix.</p>
 <p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
 <h2 id="args">Args</h2>
 <dl>
@@ -233,7 +269,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <dd>any metric method.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
 <dd>arguments for scatterplot function (e.g. fontsize).</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -269,7 +305,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <span>def <span class="ident">mds_from_dist_matrix</span></span>(<span>distance_matrix, dim=2, names=None, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).</p>
+<div class="desc"><p>Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).</p>
 <p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
 <h2 id="args">Args</h2>
 <dl>
@@ -281,7 +317,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <dd>names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
 <dd>arguments for scatterplot function (e.g. fontsize).</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -309,7 +345,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <span>def <span class="ident">scatterplot</span></span>(<span>m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc='best')</span>
 </code></dt>
 <dd>
-<section class="desc"><p>2D or 3D scatterplot.</p>
+<div class="desc"><p>2D or 3D scatterplot.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>m</code></strong></dt>
@@ -331,7 +367,7 @@ If None it will be replaced by names.</dd>
 <dd>if True, add legend of colors.</dd>
 <dt><strong><code>legend_loc</code></strong></dt>
 <dd>location of legend. See matplotlib.pyplot.legend for details.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -376,10 +412,10 @@ If None it will be replaced by names.</dd>
 </details>
 </dd>
 <dt id="ranky.visualization.show"><code class="name flex">
-<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2)</span>
+<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, round=2)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Display a ranking or a prefrence matrix.</p>
+<div class="desc"><p>Display a ranking or a prefrence matrix.</p>
 <p>If m is 1D: show ballot (bar plot).
 If m is 2D: show preferences (heatmap).</p>
 <p>TODO: annot argument adding the values in the plot.</p>
@@ -391,12 +427,16 @@ If m is 2D: show preferences (heatmap).</p>
 <dd>string - title of the figure.</dd>
 <dt><strong><code>size</code></strong></dt>
 <dd>integer - higher value for a smaller figure.</dd>
-</dl></section>
+<dt><strong><code>annot</code></strong></dt>
+<dd>If True, write the values.</dd>
+<dt><strong><code>round</code></strong></dt>
+<dd>Number of decimals to display if annot is True.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show(m, rotation=90, title=None, size=2):
+<pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False, round=2):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -408,16 +448,20 @@ If m is 2D: show preferences (heatmap).</p>
         rotation: x labels rotation.
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
+        annot: If True, write the values.
+        round: Number of decimals to display if annot is True.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        plt.bar(x, m, align=&#39;center&#39;)
+        bar_plot = plt.bar(x, m, align=&#39;center&#39;)
+        if annot:
+            autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax)
+        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt=&#39;0.&#39;+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
@@ -432,14 +476,14 @@ If m is 2D: show preferences (heatmap).</p>
 <span>def <span class="ident">show_graph</span></span>(<span>matrix, names=None)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Show a directed graph represented by a binary matrix.</p>
+<div class="desc"><p>Show a directed graph represented by a binary matrix.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>matrix</code></strong></dt>
 <dd>binary matrix. matrix[i, j] = 1 indicates an edge from i to j.</dd>
 <dt><strong><code>names</code></strong></dt>
 <dd>list representing the names of the vertices.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -469,12 +513,12 @@ If m is 2D: show preferences (heatmap).</p>
 <span>def <span class="ident">show_learning_curve</span></span>(<span>h)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Display learning curve.</p>
+<div class="desc"><p>Display learning curve.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>h</code></strong></dt>
 <dd>list representing the history of scores.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -495,7 +539,7 @@ If m is 2D: show preferences (heatmap).</p>
 <span>def <span class="ident">tsne</span></span>(<span>m, axis=0, dim=2, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.</p>
+<div class="desc"><p>Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>axis</code></strong></dt>
@@ -503,8 +547,8 @@ If m is 2D: show preferences (heatmap).</p>
 <dt><strong><code>dim</code></strong></dt>
 <dd>number of dimensions. 2 for 2D plot, 3 for 3D plot.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for scatterplot function (e.g. fontsize).</dd>
-</dl></section>
+<dd>arguments for rk.scatterplot function (e.g. fontsize, pointsize).</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -515,7 +559,7 @@ If m is 2D: show preferences (heatmap).</p>
     Args:
         axis: axis of dimensionality reduction.
         dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -550,6 +594,7 @@ If m is 2D: show preferences (heatmap).</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="ranky.visualization.autolabel" href="#ranky.visualization.autolabel">autolabel</a></code></li>
 <li><code><a title="ranky.visualization.mds" href="#ranky.visualization.mds">mds</a></code></li>
 <li><code><a title="ranky.visualization.mds_from_dist_matrix" href="#ranky.visualization.mds_from_dist_matrix">mds_from_dist_matrix</a></code></li>
 <li><code><a title="ranky.visualization.scatterplot" href="#ranky.visualization.scatterplot">scatterplot</a></code></li>
@@ -563,9 +608,7 @@ If m is 2D: show preferences (heatmap).</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>

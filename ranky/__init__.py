@@ -13,4 +13,4 @@ from .utilities import *
 
 #from .unit_test import *
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
