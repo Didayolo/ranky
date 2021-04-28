@@ -48,7 +48,7 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt='0.'+str(round))
+        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt='0.'+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
@@ -113,8 +113,8 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
                          fontsize=fontsize, color='black', weight='semibold')
-        if legend:
-            plt.legend(colors, loc=legend_loc)
+        #if legend:
+        #    plt.legend(colors, loc=legend_loc)
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
         ax = fig.add_subplot(111, projection = '3d')
@@ -158,7 +158,7 @@ def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
         m: distance matrix.
         dim: number of dimensions to plot (2 or 3).
         names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     """
     if rk.is_dataframe(distance_matrix):
         names = distance_matrix.columns
@@ -176,7 +176,7 @@ def mds(m, axis=0, dim=2, method='spearman', **kwargs):
         m: preference matrix.
         dim: number of dimensions to plot (2 or 3).
         method: any metric method.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     """
     names = None
     if axis == 0:

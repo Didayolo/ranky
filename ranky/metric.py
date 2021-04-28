@@ -260,7 +260,7 @@ def combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], met
 def dist(r1, r2, method='hamming'):
     """ Levenshtein/Wasserstein type distance between two ranked ballots.
 
-    0, 1
+    Between 0 and 1+
 
     Args:
         method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake'.
@@ -298,7 +298,7 @@ def dist(r1, r2, method='hamming'):
 def corr(r1, r2, method='swap', return_p_value=False):
     """ Levenshtein/Wasserstein type correlation between two ordinal distributions.
 
-    -1, 0, 1
+    Between -1 and 1.
 
     Args:
         method: 'swap', 'spearman', 'pearson'

@@ -295,7 +295,7 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
         return r, h # return the best ranking and its score
     return r
 
-def center(m, axis=1, method='euclidean', verbose=True):
+def center(m, axis=1, method='euclidean', verbose=True, **kwargs):
     """ Find the geometric median or 1-center.
 
     Solve the metric facility location problem.
@@ -306,6 +306,7 @@ def center(m, axis=1, method='euclidean', verbose=True):
         axis: judges axis.
         method: distance or correlation method used as metric.
         verbose: show optimization termination message.
+        **kwargs: arguments for `scipy.differential_evolution` function.
     """
     # Finds the global minimum of a multivariate function.
     # Differential Evolution is stochastic in nature (does not use gradient methods) to find the minimium, and can search large areas of candidate space,
