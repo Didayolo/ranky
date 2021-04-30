@@ -43,14 +43,13 @@ Let's display it using `rk.show(rk.borda(matrix))`:
 The rank aggregation methods available include:
 
 * Random Dictator: `rk.dictator(m)`
-* Score Voting: `rk.score(m)`
-* Borda Count: `rk.borda(m)`
-* Majority Judgement: `rk.majority(m)`
-* Condorcet, p-value Condorcet: `rk.condorcet(m)`, `rk.condorcet(m, wins=rk.p_wins)`
+* Score Voting (mean): `rk.score(m)`
+* Borda Count (average rank): `rk.borda(m)`
+* Majority Judgement (median): `rk.majority(m)`
+* Pairwise methods. Copeland's method: `rk.pairwise(m)`, Success rate: `rk.pairwise(m, wins=rk.success_rate)` and more. You can specify your own "wins" function or select one from the `rk.duel` module.
 * **Optimal rank aggregation** using any rank metric: `rk.center(m)`, `rk.center(m, method='kendalltau')`. Solver used \[1\].
-* _(Kemeny-Young method is optimal rank aggregation using Kemeny distance as metric.)_
+* _(Kemeny-Young method is optimal rank aggregation using Kendall's tau as metric.)_
 * _(Optimal rank aggregation using Spearman correlation as metric is equivalent to Borda count.)_
-
 
 
 ## Metrics

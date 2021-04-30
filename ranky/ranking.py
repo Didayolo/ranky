@@ -174,6 +174,25 @@ def uninominal(m, axis=1, turns=1):
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
     return process_vote(m, r, axis=axis)
 
+def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
+    """ Pairwise method.
+
+    We compute the matrix of scores of all possible pairs of matches between all candidates.
+    The score of one match is defined by the `wins` function.
+    This function is currently an alias for `rk.condorcet`.
+    This is more sound to name this function "pairwise".
+    Let's keep condorcet for a while for retro-compatibility but we need to clean this.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        return_graph: If True, returns the 1-1 matches result matrix.
+        score: If True, produce the 'Condorcet score' by dividing the results by (n - 1)
+               with n the number of candidates.
+    """
+    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)
+
 def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     """ Condorcet method.
 

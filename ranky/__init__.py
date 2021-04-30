@@ -7,9 +7,9 @@
 
 from .ranking import *
 from .metric import *
-from .pairwise import *
+from .duel import *
 from .visualization import *
 from .generator import *
 from .utilities import *
 
-__version__ = '0.1.7'
+__version__ = '0.2.0'
