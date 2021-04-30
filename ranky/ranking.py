@@ -202,17 +202,29 @@ def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
         return r, graph
     return r
 
+def copeland(m, axis=1, **kwargs):
+    """ Copeland's method.
+
+    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to `rk.condorcet` function.
+    """
+    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)
+
 def kemeny_young(m, axis=1, **kwargs):
     """ Kemeny-Young method.
 
-    This function is an alias of calling "center" function with Kendall tau as the metric.
+    This function is an alias of calling `rk.center` function with Kendall tau as the metric.
     Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
     according to Kendall's distance.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to "center" function.
+        **kwargs: Arguments to be passed to `rk.center` function.
     """
     return center(m, axis=axis, method='kendalltau', **kwargs)
 

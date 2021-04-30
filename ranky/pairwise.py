@@ -25,7 +25,28 @@ def hard_wins(a, b, reverse=False):
     Wa, Wb = np.sum(a > b), np.sum(b > a)
     if reverse:
         Wa, Wb = np.sum(a < b), np.sum(b < a)
-    return Wa > Wb # hard comparisons
+    return Wa > Wb  # hard comparisons
+
+def copeland_wins(a, b, reverse=False):
+    """ Function returning 1 if a wins against b, 0.5 in case of a tie and 0 otherwise.
+
+    Useful for to compute Copeland's method.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        reverse: If True, lower is better.
+    """
+    a, b = np.array(a), np.array(b)
+    Wa, Wb = np.sum(a > b), np.sum(b > a)
+    if reverse:
+        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    if Wa > Wb: # hard comparisons
+        return 1
+    elif Wb > Wa:
+        return 0
+    else: # Copeland's method
+        return 0.5
 
 def p_wins(a, b, pval=0.05, reverse=False):
     """ Function returning True if a wins against b.
