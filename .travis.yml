@@ -10,8 +10,8 @@ before_install:
 install:
     - conda create -n testenv --yes pip python=$PYTHON_VERSION
     - source activate testenv
+    - pip install -r requirements.txt
     - python setup.py -q install
-    #- pip install -r requirements.txt
 script:
     - python unit_test.py
 notifications:
