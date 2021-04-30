@@ -1,11 +1,11 @@
 # /!\ Warning: this file needs to be in sync with setup.py /!\
-pandas
-numpy
-matplotlib
-scikit-learn==0.23.2
-scipy
-seaborn
-networkx
-python-Levenshtein
-tqdm
-baycomp
+#pandas
+#numpy
+#matplotlib
+#scikit-learn==0.23.2
+#scipy
+#seaborn
+#networkx
+#python-Levenshtein
+#tqdm
+#baycomp

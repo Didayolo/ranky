@@ -12,4 +12,4 @@ from .visualization import *
 from .generator import *
 from .utilities import *
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
