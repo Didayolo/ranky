@@ -202,6 +202,25 @@ def uninominal(m, axis=1, turns=1):
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
     return process_vote(m, r, axis=axis)
 
+def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
+    &#34;&#34;&#34; Pairwise method.
+
+    We compute the matrix of scores of all possible pairs of matches between all candidates.
+    The score of one match is defined by the `wins` function.
+    This function is currently an alias for `rk.condorcet`.
+    This is more sound to name this function &#34;pairwise&#34;.
+    Let&#39;s keep condorcet for a while for retro-compatibility but we need to clean this.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        return_graph: If True, returns the 1-1 matches result matrix.
+        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
+               with n the number of candidates.
+    &#34;&#34;&#34;
+    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)
+
 def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     &#34;&#34;&#34; Condorcet method.
 
@@ -230,17 +249,29 @@ def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
         return r, graph
     return r
 
+def copeland(m, axis=1, **kwargs):
+    &#34;&#34;&#34; Copeland&#39;s method.
+
+    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to `rk.condorcet` function.
+    &#34;&#34;&#34;
+    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)
+
 def kemeny_young(m, axis=1, **kwargs):
     &#34;&#34;&#34; Kemeny-Young method.
 
-    This function is an alias of calling &#34;center&#34; function with Kendall tau as the metric.
+    This function is an alias of calling `rk.center` function with Kendall tau as the metric.
     Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
     according to Kendall&#39;s distance.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to &#34;center&#34; function.
+        **kwargs: Arguments to be passed to `rk.center` function.
     &#34;&#34;&#34;
     return center(m, axis=axis, method=&#39;kendalltau&#39;, **kwargs)
 
@@ -600,6 +631,38 @@ with n the number of candidates.</dd>
     return process_vote(m, r, axis=1-axis)</code></pre>
 </details>
 </dd>
+<dt id="ranky.ranking.copeland"><code class="name flex">
+<span>def <span class="ident">copeland</span></span>(<span>m, axis=1, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Copeland's method.</p>
+<p>This function is an alias of calling <code>rk.condorcet</code> function with <code>rk.copeland_wins</code> as the wins function.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Judge axis.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments to be passed to <code>rk.condorcet</code> function.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copeland(m, axis=1, **kwargs):
+    &#34;&#34;&#34; Copeland&#39;s method.
+
+    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        **kwargs: Arguments to be passed to `rk.condorcet` function.
+    &#34;&#34;&#34;
+    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)</code></pre>
+</details>
+</dd>
 <dt id="ranky.ranking.dictator"><code class="name flex">
 <span>def <span class="ident">dictator</span></span>(<span>m, axis=1)</span>
 </code></dt>
@@ -756,7 +819,7 @@ By convention rows reprensent candidates and columns represent voters.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Kemeny-Young method.</p>
-<p>This function is an alias of calling "center" function with Kendall tau as the metric.
+<p>This function is an alias of calling <code>rk.center</code> function with Kendall tau as the metric.
 Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
 according to Kendall's distance.</p>
 <h2 id="args">Args</h2>
@@ -766,7 +829,7 @@ according to Kendall's distance.</p>
 <dt><strong><code>axis</code></strong></dt>
 <dd>Judge axis.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
-<dd>Arguments to be passed to "center" function.</dd>
+<dd>Arguments to be passed to <code>rk.center</code> function.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -775,14 +838,14 @@ according to Kendall's distance.</p>
 <pre><code class="python">def kemeny_young(m, axis=1, **kwargs):
     &#34;&#34;&#34; Kemeny-Young method.
 
-    This function is an alias of calling &#34;center&#34; function with Kendall tau as the metric.
+    This function is an alias of calling `rk.center` function with Kendall tau as the metric.
     Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
     according to Kendall&#39;s distance.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to &#34;center&#34; function.
+        **kwargs: Arguments to be passed to `rk.center` function.
     &#34;&#34;&#34;
     return center(m, axis=axis, method=&#39;kendalltau&#39;, **kwargs)</code></pre>
 </details>
@@ -801,6 +864,54 @@ according to Kendall's distance.</p>
     &#34;&#34;&#34;
     r = np.median(m, axis=axis)
     return process_vote(m, r, axis=axis)</code></pre>
+</details>
+</dd>
+<dt id="ranky.ranking.pairwise"><code class="name flex">
+<span>def <span class="ident">pairwise</span></span>(<span>m, axis=1, wins=None, return_graph=False, score=False, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Pairwise method.</p>
+<p>We compute the matrix of scores of all possible pairs of matches between all candidates.
+The score of one match is defined by the <code>wins</code> function.
+This function is currently an alias for <code>rk.condorcet</code>.
+This is more sound to name this function "pairwise".
+Let's keep condorcet for a while for retro-compatibility but we need to clean this.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Judge axis.</dd>
+<dt><strong><code>wins</code></strong></dt>
+<dd>Function returning True if a wins against b. <code>rk.hard_wins</code> used by default.</dd>
+<dt><strong><code>return_graph</code></strong></dt>
+<dd>If True, returns the 1-1 matches result matrix.</dd>
+<dt><strong><code>score</code></strong></dt>
+<dd>If True, produce the 'Condorcet score' by dividing the results by (n - 1)
+with n the number of candidates.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
+    &#34;&#34;&#34; Pairwise method.
+
+    We compute the matrix of scores of all possible pairs of matches between all candidates.
+    The score of one match is defined by the `wins` function.
+    This function is currently an alias for `rk.condorcet`.
+    This is more sound to name this function &#34;pairwise&#34;.
+    Let&#39;s keep condorcet for a while for retro-compatibility but we need to clean this.
+
+    Args:
+        m: Preference matrix.
+        axis: Judge axis.
+        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        return_graph: If True, returns the 1-1 matches result matrix.
+        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
+               with n the number of candidates.
+    &#34;&#34;&#34;
+    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.process_vote"><code class="name flex">
@@ -1033,6 +1144,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.center" href="#ranky.ranking.center">center</a></code></li>
 <li><code><a title="ranky.ranking.condorcet" href="#ranky.ranking.condorcet">condorcet</a></code></li>
 <li><code><a title="ranky.ranking.consensus" href="#ranky.ranking.consensus">consensus</a></code></li>
+<li><code><a title="ranky.ranking.copeland" href="#ranky.ranking.copeland">copeland</a></code></li>
 <li><code><a title="ranky.ranking.dictator" href="#ranky.ranking.dictator">dictator</a></code></li>
 <li><code><a title="ranky.ranking.evolution_strategy" href="#ranky.ranking.evolution_strategy">evolution_strategy</a></code></li>
 <li><code><a title="ranky.ranking.is_dataframe" href="#ranky.ranking.is_dataframe">is_dataframe</a></code></li>
@@ -1040,6 +1152,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.joint_bootstrap" href="#ranky.ranking.joint_bootstrap">joint_bootstrap</a></code></li>
 <li><code><a title="ranky.ranking.kemeny_young" href="#ranky.ranking.kemeny_young">kemeny_young</a></code></li>
 <li><code><a title="ranky.ranking.majority" href="#ranky.ranking.majority">majority</a></code></li>
+<li><code><a title="ranky.ranking.pairwise" href="#ranky.ranking.pairwise">pairwise</a></code></li>
 <li><code><a title="ranky.ranking.process_vote" href="#ranky.ranking.process_vote">process_vote</a></code></li>
 <li><code><a title="ranky.ranking.random_swap" href="#ranky.ranking.random_swap">random_swap</a></code></li>
 <li><code><a title="ranky.ranking.rank" href="#ranky.ranking.rank">rank</a></code></li>
