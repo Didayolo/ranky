@@ -7,10 +7,9 @@
 
 from .ranking import *
 from .metric import *
+from .pairwise import *
 from .visualization import *
 from .generator import *
 from .utilities import *
 
-#from .unit_test import *
-
-__version__ = '0.1.3'
+__version__ = '0.1.4'

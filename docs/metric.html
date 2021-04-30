@@ -35,10 +35,9 @@ import numpy as np
 import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
-from scipy.stats import kendalltau, spearmanr, pearsonr, binom_test
+from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
-from baycomp import two_on_single, two_on_multiple
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
@@ -288,7 +287,7 @@ def combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#3
 def dist(r1, r2, method=&#39;hamming&#39;):
     &#34;&#34;&#34; Levenshtein/Wasserstein type distance between two ranked ballots.
 
-    0, 1
+    Between 0 and 1+
 
     Args:
         method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;.
@@ -326,7 +325,7 @@ def dist(r1, r2, method=&#39;hamming&#39;):
 def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
     &#34;&#34;&#34; Levenshtein/Wasserstein type correlation between two ordinal distributions.
 
-    -1, 0, 1
+    Between -1 and 1.
 
     Args:
         method: &#39;swap&#39;, &#39;spearman&#39;, &#39;pearson&#39;
@@ -473,93 +472,6 @@ def auc_step(X, Y):
         delta_X = X[i + 1] - X[i]
         area += delta_X * Y[i]
     return area
-
-################################################
-#### Pairwise metrics for Condorcet methods ####
-def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa &gt; Wb # hard comparisons
-
-def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    significant = binom_test(Wa, n=len(a), p=0.5) &lt;= pval
-    wins = Wa &gt; Wb
-    return significant and wins # count only significant wins
-
-def bayes_wins(a, b, width=0.1, independant=False):
-    &#34;&#34;&#34; Compare a and b using a Bayesian signed-ranks test.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    if independant:
-        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
-    else:
-        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
-    return p_a == max([p_a, p_tie, p_b])
-
-def success_rate(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa / len(a) # hard comparisons
-
-def relative_difference(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the mean relative difference between a and b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a, dtype=&#39;float&#39;), np.array(b, dtype=&#39;float&#39;)
-    if reverse:
-        num = b - a
-    else:
-        num = a - b
-    denom = a + b
-    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
-    return np.mean(s)
-################################################
-################################################
 
 def get_valid_columns(solution):
     &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
@@ -787,43 +699,6 @@ Y: List of scores of size n</p></div>
     return balanced_acc</code></pre>
 </details>
 </dd>
-<dt id="ranky.metric.bayes_wins"><code class="name flex">
-<span>def <span class="ident">bayes_wins</span></span>(<span>a, b, width=0.1, independant=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Compare a and b using a Bayesian signed-ranks test.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>width</code></strong></dt>
-<dd>the width of the region of practical equivalence.</dd>
-<dt><strong><code>independant</code></strong></dt>
-<dd>True if the different scores are correlated (e.g. bootstraps or cross-validation scores).</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def bayes_wins(a, b, width=0.1, independant=False):
-    &#34;&#34;&#34; Compare a and b using a Bayesian signed-ranks test.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    if independant:
-        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
-    else:
-        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
-    return p_a == max([p_a, p_tie, p_b])</code></pre>
-</details>
-</dd>
 <dt id="ranky.metric.centrality"><code class="name flex">
 <span>def <span class="ident">centrality</span></span>(<span>m, r, axis=0, method='swap')</span>
 </code></dt>
@@ -936,7 +811,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 </code></dt>
 <dd>
 <div class="desc"><p>Levenshtein/Wasserstein type correlation between two ordinal distributions.</p>
-<p>-1, 0, 1</p>
+<p>Between -1 and 1.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>method</code></strong></dt>
@@ -951,7 +826,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 <pre><code class="python">def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
     &#34;&#34;&#34; Levenshtein/Wasserstein type correlation between two ordinal distributions.
 
-    -1, 0, 1
+    Between -1 and 1.
 
     Args:
         method: &#39;swap&#39;, &#39;spearman&#39;, &#39;pearson&#39;
@@ -1019,7 +894,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 </code></dt>
 <dd>
 <div class="desc"><p>Levenshtein/Wasserstein type distance between two ranked ballots.</p>
-<p>0, 1</p>
+<p>Between 0 and 1+</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>method</code></strong></dt>
@@ -1032,7 +907,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 <pre><code class="python">def dist(r1, r2, method=&#39;hamming&#39;):
     &#34;&#34;&#34; Levenshtein/Wasserstein type distance between two ranked ballots.
 
-    0, 1
+    Between 0 and 1+
 
     Args:
         method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;.
@@ -1167,42 +1042,6 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
     col_sum = np.sum(solution, axis=0)
     valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
     return valid_columns</code></pre>
-</details>
-</dd>
-<dt id="ranky.metric.hard_wins"><code class="name flex">
-<span>def <span class="ident">hard_wins</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Function returning True if a wins against b.</p>
-<p>Useful for to compute Condorcet method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa &gt; Wb # hard comparisons</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.kendall_w"><code class="name flex">
@@ -1448,85 +1287,6 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
     return score</code></pre>
 </details>
 </dd>
-<dt id="ranky.metric.p_wins"><code class="name flex">
-<span>def <span class="ident">p_wins</span></span>(<span>a, b, pval=0.05, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Function returning True if a wins against b.</p>
-<p>Useful for Condorcet method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>pval</code></strong></dt>
-<dd>A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for Condorcet method.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    significant = binom_test(Wa, n=len(a), p=0.5) &lt;= pval
-    wins = Wa &gt; Wb
-    return significant and wins # count only significant wins</code></pre>
-</details>
-</dd>
-<dt id="ranky.metric.relative_difference"><code class="name flex">
-<span>def <span class="ident">relative_difference</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the mean relative difference between a and b.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def relative_difference(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the mean relative difference between a and b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a, dtype=&#39;float&#39;), np.array(b, dtype=&#39;float&#39;)
-    if reverse:
-        num = b - a
-    else:
-        num = a - b
-    denom = a + b
-    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
-    return np.mean(s)</code></pre>
-</details>
-</dd>
 <dt id="ranky.metric.relative_metric"><code class="name flex">
 <span>def <span class="ident">relative_metric</span></span>(<span>y_true, y_pred_list, loss='absolute', ranking_function=None, **kwargs)</span>
 </code></dt>
@@ -1570,39 +1330,6 @@ by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_functi
     m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
     m = pd.DataFrame(np.array(m), index=None)
     return ranking_function(m, reverse=True, **kwargs)</code></pre>
-</details>
-</dd>
-<dt id="ranky.metric.success_rate"><code class="name flex">
-<span>def <span class="ident">success_rate</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the frequency (rate) of a &gt; b.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def success_rate(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa / len(a) # hard comparisons</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
@@ -1732,7 +1459,6 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.arr_to_str" href="#ranky.metric.arr_to_str">arr_to_str</a></code></li>
 <li><code><a title="ranky.metric.auc_step" href="#ranky.metric.auc_step">auc_step</a></code></li>
 <li><code><a title="ranky.metric.balanced_accuracy" href="#ranky.metric.balanced_accuracy">balanced_accuracy</a></code></li>
-<li><code><a title="ranky.metric.bayes_wins" href="#ranky.metric.bayes_wins">bayes_wins</a></code></li>
 <li><code><a title="ranky.metric.centrality" href="#ranky.metric.centrality">centrality</a></code></li>
 <li><code><a title="ranky.metric.combined_metric" href="#ranky.metric.combined_metric">combined_metric</a></code></li>
 <li><code><a title="ranky.metric.concordance" href="#ranky.metric.concordance">concordance</a></code></li>
@@ -1741,16 +1467,12 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist</a></code></li>
 <li><code><a title="ranky.metric.distance_matrix" href="#ranky.metric.distance_matrix">distance_matrix</a></code></li>
 <li><code><a title="ranky.metric.get_valid_columns" href="#ranky.metric.get_valid_columns">get_valid_columns</a></code></li>
-<li><code><a title="ranky.metric.hard_wins" href="#ranky.metric.hard_wins">hard_wins</a></code></li>
 <li><code><a title="ranky.metric.kendall_w" href="#ranky.metric.kendall_w">kendall_w</a></code></li>
 <li><code><a title="ranky.metric.kendall_w_ties" href="#ranky.metric.kendall_w_ties">kendall_w_ties</a></code></li>
 <li><code><a title="ranky.metric.loss" href="#ranky.metric.loss">loss</a></code></li>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>
 <li><code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric</a></code></li>
-<li><code><a title="ranky.metric.p_wins" href="#ranky.metric.p_wins">p_wins</a></code></li>
-<li><code><a title="ranky.metric.relative_difference" href="#ranky.metric.relative_difference">relative_difference</a></code></li>
 <li><code><a title="ranky.metric.relative_metric" href="#ranky.metric.relative_metric">relative_metric</a></code></li>
-<li><code><a title="ranky.metric.success_rate" href="#ranky.metric.success_rate">success_rate</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
 <li><code><a title="ranky.metric.to_sparse" href="#ranky.metric.to_sparse">to_sparse</a></code></li>

@@ -51,7 +51,7 @@ def autolabel(rects, values, round=2):
                 values[idx],
                 ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)
 
-def show(m, rotation=90, title=None, size=2, annot=False, round=2):
+def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;royalblue&#39;):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -65,18 +65,19 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2):
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
         round: Number of decimals to display if annot is True.
+        color: Color for 1D bar plot.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        bar_plot = plt.bar(x, m, align=&#39;center&#39;)
+        bar_plot = plt.bar(x, m, align=&#39;center&#39;, color=color)
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt=&#39;0.&#39;+str(round))
+        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt=&#39;0.&#39;+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
@@ -141,8 +142,8 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
                          fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
-        if legend:
-            plt.legend(colors, loc=legend_loc)
+        #if legend:
+        #    plt.legend(colors, loc=legend_loc)
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
         ax = fig.add_subplot(111, projection = &#39;3d&#39;)
@@ -186,7 +187,7 @@ def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
         m: distance matrix.
         dim: number of dimensions to plot (2 or 3).
         names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     if rk.is_dataframe(distance_matrix):
         names = distance_matrix.columns
@@ -204,7 +205,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
         m: preference matrix.
         dim: number of dimensions to plot (2 or 3).
         method: any metric method.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -268,7 +269,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <dt><strong><code>method</code></strong></dt>
 <dd>any metric method.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for scatterplot function (e.g. fontsize).</dd>
+<dd>arguments for rk.scatterplot function (e.g. fontsize).</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -283,7 +284,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
         m: preference matrix.
         dim: number of dimensions to plot (2 or 3).
         method: any metric method.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -316,7 +317,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
 <dt><strong><code>names</code></strong></dt>
 <dd>names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for scatterplot function (e.g. fontsize).</dd>
+<dd>arguments for rk.scatterplot function (e.g. fontsize).</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -331,7 +332,7 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
         m: distance matrix.
         dim: number of dimensions to plot (2 or 3).
         names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for scatterplot function (e.g. fontsize).
+        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
     &#34;&#34;&#34;
     if rk.is_dataframe(distance_matrix):
         names = distance_matrix.columns
@@ -396,8 +397,8 @@ If None it will be replaced by names.</dd>
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
                          fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
-        if legend:
-            plt.legend(colors, loc=legend_loc)
+        #if legend:
+        #    plt.legend(colors, loc=legend_loc)
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
         ax = fig.add_subplot(111, projection = &#39;3d&#39;)
@@ -412,7 +413,7 @@ If None it will be replaced by names.</dd>
 </details>
 </dd>
 <dt id="ranky.visualization.show"><code class="name flex">
-<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, round=2)</span>
+<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Display a ranking or a prefrence matrix.</p>
@@ -431,12 +432,14 @@ If m is 2D: show preferences (heatmap).</p>
 <dd>If True, write the values.</dd>
 <dt><strong><code>round</code></strong></dt>
 <dd>Number of decimals to display if annot is True.</dd>
+<dt><strong><code>color</code></strong></dt>
+<dd>Color for 1D bar plot.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False, round=2):
+<pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;royalblue&#39;):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -450,18 +453,19 @@ If m is 2D: show preferences (heatmap).</p>
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
         round: Number of decimals to display if annot is True.
+        color: Color for 1D bar plot.
     &#34;&#34;&#34;
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        bar_plot = plt.bar(x, m, align=&#39;center&#39;)
+        bar_plot = plt.bar(x, m, align=&#39;center&#39;, color=color)
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax, annot=True, linewidths=.2, fmt=&#39;0.&#39;+str(round))
+        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt=&#39;0.&#39;+str(round))
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)

@@ -23,7 +23,7 @@ def autolabel(rects, values, round=2):
                 values[idx],
                 ha='center', va='bottom', rotation=0)
 
-def show(m, rotation=90, title=None, size=2, annot=False, round=2):
+def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue'):
     """ Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -37,11 +37,12 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2):
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
         round: Number of decimals to display if annot is True.
+        color: Color for 1D bar plot.
     """
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
-        bar_plot = plt.bar(x, m, align='center')
+        bar_plot = plt.bar(x, m, align='center', color=color)
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
