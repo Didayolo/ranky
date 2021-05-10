@@ -59,7 +59,7 @@ def tie(r, threshold=0.1):
     return 0
 
 # remove rows (candidates) or columns (voters)
-def bootstrap(m, axis=0, n=None, replace=True):
+def bootstrap(m, axis=0, n=None, replace=True, return_holdout=False):
     """ Sample with replacement among an axis (and keep the same shape by default).
 
     By convention rows reprensent candidates and columns represent voters.
@@ -68,11 +68,19 @@ def bootstrap(m, axis=0, n=None, replace=True):
         axis: Axis concerned by bootstrap.
         n: Number of examples to sample. By default it is the size of the matrix among the axis.
         replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+        return_holdout: If True, returns a tuple (bootstrap, out-of-bag set).
     """
     if n is None:
         n = m.shape[axis]
     idx = np.random.choice(m.shape[axis], n, replace=replace)
-    return np.take(m, idx, axis=axis)
+    bootstrap = np.take(m, idx, axis=axis)
+    if return_holdout:
+        ran = np.arange(m.shape[axis])
+        holdout_idx = ran[np.array([x not in idx for x in ran])]
+        holdout = np.take(m, holdout_idx, axis=axis)
+        return bootstrap, holdout
+    else:
+        return bootstrap
 
 def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     """ Apply the same bootstrap on all matrices on m_list.

@@ -114,6 +114,9 @@ class Test(unittest.TestCase):
         self.assertEqual(rd, 0)
         rd = rk.relative_difference([0.8, 0.1, 0.8], [0.2, 0.1, 0.2])
         self.assertAlmostEqual(rd, 0.4)
+    def test_winner_distance(self):
+        d = rk.winner_distance([1, 0.7, 0.2, 0.1, 0.1], [0.7, 1, 0.5, 0.4, 0.1])
+        self.assertEqual(d, 0.25)
 
 if __name__ == '__main__':
     print('Compute various measures...')

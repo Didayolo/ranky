@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_pre
 
 METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
-DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean']
+DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean', 'winner_distance', 'asymmetrical_winner_distance']
 
 def arr_to_str(a):
     return "".join(str(x) for x in a)
@@ -195,6 +195,29 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
     if method in ['balanced_accuracy_sklearn'] or average == 'binary': # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+
+    # TODO
+    #y_true, y_pred = np.array(y_true), np.array(y_pred)
+    #average = 'binary'
+    #if y_true.shape != y_pred.shape:
+    #    raise Exception('y_true and y_pred must have the same shape. {} != {}'.format(y_true.shape, y_pred.shape))
+    #if len(y_true.shape) == 1:
+    #    try:
+    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
+    #        if y_true.shape[1] > 2: # target is not binary
+    #            average = 'micro'
+    #    except: # TODO, TMP Ad-Hoc fix?
+    #        y_true, y_pred = y_true.T, y_pred.T
+    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
+    # PREPROCESSING
+    #if method in ['accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'f1_score', 'recall', 'jaccard']: # binarize with 0.5 threshold
+    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
+    #if method in ['balanced_accuracy_sklearn'] or average == 'binary': # sparse format
+    #    try:
+    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+    #    except:
+    #        pass
+    #        # TMP TODO
     #try:
     # COMPUTE SCORE
     if method == 'accuracy':
@@ -262,7 +285,7 @@ def dist(r1, r2, method='hamming'):
     Between 0 and 1+
 
     Args:
-        method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake'.
+        method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.
     """
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -290,6 +313,10 @@ def dist(r1, r2, method='hamming'):
         d = 1
         if np.argmin(r1) == np.argmin(r2):
             d = 0
+    elif method == 'winner_distance':
+        d = winner_distance(r1, r2)
+    elif method == 'symmetrical_winner_distance':
+        d = symmetrical_winner_distance(r1, r2)
     else:
         raise(Exception('Unknown distance method: {}'.format(method)))
     return d
@@ -464,6 +491,39 @@ def get_valid_columns(solution):
 
 #TODO
 #def relative_consensus or consensus_graph
+
+def winner_distance(r1, r2, reverse=False):
+    """ Asymmetrical winner distance.
+
+        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
+        (rank(r1 winner)) - 1 / (n - 1)
+        Assuming no ties.
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    """
+    r1, r2 = np.array(r1), np.array(r2)
+    if reverse:
+        w1 = np.argmin(r1) # r1 winner
+    else:
+        w1 = np.argmax(r1) # r1 winner
+    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)
+
+def symmetrical_winner_distance(r1, r2, reverse=False):
+    """ Symmetrical winner distance.
+
+        Average of dist(r1, r2) and dist(r2, r1).
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    """
+    d1 = winner_distance(r1, r2, reverse=reverse)
+    d2 = winner_distance(r2, r1, reverse=reverse)
+    return (d1 + d2) / 2
 
 def centrality(m, r, axis=0, method='swap'):
     """ Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
