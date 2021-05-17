@@ -379,3 +379,142 @@ def consensus(m, axis=0):
 # statistic = (Yes/No - No/Yes)^2 / (Yes/No + No/Yes)
 
 # Friedman test
+
+##########################
+###### RCV RANKING #######
+##########################
+
+'''
+Takes in only a pandas dataframe as input
+Format of input dataframe: ranked values from 1 to n, where n is number of classes
+returns: winning class by rcv (None if there was a tie), ordered list of eliminated classes
+
+This requires a dataframe in this format. It would be theoretically possible to implement other formats but this just makes no sense for rcv voting.
+This is because rcv voting relies on a list of preferences from first to last, so using other input formats is just senseless
+
+This has been tested on the data the function was written for, but not exhaustively tested
+The code should work for ties but hasn't been tested on an dataset where rcv does result in ties at an intermediate step
+
+Note on this contribution: (feel free to delete if you approve pull request)
+    The logic i followed to implement RCV is below, in pseudocode. it should help you understand what the code is doing easier
+
+        Terms:
+            Voters: rankers (row in dataframe)
+            Classes: different choices every voter has (column in dataframe)
+            Majority: when one choice is the preference of more than 50% of Voters
+
+        Count first preference of every voter
+        If there is a majority, return that class
+        Else Repeat until one class is a majority:
+            identify the minority class
+            eliminate the minority class from the vote
+            for every voter:
+                if their first preference is a class in the running, do nothing
+                if their first preference is a class that just got eliminated, find their next valid preference and count their vote for them
+                if thier first preference is a class that was eliminated in a previous round, check their next valid preference
+                    if thier next valid preference just got eliminated, find a further valid preference and count their vote for them
+                    if their next valid prefernece is in the running, do nothing [their vote got counted for that preference before]
+            
+'''
+
+def rcv(df):
+    classes = df.shape[0]       # dataframe classes
+    votes = {}                  # votes for each class, as calculated below
+    indices = df.index
+    minority_classes = []       # all eliminated classes
+    demoted_classes = []        # most recent set of eliminated classes
+    elim = []                   # classes in order of elimination
+
+    # initialize votes dictionary
+    for _class in range(classes):
+        votes[indices[_class]] = 0
+
+    # compute total number of voters, and majority
+    total_votes = len(df.columns)
+    majority = (total_votes / 2) + 1
+    
+    # loop up till number of classes
+    # this is unecessary but should avoid infinite loops in case something in the dataset is broken
+    for iteration in range(classes):
+
+        # iterate over voters
+        for c in df:
+            col = df[c]
+
+            # get class of first preference for that voter
+            ind_class = col.index[col == 1][0]
+
+            # check if class was demoted previously
+            if ind_class in demoted_classes:
+                # find next preference class that has not been eliminated and assign vote to it
+                for i in range(2, classes + 1):
+                    next_ind_class = col.index[col == i][0]
+                    if next_ind_class not in minority_classes:
+                        votes[next_ind_class] += 1
+                        break
+
+            # check if it was not just demoted but was at some previous time
+            # ex: this is for the case a voter who was moved to their second preference has to be moved to their third preference now
+            elif ind_class in minority_classes:
+                # iterate over total votes
+                i = 2
+                while i < classes + 1:
+                    # find the next preference of the voter
+                    next_ind_class = col.index[col == i][0]
+
+                    # if the preference was just eliminated last round, then assign vote to the next valid preference
+                    # if it was eliminated in the past, continue searching
+                    # if it was never eliminated, then exit the loop because otherwise we would double-count votes
+                    if next_ind_class in demoted_classes:
+                        i += 1
+                        while i < classes + 1:
+                            next_ind_class = col.index[col == i][0]
+                            if next_ind_class not in minority_classes:
+                                votes[next_ind_class] += 1
+                                break
+                            i += 1
+                        break
+                    elif next_ind_class in minority_classes:
+                        i += 1
+                    else:
+                        break
+
+            # if this is the first iteration of the outermost loop, we have to count votes for the first time based on first preference
+            elif iteration == 0:
+                votes[ind_class] += 1
+
+        # iterate over classes
+        for index in indices:
+            # skip a class that was previously eliminated
+            if index in minority_classes:
+                continue
+
+            # check if there is a new majority class
+            if votes[index] > majority:
+                vals = list(votes.values())
+                vals.sort()
+
+                # eliminate the remaining classes in order of least to most share of votes
+                for val in vals[:-1]:
+                    key = ([key for key in votes if votes[key] == val])[0]
+                    elim.append(key)
+                    del votes[key]
+
+                # return the winning class and all eliminated classes in order
+                return index, elim
+
+        # there was no majority, so find the minority class(es)
+        min_val = min(votes.values())
+        keys = [key for key in votes if votes[key] == min_val]
+        # mark minority classes as recently eliminated in the last round
+        demoted_classes = keys
+        # mark minority classes as eliminated
+        minority_classes = minority_classes + keys
+        elim += keys
+        # delete minority classes from the vote
+        for key in keys:
+            del votes[key]
+        # if there are no classes left in the vote, that means there was a tie
+        # there is no winner, so return None
+        if len(votes) == 0:
+            return(None, elim)
