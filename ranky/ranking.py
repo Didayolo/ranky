@@ -213,14 +213,17 @@ def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
                with n the number of candidates.
     """
     if wins is None:
-        wins = rk.hard_wins
+        wins = rk.copeland_wins
     ranking = rank(m, axis=1-axis)
     n = len(ranking)
     r = np.array(ranking)
     graph = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
-            graph[i][j] = wins(r[i], r[j], **kwargs)
+            if i != j:
+                graph[i][j] = wins(r[i], r[j], **kwargs)
+            else:
+                graph[i][j] = 0 # no comparison with itself
     r = np.sum(graph, axis=1-axis)
     r = process_vote(m, r, axis=axis)
     if score:
@@ -239,7 +242,7 @@ def copeland(m, axis=1, **kwargs):
         axis: Judge axis.
         **kwargs: Arguments to be passed to `rk.condorcet` function.
     """
-    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)
+    return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)
 
 def kemeny_young(m, axis=1, **kwargs):
     """ Kemeny-Young method.

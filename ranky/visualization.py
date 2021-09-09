@@ -23,7 +23,7 @@ def autolabel(rects, values, round=2):
                 values[idx],
                 ha='center', va='bottom', rotation=0)
 
-def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue'):
+def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue', cmap=None):
     """ Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -38,6 +38,7 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalb
         annot: If True, write the values.
         round: Number of decimals to display if annot is True.
         color: Color for 1D bar plot.
+        cmap: Color map for 2D heatmap.
     """
     dim = len(m.shape)
     if dim == 1: # 1D
@@ -49,7 +50,7 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalb
             plt.xticks(x, m.index, rotation=rotation)
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt='0.'+str(round))
+        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt='0.'+str(round), cmap=cmap)
         x = np.arange(m.shape[1])
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
