@@ -117,3 +117,10 @@ Please cite ranky in your publications if this is useful for your research. Here
 ```
 
 \[1\] Storn R. and Price K., Differential Evolution - a Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, Journal of Global Optimization, 1997, 11, 341 - 359.
+
+
+# License
+
+Copyright (c) 2020-2021, Adrien PAVAO. This software is released under the Apache License 2.0 (the "License"); you may not use the software except in compliance with the License.
+
+The text of the Apache License 2.0 can be found online at: http://www.opensource.org/licenses/apache2.0.php
