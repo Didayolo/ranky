@@ -15,6 +15,8 @@ class Generator():
     def fit(self, r):
         """ Store the reference ranking.
         """
+        if len(r) < 2:
+            raise Exception('The reference ranking must contains at least two candidates.')
         self.r = r
 
     def sample(self, n=1, loc=0, scale=1):
@@ -23,11 +25,54 @@ class Generator():
         Args:
             n: number of samples to draw.
         """
-        #m = [ranking_noise(self.r) for _ in range(n)]
+        if self.r is None:
+            raise Exception('The generator must be fitted before sampling.')
+        m = [self.r for _ in range(n)]
+        return np.array(m).T
+
+class SwapGenerator(Generator):
+    def sample(self, n=1, N=1, p=1):
+        """ Sample n judges by swaping neighbors N times with probability p.
+
+        Args:
+            n: number of samples to draw.
+            N: number swapings.
+            p: probability (in ]0;1]) of disturbing on each iteration.
+        """
+        m = [neighbors_swap(self.r, N=N, p=p) for _ in range(n)]
+        return np.array(m).T
+
+class GaussianGenerator(Generator):
+    def sample(self, n=1, loc=0, scale=1):
+        """ Sample n judges by normally disturb the original ranking.
+
+        Args:
+            n: number of samples to draw.
+        """
         m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]
         return np.array(m).T
 
-### NOISES ###
+################
+###  NOISES  ###
+################
+
+def neighbors_swap(r, N=1, p=1):
+    """ Swap random neighbors n times with probability p.
+
+    Args:
+        r: the ranking to disturb.
+        n: number of iterations.
+        p: probability (in ]0;1]) of disturbing on each iteration.
+    """
+    if (p <= 0) or (p > 1):
+        raise('p must be in ]0;1]')
+    _r = r.copy()
+    for _ in range(N):
+        i1 = np.random.randint(len(r) - 1) # uniform selection
+        i2 = i1 + 1
+        if np.random.randint(1/p) == 0: # probability
+            _r[i1], _r[i2] = _r[i2], _r[i1] # swap neighbors
+    return _r
 
 def ranking_noise(r, method='swap', n=1, p=1):
     """ Ranking noise.
@@ -58,8 +103,3 @@ def gaussian_noise(r, loc=0, scale=1):
         r = np.array(r)
     noise = np.random.normal(loc, scale, r.shape)
     return r + noise
-
-### FUNCTIONS ###
-
-def identity(r):
-    return r

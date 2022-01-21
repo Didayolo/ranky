@@ -13,6 +13,10 @@ import itertools as it
 #import ranky.metric as metric
 import ranky as rk
 
+#####################
+##### Functions #####
+#####################
+
 # Convert to ranking
 def rank(m, axis=0, method='average', ascending=False, reverse=False):
     """ Replace values by their rank in the column.
@@ -98,6 +102,32 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
         n = size
     idx = np.random.choice(size, n, replace=replace)
     return [np.take(m, idx, axis=axis) for m in m_list]
+
+def select_k_best(m, k=1, reverse=False):
+    """ Select k best candidates from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        k: number of best candidates to be returned.
+        reverse: if True lower is better (by default higher is better).
+    """
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # "column array"
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    if k == 0 or k > len(m):
+        raise Exception('Bad value for K')
+    return m.sort_values(ascending=reverse).index[:k]
+
+def select_best(m, reverse=False):
+    """ Return the best candidate from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        reverse: if True lower is better (by default higher is better).
+    """
+    return select_k_best(m, k=1, reverse=reverse)
 
 # upsampling
 # downsampling
