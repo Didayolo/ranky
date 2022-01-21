@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ranky.metric API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -42,7 +42,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_pre
 
 METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
 CORR_METHODS = [&#39;swap&#39;, &#39;kendalltau&#39;, &#39;spearman&#39;, &#39;spearmanr&#39;, &#39;pearson&#39;, &#39;pearsonr&#39;]
-DIST_METHODS = [&#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;]
+DIST_METHODS = [&#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;]
 
 def arr_to_str(a):
     return &#34;&#34;.join(str(x) for x in a)
@@ -223,6 +223,29 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
     if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+
+    # TODO
+    #y_true, y_pred = np.array(y_true), np.array(y_pred)
+    #average = &#39;binary&#39;
+    #if y_true.shape != y_pred.shape:
+    #    raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
+    #if len(y_true.shape) == 1:
+    #    try:
+    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
+    #        if y_true.shape[1] &gt; 2: # target is not binary
+    #            average = &#39;micro&#39;
+    #    except: # TODO, TMP Ad-Hoc fix?
+    #        y_true, y_pred = y_true.T, y_pred.T
+    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
+    # PREPROCESSING
+    #if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
+    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
+    #if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
+    #    try:
+    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+    #    except:
+    #        pass
+    #        # TMP TODO
     #try:
     # COMPUTE SCORE
     if method == &#39;accuracy&#39;:
@@ -290,7 +313,7 @@ def dist(r1, r2, method=&#39;hamming&#39;):
     Between 0 and 1+
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;.
+        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
     &#34;&#34;&#34;
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -318,6 +341,10 @@ def dist(r1, r2, method=&#39;hamming&#39;):
         d = 1
         if np.argmin(r1) == np.argmin(r2):
             d = 0
+    elif method == &#39;winner_distance&#39;:
+        d = winner_distance(r1, r2)
+    elif method == &#39;symmetrical_winner_distance&#39;:
+        d = symmetrical_winner_distance(r1, r2)
     else:
         raise(Exception(&#39;Unknown distance method: {}&#39;.format(method)))
     return d
@@ -492,6 +519,39 @@ def get_valid_columns(solution):
 
 #TODO
 #def relative_consensus or consensus_graph
+
+def winner_distance(r1, r2, reverse=False):
+    &#34;&#34;&#34; Asymmetrical winner distance.
+
+        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
+        (rank(r1 winner)) - 1 / (n - 1)
+        Assuming no ties.
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    &#34;&#34;&#34;
+    r1, r2 = np.array(r1), np.array(r2)
+    if reverse:
+        w1 = np.argmin(r1) # r1 winner
+    else:
+        w1 = np.argmax(r1) # r1 winner
+    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)
+
+def symmetrical_winner_distance(r1, r2, reverse=False):
+    &#34;&#34;&#34; Symmetrical winner distance.
+
+        Average of dist(r1, r2) and dist(r2, r1).
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    &#34;&#34;&#34;
+    d1 = winner_distance(r1, r2, reverse=reverse)
+    d2 = winner_distance(r2, r1, reverse=reverse)
+    return (d1 + d2) / 2
 
 def centrality(m, r, axis=0, method=&#39;swap&#39;):
     &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
@@ -898,7 +958,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>method</code></strong></dt>
-<dd>'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake'.</dd>
+<dd>'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -910,7 +970,7 @@ The computation is the mean of the correlation between all possible pairs of jud
     Between 0 and 1+
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;.
+        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
     &#34;&#34;&#34;
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -938,6 +998,10 @@ The computation is the mean of the correlation between all possible pairs of jud
         d = 1
         if np.argmin(r1) == np.argmin(r2):
             d = 0
+    elif method == &#39;winner_distance&#39;:
+        d = winner_distance(r1, r2)
+    elif method == &#39;symmetrical_winner_distance&#39;:
+        d = symmetrical_winner_distance(r1, r2)
     else:
         raise(Exception(&#39;Unknown distance method: {}&#39;.format(method)))
     return d</code></pre>
@@ -1245,6 +1309,29 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
     if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+
+    # TODO
+    #y_true, y_pred = np.array(y_true), np.array(y_pred)
+    #average = &#39;binary&#39;
+    #if y_true.shape != y_pred.shape:
+    #    raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
+    #if len(y_true.shape) == 1:
+    #    try:
+    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
+    #        if y_true.shape[1] &gt; 2: # target is not binary
+    #            average = &#39;micro&#39;
+    #    except: # TODO, TMP Ad-Hoc fix?
+    #        y_true, y_pred = y_true.T, y_pred.T
+    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
+    # PREPROCESSING
+    #if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
+    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
+    #if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
+    #    try:
+    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
+    #    except:
+    #        pass
+    #        # TMP TODO
     #try:
     # COMPUTE SCORE
     if method == &#39;accuracy&#39;:
@@ -1330,6 +1417,40 @@ by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_functi
     m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
     m = pd.DataFrame(np.array(m), index=None)
     return ranking_function(m, reverse=True, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ranky.metric.symmetrical_winner_distance"><code class="name flex">
+<span>def <span class="ident">symmetrical_winner_distance</span></span>(<span>r1, r2, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Symmetrical winner distance.</p>
+<p>Average of dist(r1, r2) and dist(r2, r1).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D vector representing a judge.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D vector representing a judge.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def symmetrical_winner_distance(r1, r2, reverse=False):
+    &#34;&#34;&#34; Symmetrical winner distance.
+
+        Average of dist(r1, r2) and dist(r2, r1).
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    &#34;&#34;&#34;
+    d1 = winner_distance(r1, r2, reverse=reverse)
+    d2 = winner_distance(r2, r1, reverse=reverse)
+    return (d1 + d2) / 2</code></pre>
 </details>
 </dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
@@ -1436,6 +1557,47 @@ Dense = 'one-hot'</p></div>
         raise Exception(&#39;y must be 2-dimensional&#39;)</code></pre>
 </details>
 </dd>
+<dt id="ranky.metric.winner_distance"><code class="name flex">
+<span>def <span class="ident">winner_distance</span></span>(<span>r1, r2, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Asymmetrical winner distance.</p>
+<p>This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
+(rank(r1 winner)) - 1 / (n - 1)
+Assuming no ties.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D vector representing a judge.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D vector representing a judge.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def winner_distance(r1, r2, reverse=False):
+    &#34;&#34;&#34; Asymmetrical winner distance.
+
+        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
+        (rank(r1 winner)) - 1 / (n - 1)
+        Assuming no ties.
+
+        Args:
+          r1: 1D vector representing a judge.
+          r2: 1D vector representing a judge.
+          reverse: If True, lower is better.
+    &#34;&#34;&#34;
+    r1, r2 = np.array(r1), np.array(r2)
+    if reverse:
+        w1 = np.argmin(r1) # r1 winner
+    else:
+        w1 = np.argmax(r1) # r1 winner
+    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -1453,7 +1615,7 @@ Dense = 'one-hot'</p></div>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="ranky.metric.accuracy_multilabel" href="#ranky.metric.accuracy_multilabel">accuracy_multilabel</a></code></li>
 <li><code><a title="ranky.metric.any_metric" href="#ranky.metric.any_metric">any_metric</a></code></li>
 <li><code><a title="ranky.metric.arr_to_str" href="#ranky.metric.arr_to_str">arr_to_str</a></code></li>
@@ -1473,16 +1635,18 @@ Dense = 'one-hot'</p></div>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>
 <li><code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric</a></code></li>
 <li><code><a title="ranky.metric.relative_metric" href="#ranky.metric.relative_metric">relative_metric</a></code></li>
+<li><code><a title="ranky.metric.symmetrical_winner_distance" href="#ranky.metric.symmetrical_winner_distance">symmetrical_winner_distance</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
 <li><code><a title="ranky.metric.to_sparse" href="#ranky.metric.to_sparse">to_sparse</a></code></li>
+<li><code><a title="ranky.metric.winner_distance" href="#ranky.metric.winner_distance">winner_distance</a></code></li>
 </ul>
 </li>
 </ul>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

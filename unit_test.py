@@ -76,10 +76,10 @@ class Test(unittest.TestCase):
         np.testing.assert_array_almost_equal(rk.borda(self.__class__.M), np.array([2.66666667, 1., 2.66666667, 3.66666667, 5.]))
     def test_majority(self):
         np.testing.assert_array_equal(rk.majority(self.__class__.M), np.array([0.4, 0.8, 0.5, 0.2, 0.]))
-    def test_condorcet(self):
-        np.testing.assert_array_equal(rk.condorcet(self.__class__.M), np.array([2., 4., 3., 1., 0.]))
-    def test_condorcet2(self):
-        np.testing.assert_array_equal(rk.condorcet(self.__class__.M, wins=rk.p_wins, pval=0.2), np.array([0., 0., 0., 0., 0.]))
+    def test_pairwise(self):
+        np.testing.assert_array_equal(rk.pairwise(self.__class__.M), np.array([2., 4., 3., 1., 0.]))
+    def test_pairwise2(self):
+        np.testing.assert_array_equal(rk.pairwise(self.__class__.M, wins=rk.p_wins, pval=0.2), np.array([0., 0., 0., 0., 0.]))
     def test_consensus(self):
         rank_M = np.array([[1., 2., 3.], [1., 3., 2.], [1., 2., 3.]])
         np.testing.assert_array_equal(rk.consensus(rank_M, axis=1), np.array([True, False, False]))
@@ -164,3 +164,5 @@ array([[0.2, 0.3, 0.1],
 array([[0, 0, 0],
        [0, 1, 1]])
 '''
+
+# TODO: tests for all functions

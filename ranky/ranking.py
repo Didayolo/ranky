@@ -187,44 +187,26 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
 
     We compute the matrix of scores of all possible pairs of matches between all candidates.
     The score of one match is defined by the `wins` function.
-    This function is currently an alias for `rk.condorcet`.
-    This is more sound to name this function "pairwise".
-    Let's keep condorcet for a while for retro-compatibility but we need to clean this.
 
     Args:
         m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        axis: Judge axis. /!\
+        wins: Function returning True if a wins against b. `rk.copeland_wins` used by default.
         return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the 'Condorcet score' by dividing the results by (n - 1)
-               with n the number of candidates.
-    """
-    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)
-
-def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
-    """ Condorcet method.
-
-    Args:
-        m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
-        return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the 'Condorcet score' by dividing the results by (n - 1)
+        score: If True, produce scores between 0 and 1 by dividing the results by (n - 1)
                with n the number of candidates.
     """
     if wins is None:
         wins = rk.copeland_wins
-    ranking = rank(m, axis=1-axis)
-    n = len(ranking)
-    r = np.array(ranking)
+    n = len(m)
     graph = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
             if i != j:
-                graph[i][j] = wins(r[i], r[j], **kwargs)
+                graph[i][j] = wins(m[i], m[j], **kwargs)
             else:
                 graph[i][j] = 0 # no comparison with itself
-    r = np.sum(graph, axis=1-axis)
+    r = np.sum(graph, axis=axis) # collect candidates average score against all opponents
     r = process_vote(m, r, axis=axis)
     if score:
         r = r / (n - 1)
@@ -235,12 +217,12 @@ def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
 def copeland(m, axis=1, **kwargs):
     """ Copeland's method.
 
-    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+    This function is an alias of calling `rk.pairwise` function with `rk.copeland_wins` as the wins function.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to `rk.condorcet` function.
+        **kwargs: Arguments to be passed to `rk.pairwise` function.
     """
     return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)
 

@@ -1,7 +1,7 @@
 # Module for pairwise comparison of performances of algorithm
 
 ################################################
-#### Pairwise metrics for Condorcet methods ####
+####     Metrics for pairwise methods       ####
 ####       and significance tests           ####
 ################################################
 
@@ -12,9 +12,7 @@ from scipy.stats import binom_test
 from baycomp import two_on_single, two_on_multiple
 
 def hard_wins(a, b, reverse=False):
-    """ Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
+    """ Function returning True if a wins against b in a majority vote.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -28,7 +26,7 @@ def hard_wins(a, b, reverse=False):
     return Wa > Wb  # hard comparisons
 
 def copeland_wins(a, b, reverse=False):
-    """ Function returning 1 if a wins against b, 0.5 in case of a tie and 0 otherwise.
+    """ Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
 
     Useful for to compute Copeland's method.
 
@@ -49,9 +47,7 @@ def copeland_wins(a, b, reverse=False):
         return 0.5
 
 def p_wins(a, b, pval=0.05, reverse=False):
-    """ Function returning True if a wins against b.
-
-    Useful for Condorcet method.
+    """ Function returning True if a significantly wins against b.
 
     Args:
         a: Ballot representing one candidate (array-like).

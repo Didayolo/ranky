@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ranky.duel API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -29,7 +29,7 @@
 <pre><code class="python"># Module for pairwise comparison of performances of algorithm
 
 ################################################
-#### Pairwise metrics for Condorcet methods ####
+####     Metrics for pairwise methods       ####
 ####       and significance tests           ####
 ################################################
 
@@ -40,9 +40,7 @@ from scipy.stats import binom_test
 from baycomp import two_on_single, two_on_multiple
 
 def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
+    &#34;&#34;&#34; Function returning True if a wins against b in a majority vote.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -56,7 +54,7 @@ def hard_wins(a, b, reverse=False):
     return Wa &gt; Wb  # hard comparisons
 
 def copeland_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning 1 if a wins against b, 0.5 in case of a tie and 0 otherwise.
+    &#34;&#34;&#34; Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
 
     Useful for to compute Copeland&#39;s method.
 
@@ -77,9 +75,7 @@ def copeland_wins(a, b, reverse=False):
         return 0.5
 
 def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for Condorcet method.
+    &#34;&#34;&#34; Function returning True if a significantly wins against b.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -226,7 +222,7 @@ def relative_difference(a, b, reverse=False):
 <span>def <span class="ident">copeland_wins</span></span>(<span>a, b, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function returning 1 if a wins against b, 0.5 in case of a tie and 0 otherwise.</p>
+<div class="desc"><p>Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.</p>
 <p>Useful for to compute Copeland's method.</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -242,7 +238,7 @@ def relative_difference(a, b, reverse=False):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def copeland_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning 1 if a wins against b, 0.5 in case of a tie and 0 otherwise.
+    &#34;&#34;&#34; Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
 
     Useful for to compute Copeland&#39;s method.
 
@@ -267,8 +263,7 @@ def relative_difference(a, b, reverse=False):
 <span>def <span class="ident">hard_wins</span></span>(<span>a, b, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function returning True if a wins against b.</p>
-<p>Useful for to compute Condorcet method.</p>
+<div class="desc"><p>Function returning True if a wins against b in a majority vote.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
@@ -283,9 +278,7 @@ def relative_difference(a, b, reverse=False):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for to compute Condorcet method.
+    &#34;&#34;&#34; Function returning True if a wins against b in a majority vote.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -303,8 +296,7 @@ def relative_difference(a, b, reverse=False):
 <span>def <span class="ident">p_wins</span></span>(<span>a, b, pval=0.05, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function returning True if a wins against b.</p>
-<p>Useful for Condorcet method.</p>
+<div class="desc"><p>Function returning True if a significantly wins against b.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
@@ -322,9 +314,7 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b.
-
-    Useful for Condorcet method.
+    &#34;&#34;&#34; Function returning True if a significantly wins against b.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -442,7 +432,7 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ranky.ranking API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -87,7 +87,7 @@ def tie(r, threshold=0.1):
     return 0
 
 # remove rows (candidates) or columns (voters)
-def bootstrap(m, axis=0, n=None, replace=True):
+def bootstrap(m, axis=0, n=None, replace=True, return_holdout=False):
     &#34;&#34;&#34; Sample with replacement among an axis (and keep the same shape by default).
 
     By convention rows reprensent candidates and columns represent voters.
@@ -96,11 +96,19 @@ def bootstrap(m, axis=0, n=None, replace=True):
         axis: Axis concerned by bootstrap.
         n: Number of examples to sample. By default it is the size of the matrix among the axis.
         replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+        return_holdout: If True, returns a tuple (bootstrap, out-of-bag set).
     &#34;&#34;&#34;
     if n is None:
         n = m.shape[axis]
     idx = np.random.choice(m.shape[axis], n, replace=replace)
-    return np.take(m, idx, axis=axis)
+    bootstrap = np.take(m, idx, axis=axis)
+    if return_holdout:
+        ran = np.arange(m.shape[axis])
+        holdout_idx = ran[np.array([x not in idx for x in ran])]
+        holdout = np.take(m, holdout_idx, axis=axis)
+        return bootstrap, holdout
+    else:
+        return bootstrap
 
 def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     &#34;&#34;&#34; Apply the same bootstrap on all matrices on m_list.
@@ -207,41 +215,26 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
 
     We compute the matrix of scores of all possible pairs of matches between all candidates.
     The score of one match is defined by the `wins` function.
-    This function is currently an alias for `rk.condorcet`.
-    This is more sound to name this function &#34;pairwise&#34;.
-    Let&#39;s keep condorcet for a while for retro-compatibility but we need to clean this.
 
     Args:
         m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        axis: Judge axis. /!\
+        wins: Function returning True if a wins against b. `rk.copeland_wins` used by default.
         return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
-               with n the number of candidates.
-    &#34;&#34;&#34;
-    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)
-
-def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
-    &#34;&#34;&#34; Condorcet method.
-
-    Args:
-        m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
-        return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
+        score: If True, produce scores between 0 and 1 by dividing the results by (n - 1)
                with n the number of candidates.
     &#34;&#34;&#34;
     if wins is None:
-        wins = rk.hard_wins
-    ranking = rank(m, axis=1-axis)
-    n = len(ranking)
-    r = np.array(ranking)
+        wins = rk.copeland_wins
+    n = len(m)
     graph = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
-            graph[i][j] = wins(r[i], r[j], **kwargs)
-    r = np.sum(graph, axis=1-axis)
+            if i != j:
+                graph[i][j] = wins(m[i], m[j], **kwargs)
+            else:
+                graph[i][j] = 0 # no comparison with itself
+    r = np.sum(graph, axis=axis) # collect candidates average score against all opponents
     r = process_vote(m, r, axis=axis)
     if score:
         r = r / (n - 1)
@@ -252,14 +245,14 @@ def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
 def copeland(m, axis=1, **kwargs):
     &#34;&#34;&#34; Copeland&#39;s method.
 
-    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+    This function is an alias of calling `rk.pairwise` function with `rk.copeland_wins` as the wins function.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to `rk.condorcet` function.
+        **kwargs: Arguments to be passed to `rk.pairwise` function.
     &#34;&#34;&#34;
-    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)
+    return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)
 
 def kemeny_young(m, axis=1, **kwargs):
     &#34;&#34;&#34; Kemeny-Young method.
@@ -373,7 +366,7 @@ def center(m, axis=1, method=&#39;euclidean&#39;, verbose=True, **kwargs):
     # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False, **kwargs) # from scipy.optimize
     if verbose:
         print(res.message)
     r = res.x
@@ -409,7 +402,7 @@ def consensus(m, axis=0):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="ranky.ranking.bootstrap"><code class="name flex">
-<span>def <span class="ident">bootstrap</span></span>(<span>m, axis=0, n=None, replace=True)</span>
+<span>def <span class="ident">bootstrap</span></span>(<span>m, axis=0, n=None, replace=True, return_holdout=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sample with replacement among an axis (and keep the same shape by default).</p>
@@ -422,12 +415,14 @@ def consensus(m, axis=0):
 <dd>Number of examples to sample. By default it is the size of the matrix among the axis.</dd>
 <dt><strong><code>replace</code></strong></dt>
 <dd>Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.</dd>
+<dt><strong><code>return_holdout</code></strong></dt>
+<dd>If True, returns a tuple (bootstrap, out-of-bag set).</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def bootstrap(m, axis=0, n=None, replace=True):
+<pre><code class="python">def bootstrap(m, axis=0, n=None, replace=True, return_holdout=False):
     &#34;&#34;&#34; Sample with replacement among an axis (and keep the same shape by default).
 
     By convention rows reprensent candidates and columns represent voters.
@@ -436,11 +431,19 @@ def consensus(m, axis=0):
         axis: Axis concerned by bootstrap.
         n: Number of examples to sample. By default it is the size of the matrix among the axis.
         replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+        return_holdout: If True, returns a tuple (bootstrap, out-of-bag set).
     &#34;&#34;&#34;
     if n is None:
         n = m.shape[axis]
     idx = np.random.choice(m.shape[axis], n, replace=replace)
-    return np.take(m, idx, axis=axis)</code></pre>
+    bootstrap = np.take(m, idx, axis=axis)
+    if return_holdout:
+        ran = np.arange(m.shape[axis])
+        holdout_idx = ran[np.array([x not in idx for x in ran])]
+        holdout = np.take(m, holdout_idx, axis=axis)
+        return bootstrap, holdout
+    else:
+        return bootstrap</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.borda"><code class="name flex">
@@ -553,63 +556,11 @@ Also called optimal rank aggregation.</p>
     # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False, **kwargs) # from scipy.optimize
     if verbose:
         print(res.message)
     r = res.x
     return process_vote(m, r, axis=axis)</code></pre>
-</details>
-</dd>
-<dt id="ranky.ranking.condorcet"><code class="name flex">
-<span>def <span class="ident">condorcet</span></span>(<span>m, axis=1, wins=None, return_graph=False, score=False, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Condorcet method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>Preference matrix.</dd>
-<dt><strong><code>axis</code></strong></dt>
-<dd>Judge axis.</dd>
-<dt><strong><code>wins</code></strong></dt>
-<dd>Function returning True if a wins against b. <code>rk.hard_wins</code> used by default.</dd>
-<dt><strong><code>return_graph</code></strong></dt>
-<dd>If True, returns the 1-1 matches result matrix.</dd>
-<dt><strong><code>score</code></strong></dt>
-<dd>If True, produce the 'Condorcet score' by dividing the results by (n - 1)
-with n the number of candidates.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def condorcet(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
-    &#34;&#34;&#34; Condorcet method.
-
-    Args:
-        m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
-        return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
-               with n the number of candidates.
-    &#34;&#34;&#34;
-    if wins is None:
-        wins = rk.hard_wins
-    ranking = rank(m, axis=1-axis)
-    n = len(ranking)
-    r = np.array(ranking)
-    graph = np.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            graph[i][j] = wins(r[i], r[j], **kwargs)
-    r = np.sum(graph, axis=1-axis)
-    r = process_vote(m, r, axis=axis)
-    if score:
-        r = r / (n - 1)
-    if return_graph:
-        return r, graph
-    return r</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.consensus"><code class="name flex">
@@ -636,7 +587,7 @@ with n the number of candidates.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Copeland's method.</p>
-<p>This function is an alias of calling <code>rk.condorcet</code> function with <code>rk.copeland_wins</code> as the wins function.</p>
+<p>This function is an alias of calling <code>rk.pairwise</code> function with <code>rk.copeland_wins</code> as the wins function.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>m</code></strong></dt>
@@ -644,7 +595,7 @@ with n the number of candidates.</dd>
 <dt><strong><code>axis</code></strong></dt>
 <dd>Judge axis.</dd>
 <dt><strong><code>**kwargs</code></strong></dt>
-<dd>Arguments to be passed to <code>rk.condorcet</code> function.</dd>
+<dd>Arguments to be passed to <code>rk.pairwise</code> function.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -653,14 +604,14 @@ with n the number of candidates.</dd>
 <pre><code class="python">def copeland(m, axis=1, **kwargs):
     &#34;&#34;&#34; Copeland&#39;s method.
 
-    This function is an alias of calling `rk.condorcet` function with `rk.copeland_wins` as the wins function.
+    This function is an alias of calling `rk.pairwise` function with `rk.copeland_wins` as the wins function.
 
     Args:
         m: Preference matrix.
         axis: Judge axis.
-        **kwargs: Arguments to be passed to `rk.condorcet` function.
+        **kwargs: Arguments to be passed to `rk.pairwise` function.
     &#34;&#34;&#34;
-    return condorcet(m, axis=axis, wins=rk.copeland_wins, **kwargs)</code></pre>
+    return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.dictator"><code class="name flex">
@@ -872,22 +823,18 @@ according to Kendall's distance.</p>
 <dd>
 <div class="desc"><p>Pairwise method.</p>
 <p>We compute the matrix of scores of all possible pairs of matches between all candidates.
-The score of one match is defined by the <code>wins</code> function.
-This function is currently an alias for <code>rk.condorcet</code>.
-This is more sound to name this function "pairwise".
-Let's keep condorcet for a while for retro-compatibility but we need to clean this.</p>
+The score of one match is defined by the <code>wins</code> function.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>m</code></strong></dt>
 <dd>Preference matrix.</dd>
 <dt><strong><code>axis</code></strong></dt>
-<dd>Judge axis.</dd>
-<dt><strong><code>wins</code></strong></dt>
-<dd>Function returning True if a wins against b. <code>rk.hard_wins</code> used by default.</dd>
+<dd>Judge axis. /!
+wins: Function returning True if a wins against b. <code>rk.copeland_wins</code> used by default.</dd>
 <dt><strong><code>return_graph</code></strong></dt>
 <dd>If True, returns the 1-1 matches result matrix.</dd>
 <dt><strong><code>score</code></strong></dt>
-<dd>If True, produce the 'Condorcet score' by dividing the results by (n - 1)
+<dd>If True, produce scores between 0 and 1 by dividing the results by (n - 1)
 with n the number of candidates.</dd>
 </dl></div>
 <details class="source">
@@ -899,19 +846,32 @@ with n the number of candidates.</dd>
 
     We compute the matrix of scores of all possible pairs of matches between all candidates.
     The score of one match is defined by the `wins` function.
-    This function is currently an alias for `rk.condorcet`.
-    This is more sound to name this function &#34;pairwise&#34;.
-    Let&#39;s keep condorcet for a while for retro-compatibility but we need to clean this.
 
     Args:
         m: Preference matrix.
-        axis: Judge axis.
-        wins: Function returning True if a wins against b. `rk.hard_wins` used by default.
+        axis: Judge axis. /!\
+        wins: Function returning True if a wins against b. `rk.copeland_wins` used by default.
         return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce the &#39;Condorcet score&#39; by dividing the results by (n - 1)
+        score: If True, produce scores between 0 and 1 by dividing the results by (n - 1)
                with n the number of candidates.
     &#34;&#34;&#34;
-    return condorcet(m, axis=axis, wins=wins, return_graph=return_graph, score=score, **kwargs)</code></pre>
+    if wins is None:
+        wins = rk.copeland_wins
+    n = len(m)
+    graph = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                graph[i][j] = wins(m[i], m[j], **kwargs)
+            else:
+                graph[i][j] = 0 # no comparison with itself
+    r = np.sum(graph, axis=axis) # collect candidates average score against all opponents
+    r = process_vote(m, r, axis=axis)
+    if score:
+        r = r / (n - 1)
+    if return_graph:
+        return r, graph
+    return r</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.process_vote"><code class="name flex">
@@ -1142,7 +1102,6 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.borda" href="#ranky.ranking.borda">borda</a></code></li>
 <li><code><a title="ranky.ranking.brute_force" href="#ranky.ranking.brute_force">brute_force</a></code></li>
 <li><code><a title="ranky.ranking.center" href="#ranky.ranking.center">center</a></code></li>
-<li><code><a title="ranky.ranking.condorcet" href="#ranky.ranking.condorcet">condorcet</a></code></li>
 <li><code><a title="ranky.ranking.consensus" href="#ranky.ranking.consensus">consensus</a></code></li>
 <li><code><a title="ranky.ranking.copeland" href="#ranky.ranking.copeland">copeland</a></code></li>
 <li><code><a title="ranky.ranking.dictator" href="#ranky.ranking.dictator">dictator</a></code></li>
@@ -1166,7 +1125,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
