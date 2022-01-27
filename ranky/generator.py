@@ -15,23 +15,33 @@ class Generator():
     def fit(self, r):
         """ Store the reference ranking.
         """
-        if len(r) < 2:
-            raise Exception('The reference ranking must contains at least two candidates.')
-        self.r = r
+        if isinstance(r, int):
+            self.r = list(range(r))
+        else:
+            if len(r) < 2:
+                raise Exception('The reference ranking must contains at least two candidates.')
+            self.r = r
 
-    def sample(self, n=1, loc=0, scale=1):
+    def sample(self, n=1, return_single=True, **kwargs):
         """ Sample judge according to the function.
 
         Args:
             n: number of samples to draw.
+            return_single: if True, return a simple 1D array when n = 1.
         """
         if self.r is None:
             raise Exception('The generator must be fitted before sampling.')
-        m = [self.r for _ in range(n)]
-        return np.array(m).T
+        if n == 1 and return_single:
+            return self._sample(**kwargs) # return one array
+        return np.array([self._sample(**kwargs) for _ in range(n)]).T # return a matrix
+        
+    def _sample(self):
+        """ Sampling function to be re-written when inheriting this class.
+        """
+        return self.r
 
 class SwapGenerator(Generator):
-    def sample(self, n=1, N=1, p=1):
+    def _sample(self, n=1, N=1, p=1):
         """ Sample n judges by swaping neighbors N times with probability p.
 
         Args:
@@ -39,18 +49,16 @@ class SwapGenerator(Generator):
             N: number swapings.
             p: probability (in ]0;1]) of disturbing on each iteration.
         """
-        m = [neighbors_swap(self.r, N=N, p=p) for _ in range(n)]
-        return np.array(m).T
+        return neighbors_swap(self.r, N=N, p=p)
 
 class GaussianGenerator(Generator):
-    def sample(self, n=1, loc=0, scale=1):
+    def _sample(self, n=1, loc=0, scale=1):
         """ Sample n judges by normally disturb the original ranking.
 
         Args:
             n: number of samples to draw.
         """
-        m = [gaussian_noise(self.r, loc=loc, scale=scale) for _ in range(n)]
-        return np.array(m).T
+        return gaussian_noise(self.r, loc=loc, scale=scale)
 
 ################
 ###  NOISES  ###

@@ -127,7 +127,7 @@ def select_best(m, reverse=False):
         m: 1D array-like of scores.
         reverse: if True lower is better (by default higher is better).
     """
-    return select_k_best(m, k=1, reverse=reverse)
+    return select_k_best(m, k=1, reverse=reverse)[0]
 
 # upsampling
 # downsampling
