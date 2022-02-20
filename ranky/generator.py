@@ -32,7 +32,7 @@ class Generator():
         if self.r is None:
             raise Exception('The generator must be fitted before sampling.')
         if n == 1 and return_single:
-            return self._sample(**kwargs) # return one array
+            return np.array(self._sample(**kwargs)) # return one array
         return np.array([self._sample(**kwargs) for _ in range(n)]).T # return a matrix
         
     def _sample(self):

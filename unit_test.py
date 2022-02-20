@@ -117,6 +117,11 @@ class Test(unittest.TestCase):
     def test_winner_distance(self):
         d = rk.winner_distance([1, 0.7, 0.2, 0.1, 0.1], [0.7, 1, 0.5, 0.4, 0.1])
         self.assertEqual(d, 0.25)
+    def test_kendall_tau_distance(self):
+        d = rk.kendall_tau_distance([0, 1, 2], [1, 2, 0])
+        self.assertEqual(d, 2)
+        d = rk.kendall_tau_distance([0, 1, 2], [0, 1, 2])
+        self.assertEqual(d, 0)
 
 if __name__ == '__main__':
     print('Compute various measures...')

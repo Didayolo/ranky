@@ -344,6 +344,27 @@ def corr(r1, r2, method='swap', return_p_value=False):
         return c, p_value
     return c
 
+def kendall_tau_distance(r1, r2):
+    """ Compute the absolute Kendall distance between two ranks (array-like).
+
+    This distance represents the minimal number of neighbors swaps needed to
+    transform r1 into r2.
+
+    >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
+    2
+
+    >>> kendall_tau_distance([0, 1, 2], [0, 1, 2])
+    0
+    """
+    pairs = it.combinations(range(0, len(r1)), 2)
+    distance = 0
+    for x, y in pairs:
+        a = r1.index(x) - r1.index(y)
+        b = r2.index(x) - r2.index(y)
+        if a * b < 0:
+            distance += 1
+    return distance
+
 def kendall_w(matrix, axis=0, ties=False):
     """ Kendall's W coefficient of concordance.
 
