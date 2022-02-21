@@ -350,6 +350,8 @@ def kendall_tau_distance(r1, r2, normalize=False):
     This distance represents the minimal number of neighbors swaps needed to
     transform r1 into r2.
 
+    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+
     >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
 
@@ -359,7 +361,7 @@ def kendall_tau_distance(r1, r2, normalize=False):
     Args:
         normalize: If True, divide the results by the length of the lists.
     """
-    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
+    r1, r2 = rk.rank(r1, reverse=True, method='ordinal'), rk.rank(r2, reverse=True, method='ordinal') # To ensure having ranks from 1 to n
     if len(r1) != len(r2):
         print("WARNING: r1 and r2 don't have the same length ({} != {})".format(len(r1), len(r2)))
     pairs = it.combinations(range(1, len(r1)+1), 2)
