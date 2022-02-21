@@ -359,13 +359,14 @@ def kendall_tau_distance(r1, r2, normalize=False):
     Args:
         normalize: If True, divide the results by the length of the lists.
     """
+    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
     if len(r1) != len(r2):
         print("WARNING: r1 and r2 don't have the same length ({} != {})".format(len(r1), len(r2)))
-    pairs = it.combinations(range(0, len(r1)), 2)
+    pairs = it.combinations(range(1, len(r1)+1), 2)
     distance = 0
     for x, y in pairs:
-        a = r1.index(x) - r1.index(y)
-        b = r2.index(x) - r2.index(y)
+        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
+        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
         if a * b < 0:
             distance += 1
     if normalize:
