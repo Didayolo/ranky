@@ -41,6 +41,10 @@ import itertools as it
 #import ranky.metric as metric
 import ranky as rk
 
+#####################
+##### Functions #####
+#####################
+
 # Convert to ranking
 def rank(m, axis=0, method=&#39;average&#39;, ascending=False, reverse=False):
     &#34;&#34;&#34; Replace values by their rank in the column.
@@ -126,6 +130,32 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
         n = size
     idx = np.random.choice(size, n, replace=replace)
     return [np.take(m, idx, axis=axis) for m in m_list]
+
+def select_k_best(m, k=1, reverse=False):
+    &#34;&#34;&#34; Select k best candidates from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        k: number of best candidates to be returned.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    if k == 0 or k &gt; len(m):
+        raise Exception(&#39;Bad value for K&#39;)
+    return m.sort_values(ascending=reverse).index[:k]
+
+def select_best(m, reverse=False):
+    &#34;&#34;&#34; Return the best candidate from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    return select_k_best(m, k=1, reverse=reverse)[0]
 
 # upsampling
 # downsampling
@@ -1003,6 +1033,68 @@ Ranked preference matrix.</p></div>
     return process_vote(m, r, axis=axis)</code></pre>
 </details>
 </dd>
+<dt id="ranky.ranking.select_best"><code class="name flex">
+<span>def <span class="ident">select_best</span></span>(<span>m, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the best candidate from the 1D array m.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>1D array-like of scores.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>if True lower is better (by default higher is better).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_best(m, reverse=False):
+    &#34;&#34;&#34; Return the best candidate from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    return select_k_best(m, k=1, reverse=reverse)[0]</code></pre>
+</details>
+</dd>
+<dt id="ranky.ranking.select_k_best"><code class="name flex">
+<span>def <span class="ident">select_k_best</span></span>(<span>m, k=1, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Select k best candidates from the 1D array m.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>1D array-like of scores.</dd>
+<dt><strong><code>k</code></strong></dt>
+<dd>number of best candidates to be returned.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>if True lower is better (by default higher is better).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_k_best(m, k=1, reverse=False):
+    &#34;&#34;&#34; Select k best candidates from the 1D array m.
+
+    Args:
+        m: 1D array-like of scores.
+        k: number of best candidates to be returned.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    if k == 0 or k &gt; len(m):
+        raise Exception(&#39;Bad value for K&#39;)
+    return m.sort_values(ascending=reverse).index[:k]</code></pre>
+</details>
+</dd>
 <dt id="ranky.ranking.tie"><code class="name flex">
 <span>def <span class="ident">tie</span></span>(<span>r, threshold=0.1)</span>
 </code></dt>
@@ -1116,6 +1208,8 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.random_swap" href="#ranky.ranking.random_swap">random_swap</a></code></li>
 <li><code><a title="ranky.ranking.rank" href="#ranky.ranking.rank">rank</a></code></li>
 <li><code><a title="ranky.ranking.score" href="#ranky.ranking.score">score</a></code></li>
+<li><code><a title="ranky.ranking.select_best" href="#ranky.ranking.select_best">select_best</a></code></li>
+<li><code><a title="ranky.ranking.select_k_best" href="#ranky.ranking.select_k_best">select_k_best</a></code></li>
 <li><code><a title="ranky.ranking.tie" href="#ranky.ranking.tie">tie</a></code></li>
 <li><code><a title="ranky.ranking.uninominal" href="#ranky.ranking.uninominal">uninominal</a></code></li>
 <li><code><a title="ranky.ranking.weigher" href="#ranky.ranking.weigher">weigher</a></code></li>

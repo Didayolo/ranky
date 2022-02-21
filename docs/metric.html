@@ -372,6 +372,35 @@ def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
         return c, p_value
     return c
 
+def kendall_tau_distance(r1, r2, normalize=False):
+    &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
+
+    This distance represents the minimal number of neighbors swaps needed to
+    transform r1 into r2.
+
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
+    2
+
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
+    0
+
+    Args:
+        normalize: If True, divide the results by the length of the lists.
+    &#34;&#34;&#34;
+    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
+    if len(r1) != len(r2):
+        print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
+    pairs = it.combinations(range(1, len(r1)+1), 2)
+    distance = 0
+    for x, y in pairs:
+        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
+        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
+        if a * b &lt; 0:
+            distance += 1
+    if normalize:
+        distance = distance / len(r1)
+    return distance
+
 def kendall_w(matrix, axis=0, ties=False):
     &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
 
@@ -1108,6 +1137,58 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
     return valid_columns</code></pre>
 </details>
 </dd>
+<dt id="ranky.metric.kendall_tau_distance"><code class="name flex">
+<span>def <span class="ident">kendall_tau_distance</span></span>(<span>r1, r2, normalize=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compute the absolute Kendall distance between two ranks (array-like).</p>
+<p>This distance represents the minimal number of neighbors swaps needed to
+transform r1 into r2.</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
+2
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
+0
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>normalize</code></strong></dt>
+<dd>If True, divide the results by the length of the lists.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def kendall_tau_distance(r1, r2, normalize=False):
+    &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
+
+    This distance represents the minimal number of neighbors swaps needed to
+    transform r1 into r2.
+
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
+    2
+
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
+    0
+
+    Args:
+        normalize: If True, divide the results by the length of the lists.
+    &#34;&#34;&#34;
+    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
+    if len(r1) != len(r2):
+        print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
+    pairs = it.combinations(range(1, len(r1)+1), 2)
+    distance = 0
+    for x, y in pairs:
+        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
+        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
+        if a * b &lt; 0:
+            distance += 1
+    if normalize:
+        distance = distance / len(r1)
+    return distance</code></pre>
+</details>
+</dd>
 <dt id="ranky.metric.kendall_w"><code class="name flex">
 <span>def <span class="ident">kendall_w</span></span>(<span>matrix, axis=0, ties=False)</span>
 </code></dt>
@@ -1629,6 +1710,7 @@ Assuming no ties.</p>
 <li><code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist</a></code></li>
 <li><code><a title="ranky.metric.distance_matrix" href="#ranky.metric.distance_matrix">distance_matrix</a></code></li>
 <li><code><a title="ranky.metric.get_valid_columns" href="#ranky.metric.get_valid_columns">get_valid_columns</a></code></li>
+<li><code><a title="ranky.metric.kendall_tau_distance" href="#ranky.metric.kendall_tau_distance">kendall_tau_distance</a></code></li>
 <li><code><a title="ranky.metric.kendall_w" href="#ranky.metric.kendall_w">kendall_w</a></code></li>
 <li><code><a title="ranky.metric.kendall_w_ties" href="#ranky.metric.kendall_w_ties">kendall_w_ties</a></code></li>
 <li><code><a title="ranky.metric.loss" href="#ranky.metric.loss">loss</a></code></li>
