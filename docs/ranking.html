@@ -131,6 +131,21 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     idx = np.random.choice(size, n, replace=replace)
     return [np.take(m, idx, axis=axis) for m in m_list]
 
+def top_k_method(D, F, k=1, reverse=False):
+    &#34;&#34;&#34; Apply top-k method to select a winner from two rankings D and F (development and final).
+    
+    Return the index of the winner. The winner is the top of F from the k best candidates of D.
+    
+    Args:
+        D: 1D array-like of scores, representing the development phase (or public leaderboard).
+        F: 1D array-like of scores, representing the final phase (or private leaderboard).
+        k: number of candidates that access the final phase.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    D, F = to_series(D), to_series(F)
+    top_k = select_k_best(D, k=k, reverse=reverse)
+    return rk.select_best(F[top_k], reverse=reverse)
+
 def select_k_best(m, k=1, reverse=False):
     &#34;&#34;&#34; Select k best candidates from the 1D array m.
 
@@ -139,11 +154,7 @@ def select_k_best(m, k=1, reverse=False):
         k: number of best candidates to be returned.
         reverse: if True lower is better (by default higher is better).
     &#34;&#34;&#34;
-    if not isinstance(m, list):
-        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
-            m = m.reshape((m.shape[0]))
-    if not is_series(m): # cast to pd.Series if needed
-        m = pd.Series(m)
+    m = to_series(m)
     if k == 0 or k &gt; len(m):
         raise Exception(&#39;Bad value for K&#39;)
     return m.sort_values(ascending=reverse).index[:k]
@@ -165,6 +176,14 @@ def is_series(m):
 
 def is_dataframe(m):
     return isinstance(m, pd.DataFrame)
+    
+def to_series(m):
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    return m
 
 def process_vote(m, r, axis=1):
     &#34;&#34;&#34; Keep names if using pd.DataFrame.
@@ -1085,11 +1104,7 @@ Ranked preference matrix.</p></div>
         k: number of best candidates to be returned.
         reverse: if True lower is better (by default higher is better).
     &#34;&#34;&#34;
-    if not isinstance(m, list):
-        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
-            m = m.reshape((m.shape[0]))
-    if not is_series(m): # cast to pd.Series if needed
-        m = pd.Series(m)
+    m = to_series(m)
     if k == 0 or k &gt; len(m):
         raise Exception(&#39;Bad value for K&#39;)
     return m.sort_values(ascending=reverse).index[:k]</code></pre>
@@ -1108,6 +1123,61 @@ Ranked preference matrix.</p></div>
     &#34;&#34;&#34; TODO: merge close values.
     &#34;&#34;&#34;
     return 0</code></pre>
+</details>
+</dd>
+<dt id="ranky.ranking.to_series"><code class="name flex">
+<span>def <span class="ident">to_series</span></span>(<span>m)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_series(m):
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # &#34;column array&#34;
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    return m</code></pre>
+</details>
+</dd>
+<dt id="ranky.ranking.top_k_method"><code class="name flex">
+<span>def <span class="ident">top_k_method</span></span>(<span>D, F, k=1, reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply top-k method to select a winner from two rankings D and F (development and final).</p>
+<p>Return the index of the winner. The winner is the top of F from the k best candidates of D.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>D</code></strong></dt>
+<dd>1D array-like of scores, representing the development phase (or public leaderboard).</dd>
+<dt><strong><code>F</code></strong></dt>
+<dd>1D array-like of scores, representing the final phase (or private leaderboard).</dd>
+<dt><strong><code>k</code></strong></dt>
+<dd>number of candidates that access the final phase.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>if True lower is better (by default higher is better).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def top_k_method(D, F, k=1, reverse=False):
+    &#34;&#34;&#34; Apply top-k method to select a winner from two rankings D and F (development and final).
+    
+    Return the index of the winner. The winner is the top of F from the k best candidates of D.
+    
+    Args:
+        D: 1D array-like of scores, representing the development phase (or public leaderboard).
+        F: 1D array-like of scores, representing the final phase (or private leaderboard).
+        k: number of candidates that access the final phase.
+        reverse: if True lower is better (by default higher is better).
+    &#34;&#34;&#34;
+    D, F = to_series(D), to_series(F)
+    top_k = select_k_best(D, k=k, reverse=reverse)
+    return rk.select_best(F[top_k], reverse=reverse)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.uninominal"><code class="name flex">
@@ -1211,6 +1281,8 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.select_best" href="#ranky.ranking.select_best">select_best</a></code></li>
 <li><code><a title="ranky.ranking.select_k_best" href="#ranky.ranking.select_k_best">select_k_best</a></code></li>
 <li><code><a title="ranky.ranking.tie" href="#ranky.ranking.tie">tie</a></code></li>
+<li><code><a title="ranky.ranking.to_series" href="#ranky.ranking.to_series">to_series</a></code></li>
+<li><code><a title="ranky.ranking.top_k_method" href="#ranky.ranking.top_k_method">top_k_method</a></code></li>
 <li><code><a title="ranky.ranking.uninominal" href="#ranky.ranking.uninominal">uninominal</a></code></li>
 <li><code><a title="ranky.ranking.weigher" href="#ranky.ranking.weigher">weigher</a></code></li>
 </ul>

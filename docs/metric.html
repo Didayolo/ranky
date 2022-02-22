@@ -378,6 +378,8 @@ def kendall_tau_distance(r1, r2, normalize=False):
     This distance represents the minimal number of neighbors swaps needed to
     transform r1 into r2.
 
+    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
 
@@ -387,7 +389,7 @@ def kendall_tau_distance(r1, r2, normalize=False):
     Args:
         normalize: If True, divide the results by the length of the lists.
     &#34;&#34;&#34;
-    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
+    r1, r2 = rk.rank(r1, reverse=True, method=&#39;ordinal&#39;), rk.rank(r2, reverse=True, method=&#39;ordinal&#39;) # To ensure having ranks from 1 to n
     if len(r1) != len(r2):
         print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
     pairs = it.combinations(range(1, len(r1)+1), 2)
@@ -1144,6 +1146,7 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 <div class="desc"><p>Compute the absolute Kendall distance between two ranks (array-like).</p>
 <p>This distance represents the minimal number of neighbors swaps needed to
 transform r1 into r2.</p>
+<p>WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.</p>
 <pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
 2
 </code></pre>
@@ -1165,6 +1168,8 @@ transform r1 into r2.</p>
     This distance represents the minimal number of neighbors swaps needed to
     transform r1 into r2.
 
+    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
 
@@ -1174,7 +1179,7 @@ transform r1 into r2.</p>
     Args:
         normalize: If True, divide the results by the length of the lists.
     &#34;&#34;&#34;
-    r1, r2 = rk.rank(r1, reverse=True), rk.rank(r2, reverse=True) # To ensure having ranks from 1 to n
+    r1, r2 = rk.rank(r1, reverse=True, method=&#39;ordinal&#39;), rk.rank(r2, reverse=True, method=&#39;ordinal&#39;) # To ensure having ranks from 1 to n
     if len(r1) != len(r2):
         print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
     pairs = it.combinations(range(1, len(r1)+1), 2)

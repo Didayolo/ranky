@@ -103,6 +103,21 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     idx = np.random.choice(size, n, replace=replace)
     return [np.take(m, idx, axis=axis) for m in m_list]
 
+def top_k_method(D, F, k=1, reverse=False):
+    """ Apply top-k method to select a winner from two rankings D and F (development and final).
+    
+    Return the index of the winner. The winner is the top of F from the k best candidates of D.
+    
+    Args:
+        D: 1D array-like of scores, representing the development phase (or public leaderboard).
+        F: 1D array-like of scores, representing the final phase (or private leaderboard).
+        k: number of candidates that access the final phase.
+        reverse: if True lower is better (by default higher is better).
+    """
+    D, F = to_series(D), to_series(F)
+    top_k = select_k_best(D, k=k, reverse=reverse)
+    return rk.select_best(F[top_k], reverse=reverse)
+
 def select_k_best(m, k=1, reverse=False):
     """ Select k best candidates from the 1D array m.
 
@@ -111,11 +126,7 @@ def select_k_best(m, k=1, reverse=False):
         k: number of best candidates to be returned.
         reverse: if True lower is better (by default higher is better).
     """
-    if not isinstance(m, list):
-        if len(m.shape) == 2 and m.shape[1] == 1: # "column array"
-            m = m.reshape((m.shape[0]))
-    if not is_series(m): # cast to pd.Series if needed
-        m = pd.Series(m)
+    m = to_series(m)
     if k == 0 or k > len(m):
         raise Exception('Bad value for K')
     return m.sort_values(ascending=reverse).index[:k]
@@ -137,6 +148,14 @@ def is_series(m):
 
 def is_dataframe(m):
     return isinstance(m, pd.DataFrame)
+    
+def to_series(m):
+    if not isinstance(m, list):
+        if len(m.shape) == 2 and m.shape[1] == 1: # "column array"
+            m = m.reshape((m.shape[0]))
+    if not is_series(m): # cast to pd.Series if needed
+        m = pd.Series(m)
+    return m
 
 def process_vote(m, r, axis=1):
     """ Keep names if using pd.DataFrame.
