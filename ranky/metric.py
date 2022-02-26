@@ -10,6 +10,8 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
+from math import comb
+from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
@@ -344,13 +346,26 @@ def corr(r1, r2, method='swap', return_p_value=False):
         return c, p_value
     return c
 
-def kendall_tau_distance(r1, r2, normalize=False):
+def kendall_ties_coefficient(r1, r2):
+    """ Compute ties correction coefficient for Kendall tau distance.
+
+    Ties management inspired by tau_b,
+    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient#Accounting_for_ties
+    """
+    n0 = comb(len(r1), 2)
+    a1 = np.array(list(Counter(r1).values())) # count tied values
+    n1 = a1[a1 != 1].sum() # sum of number of tied values in all tie groups of r1
+    a2 = np.array(list(Counter(r1).values())) # count tied values
+    n2 = a2[a2 != 1].sum() # sum of number of tied values in all tie groups of r2
+    denom = np.sqrt((n0 - n1) * (n0 - n2))
+    coeff = n0 / denom if denom != 0 else 1
+    return coeff
+
+def kendall_tau_distance(r1, r2, normalize=False, ties=True):
     """ Compute the absolute Kendall distance between two ranks (array-like).
 
     This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2.
-
-    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+    transform r1 into r2. Basically Kendall tau without scaling between -1 and 1.
 
     >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
@@ -358,22 +373,30 @@ def kendall_tau_distance(r1, r2, normalize=False):
     >>> kendall_tau_distance([0, 1, 2], [0, 1, 2])
     0
 
+    Ties management:
+    >>> kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
+    2
+
     Args:
         normalize: If True, divide the results by the length of the lists.
+        ties: If True, use the correction for ties.
     """
-    r1, r2 = rk.rank(r1, reverse=True, method='ordinal'), rk.rank(r2, reverse=True, method='ordinal') # To ensure having ranks from 1 to n
+    n = len(r1)
+    # First convert to ranks to ensure having ranks from 1 to n
+    r1, r2 = rk.rank(r1, method='dense'), rk.rank(r2, method='dense')
     if len(r1) != len(r2):
         print("WARNING: r1 and r2 don't have the same length ({} != {})".format(len(r1), len(r2)))
-    pairs = it.combinations(range(1, len(r1)+1), 2)
+    pairs = it.combinations(range(0, n), 2)
+    coeff = kendall_ties_coefficient(r1, r2) if ties else 1
     distance = 0
-    for x, y in pairs:
-        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
-        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
-        if a * b < 0:
+    for i, j in pairs:
+        a = r1[i] - r1[j]
+        b = r2[i] - r2[j]
+        if a * b < 0: # discordant pair
             distance += 1
     if normalize:
         distance = distance / len(r1)
-    return distance
+    return distance * coeff
 
 def kendall_w(matrix, axis=0, ties=False):
     """ Kendall's W coefficient of concordance.
