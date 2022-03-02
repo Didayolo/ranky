@@ -10,7 +10,6 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
-from math import comb
 from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
@@ -348,26 +347,13 @@ def corr(r1, r2, method='swap', return_p_value=False):
         return c, p_value
     return c
 
-def kendall_ties_coefficient(r1, r2):
-    """ Compute ties correction coefficient for Kendall tau distance.
-
-    Ties management inspired by tau_b,
-    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient#Accounting_for_ties
-    """
-    n0 = comb(len(r1), 2)
-    a1 = np.array(list(Counter(r1).values())) # count tied values
-    n1 = a1[a1 != 1].sum() # sum of number of tied values in all tie groups of r1
-    a2 = np.array(list(Counter(r1).values())) # count tied values
-    n2 = a2[a2 != 1].sum() # sum of number of tied values in all tie groups of r2
-    denom = np.sqrt((n0 - n1) * (n0 - n2))
-    coeff = n0 / denom if denom != 0 else 1
-    return coeff
-
 def kendall_tau_distance(r1, r2, normalize=False):
     """ Compute the absolute Kendall distance between two ranks (array-like).
 
     This distance represents the minimal number of neighbors swaps needed to
     transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
+
+    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
 
     >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
