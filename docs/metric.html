@@ -38,6 +38,7 @@ from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
 import ranky.ranking as rk
 import itertools as it
+from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
 
 METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
@@ -313,7 +314,7 @@ def dist(r1, r2, method=&#39;hamming&#39;):
     Between 0 and 1+
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
+        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;kendall&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
     &#34;&#34;&#34;
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -330,6 +331,8 @@ def dist(r1, r2, method=&#39;hamming&#39;):
         d = hamming(r1, r2)
     elif method == &#39;levenshtein&#39;: # Levenshtein distance - deletion, insertion, substitution
         d = levenshtein(arr_to_str(r1), arr_to_str(r2))
+    elif method in [&#39;kendall&#39;, &#39;kendalltau&#39;]: # Absolute Kendall distance, defined below
+        d = kendall_tau_distance(r1, r2)
     elif method == &#39;winner&#39;: # How much the ranked first in r1 is far from the first place in r2
         i = np.argmin(r1)
         d = r2[i] - r1[i] # TODO: should be an absolute value?
@@ -376,9 +379,9 @@ def kendall_tau_distance(r1, r2, normalize=False):
     &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
 
     This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2.
+    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
 
-    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
 
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
@@ -386,21 +389,20 @@ def kendall_tau_distance(r1, r2, normalize=False):
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
     0
 
+    Ties management:
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
+    4
+
     Args:
         normalize: If True, divide the results by the length of the lists.
     &#34;&#34;&#34;
-    r1, r2 = rk.rank(r1, reverse=True, method=&#39;ordinal&#39;), rk.rank(r2, reverse=True, method=&#39;ordinal&#39;) # To ensure having ranks from 1 to n
+    n = len(r1)
     if len(r1) != len(r2):
         print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
-    pairs = it.combinations(range(1, len(r1)+1), 2)
-    distance = 0
-    for x, y in pairs:
-        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
-        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
-        if a * b &lt; 0:
-            distance += 1
+    distance = corr(r1, r2, method=&#39;kendalltau&#39;) # scipy&#39;s Kendall tau b
+    distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
     if normalize:
-        distance = distance / len(r1)
+        distance = distance / n
     return distance
 
 def kendall_w(matrix, axis=0, ties=False):
@@ -989,7 +991,7 @@ The computation is the mean of the correlation between all possible pairs of jud
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>method</code></strong></dt>
-<dd>'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.</dd>
+<dd>'hamming', 'levenshtein', 'kendall', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1001,7 +1003,7 @@ The computation is the mean of the correlation between all possible pairs of jud
     Between 0 and 1+
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
+        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;kendall&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
     &#34;&#34;&#34;
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -1018,6 +1020,8 @@ The computation is the mean of the correlation between all possible pairs of jud
         d = hamming(r1, r2)
     elif method == &#39;levenshtein&#39;: # Levenshtein distance - deletion, insertion, substitution
         d = levenshtein(arr_to_str(r1), arr_to_str(r2))
+    elif method in [&#39;kendall&#39;, &#39;kendalltau&#39;]: # Absolute Kendall distance, defined below
+        d = kendall_tau_distance(r1, r2)
     elif method == &#39;winner&#39;: # How much the ranked first in r1 is far from the first place in r2
         i = np.argmin(r1)
         d = r2[i] - r1[i] # TODO: should be an absolute value?
@@ -1145,13 +1149,17 @@ don't make sense (or you have to add an epsilon to remedy the situation).</p>
 <dd>
 <div class="desc"><p>Compute the absolute Kendall distance between two ranks (array-like).</p>
 <p>This distance represents the minimal number of neighbors swaps needed to
-transform r1 into r2.</p>
-<p>WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.</p>
+transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.</p>
+<p><a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient">https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient</a></p>
 <pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
 2
 </code></pre>
 <pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
 0
+</code></pre>
+<p>Ties management:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
+4
 </code></pre>
 <h2 id="args">Args</h2>
 <dl>
@@ -1166,9 +1174,9 @@ transform r1 into r2.</p>
     &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
 
     This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2.
+    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
 
-    WARNING: currently not taking ties into account. r1 and r2 are replaced by ordinal rankings.
+    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
 
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
@@ -1176,21 +1184,20 @@ transform r1 into r2.</p>
     &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
     0
 
+    Ties management:
+    &gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
+    4
+
     Args:
         normalize: If True, divide the results by the length of the lists.
     &#34;&#34;&#34;
-    r1, r2 = rk.rank(r1, reverse=True, method=&#39;ordinal&#39;), rk.rank(r2, reverse=True, method=&#39;ordinal&#39;) # To ensure having ranks from 1 to n
+    n = len(r1)
     if len(r1) != len(r2):
         print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
-    pairs = it.combinations(range(1, len(r1)+1), 2)
-    distance = 0
-    for x, y in pairs:
-        a = np.where(r1 == x)[0][0] - np.where(r1 == y)[0][0]
-        b = np.where(r2 == x)[0][0] - np.where(r2 == y)[0][0]
-        if a * b &lt; 0:
-            distance += 1
+    distance = corr(r1, r2, method=&#39;kendalltau&#39;) # scipy&#39;s Kendall tau b
+    distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
     if normalize:
-        distance = distance / len(r1)
+        distance = distance / n
     return distance</code></pre>
 </details>
 </dd>

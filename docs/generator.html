@@ -62,7 +62,7 @@ class Generator():
         if n == 1 and return_single:
             return np.array(self._sample(**kwargs)) # return one array
         return np.array([self._sample(**kwargs) for _ in range(n)]).T # return a matrix
-        
+
     def _sample(self):
         &#34;&#34;&#34; Sampling function to be re-written when inheriting this class.
         &#34;&#34;&#34;
@@ -320,7 +320,7 @@ def gaussian_noise(r, loc=0, scale=1):
         if n == 1 and return_single:
             return np.array(self._sample(**kwargs)) # return one array
         return np.array([self._sample(**kwargs) for _ in range(n)]).T # return a matrix
-        
+
     def _sample(self):
         &#34;&#34;&#34; Sampling function to be re-written when inheriting this class.
         &#34;&#34;&#34;
