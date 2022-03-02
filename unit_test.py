@@ -123,9 +123,9 @@ class Test(unittest.TestCase):
         d = rk.kendall_tau_distance([0, 1, 2], [0, 1, 2])
         self.assertEqual(d, 0)
         d = rk.kendall_tau_distance([0, 1, 2, 3], [0, 1, 3, 2], normalize=True)
-        self.assertEqual(d, 0.25)
+        self.assertAlmostEqual(d, 0.25)
         d = rk.kendall_tau_distance([0.2, 0.2, 0.2, 0.1], [0.1, 0.2, 0.2, 0.2])
-        self.assertEqual(d, 2)
+        self.assertEqual(d, 4)
 
 if __name__ == '__main__':
     print('Compute various measures...')

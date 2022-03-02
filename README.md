@@ -60,7 +60,7 @@ You can use `any_metric(a, b, method)` to call a metric from **any** of the thre
 
 * **Rank correlation coefficients**: `rk.corr(r1, r2, method='spearman')`. Methods include: `['kendalltau', 'spearman', 'pearson']`
 
-* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`. Methods include: `['hamming', 'levenshtein', 'winner', 'euclidean']`
+* **Rank distances**: `rk.dist(r1, r2, method='levenshtein')`. Methods include: `['hamming', 'levenshtein', 'kendall', 'winner', 'euclidean']`
 
 
 _To add: general edit distances, kemeny distance, regression metrics..._

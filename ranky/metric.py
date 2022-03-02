@@ -287,7 +287,7 @@ def dist(r1, r2, method='hamming'):
     Between 0 and 1+
 
     Args:
-        method: 'hamming', 'levenshtein', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.
+        method: 'hamming', 'levenshtein', 'kendall', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.
     """
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
@@ -304,6 +304,8 @@ def dist(r1, r2, method='hamming'):
         d = hamming(r1, r2)
     elif method == 'levenshtein': # Levenshtein distance - deletion, insertion, substitution
         d = levenshtein(arr_to_str(r1), arr_to_str(r2))
+    elif method in ['kendall', 'kendalltau']: # Absolute Kendall distance, defined below
+        d = kendall_tau_distance(r1, r2)
     elif method == 'winner': # How much the ranked first in r1 is far from the first place in r2
         i = np.argmin(r1)
         d = r2[i] - r1[i] # TODO: should be an absolute value?
@@ -361,11 +363,11 @@ def kendall_ties_coefficient(r1, r2):
     coeff = n0 / denom if denom != 0 else 1
     return coeff
 
-def kendall_tau_distance(r1, r2, normalize=False, ties=True):
+def kendall_tau_distance(r1, r2, normalize=False):
     """ Compute the absolute Kendall distance between two ranks (array-like).
 
     This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2. Basically Kendall tau without scaling between -1 and 1.
+    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
 
     >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
     2
@@ -375,28 +377,19 @@ def kendall_tau_distance(r1, r2, normalize=False, ties=True):
 
     Ties management:
     >>> kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
-    2
+    4
 
     Args:
         normalize: If True, divide the results by the length of the lists.
-        ties: If True, use the correction for ties.
     """
     n = len(r1)
-    # First convert to ranks to ensure having ranks from 1 to n
-    r1, r2 = rk.rank(r1, method='dense'), rk.rank(r2, method='dense')
     if len(r1) != len(r2):
         print("WARNING: r1 and r2 don't have the same length ({} != {})".format(len(r1), len(r2)))
-    pairs = it.combinations(range(0, n), 2)
-    coeff = kendall_ties_coefficient(r1, r2) if ties else 1
-    distance = 0
-    for i, j in pairs:
-        a = r1[i] - r1[j]
-        b = r2[i] - r2[j]
-        if a * b < 0: # discordant pair
-            distance += 1
+    distance = corr(r1, r2, method='kendalltau') # scipy's Kendall tau b
+    distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
     if normalize:
-        distance = distance / len(r1)
-    return distance * coeff
+        distance = distance / n
+    return distance
 
 def kendall_w(matrix, axis=0, ties=False):
     """ Kendall's W coefficient of concordance.
