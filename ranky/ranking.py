@@ -62,6 +62,22 @@ def tie(r, threshold=0.1):
     """
     return 0
 
+def contains_ties(r):
+    """ Return True if r contains tied values.
+
+    Args:
+        r: 1D array-like of scores or ranks.
+    """
+    n = len(r)
+    if n==0:
+        return False
+    for i in range(n):
+        for j in range(1, n):
+            if i != j:
+                if r[i] == r[j]:
+                    return True
+    return False
+
 # remove rows (candidates) or columns (voters)
 def bootstrap(m, axis=0, n=None, replace=True, return_holdout=False):
     """ Sample with replacement among an axis (and keep the same shape by default).
@@ -105,9 +121,9 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
 
 def top_k_method(D, F, k=1, reverse=False):
     """ Apply top-k method to select a winner from two rankings D and F (development and final).
-    
+
     Return the index of the winner. The winner is the top of F from the k best candidates of D.
-    
+
     Args:
         D: 1D array-like of scores, representing the development phase (or public leaderboard).
         F: 1D array-like of scores, representing the final phase (or private leaderboard).
@@ -148,7 +164,7 @@ def is_series(m):
 
 def is_dataframe(m):
     return isinstance(m, pd.DataFrame)
-    
+
 def to_series(m):
     if not isinstance(m, list):
         if len(m.shape) == 2 and m.shape[1] == 1: # "column array"

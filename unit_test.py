@@ -126,6 +126,12 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(d, 0.25)
         d = rk.kendall_tau_distance([0.2, 0.2, 0.2, 0.1], [0.1, 0.2, 0.2, 0.2])
         self.assertEqual(d, 4)
+    def test_contains_ties(self):
+        self.assertEqual(rk.contains_ties([0, 1, 2, 1, 2, 0]), True)
+        self.assertEqual(rk.contains_ties([0.4, 0.2, 0.2, 0.2]), True)
+        self.assertEqual(rk.contains_ties([0, 1, 2, 10, -2, 4]), False)
+        self.assertEqual(rk.contains_ties([0.4, 0.2, 0.1, 0.5]), False)
+        self.assertEqual(rk.contains_ties([]), False)
 
 if __name__ == '__main__':
     print('Compute various measures...')

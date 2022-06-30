@@ -40,6 +40,8 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalb
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
     """
+    if isinstance(m, list): # convert to np.ndarray if needed
+        m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))

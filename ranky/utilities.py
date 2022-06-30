@@ -22,7 +22,7 @@ def read_codalab_csv(csv_file):
     Args:
         csv_file: The leaderboard downloaded from Codalab.
     """
-    m = pd.read_csv('data/chems.csv', usecols=np.arange(0,5), index_col=1)
+    m = pd.read_csv(csv_file, usecols=np.arange(0,5), index_col=1)
     m = m.drop('submission_pk', axis=1)
     m = m.applymap(str_to_float)
     return m
