@@ -79,6 +79,8 @@ class Test(unittest.TestCase):
     def test_pairwise(self):
         np.testing.assert_array_equal(rk.pairwise(self.__class__.M), np.array([2., 4., 3., 1., 0.]))
     def test_pairwise2(self):
+        np.testing.assert_array_equal(rk.pairwise(self.__class__.M.T, axis=0), np.array([2., 4., 3., 1., 0.]))
+    def test_pairwise3(self):
         np.testing.assert_array_equal(rk.pairwise(self.__class__.M, wins=rk.p_wins, pval=0.2), np.array([0., 0., 0., 0., 0.]))
     def test_consensus(self):
         rank_M = np.array([[1., 2., 3.], [1., 3., 2.], [1., 2., 3.]])

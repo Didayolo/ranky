@@ -263,16 +263,19 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     """
     if wins is None:
         wins = rk.copeland_wins
-    n = len(m)
+    _m = m
+    m = np.array(m)
+    n = m.shape[1-axis]
     graph = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
             if i != j:
-                graph[i][j] = wins(m[i], m[j], **kwargs)
+                c1, c2 = np.take(m, i, 1-axis), np.take(m, j, 1-axis)
+                graph[i][j] = wins(c1, c2, **kwargs)
             else:
                 graph[i][j] = 0 # no comparison with itself
-    r = np.sum(graph, axis=axis) # collect candidates average score against all opponents
-    r = process_vote(m, r, axis=axis)
+    r = np.sum(graph, axis=1) # collect candidates average score against all opponents
+    r = process_vote(_m, r, axis=axis)
     if score:
         r = r / (n - 1)
     if return_graph:
