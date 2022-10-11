@@ -90,18 +90,23 @@ def bayes_score(a, b, **kwargs):
     """
     return bayes_wins(a, b, score=True, **kwargs)
 
-def success_rate(a, b, reverse=False):
+def success_rate(a, b, reverse=False, ties=False):
     """ Returns the frequency (rate) of a > b.
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
+        ties: If True, ties are taken into account (with value 0.5) instead of hard comparisons
     """
     a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a > b), np.sum(b > a)
-    if reverse:
-        Wa, Wb = np.sum(a < b), np.sum(b < a)
+    if not reverse: # normal behavior
+        Wa = np.sum(a > b)
+    else:
+        Wa = np.sum(a < b)
+    if ties:
+        Eq = np.sum(a == b)
+        Wa = Wa + Eq * 0.5
     return Wa / len(a) # hard comparisons
 
 def relative_difference(a, b, reverse=False):
