@@ -175,6 +175,10 @@ def to_series(m):
 
 def process_vote(m, r, axis=1):
     """ Keep names if using pd.DataFrame.
+
+        Args:
+            m: original matrix of scores (pd.DataFrame or pd.Series)
+            r: the ranking (array-like)
     """
     if is_dataframe(m):
         if len(r.shape) == 1: # Series
@@ -199,6 +203,10 @@ def process_vote(m, r, axis=1):
 def dictator(m, axis=1):
 #def random(m, axis=1): # renamed because of random module
     """ Random dictator.
+
+        Args:
+            m: 2D matrix of scores.
+            axis: axis of judges.
     """
     voter = np.random.randint(m.shape[axis]) # select a column number
     r = np.take(np.array(m), voter, axis=axis) #m[:, voter]
@@ -208,12 +216,14 @@ def borda(m, axis=1, method='mean', reverse=False):
     """ Borda count.
 
     Args:
+        m: 2D matrix of scores.
+        axis: axis of judges.
         method: 'mean' or 'median'.
         reverse: reverse the ranking.
     """
-    ranking = rank(m)
+    ranking = rank(m, axis=1-axis)
     if reverse:
-        ranking = rank(-m)
+        ranking = rank(-m, axis=1-axis)
     if method == 'mean':
         r = ranking.mean(axis=axis)
     elif method == 'median':
@@ -224,12 +234,20 @@ def borda(m, axis=1, method='mean', reverse=False):
 
 def majority(m, axis=1):
     """ Majority judgement.
+
+        Args:
+            m: 2D matrix of scores.
+            axis: axis of judges.
     """
     r = np.median(m, axis=axis)
     return process_vote(m, r, axis=axis)
 
 def score(m, axis=1):
     """ Score/range ranking.
+
+        Args:
+            m: 2D matrix of scores.
+            axis: axis of judges.
     """
     r = np.mean(m, axis=axis)
     return process_vote(m, r, axis=axis)
@@ -238,6 +256,8 @@ def uninominal(m, axis=1, turns=1):
     """ Uninominal.
 
     Args:
+        m: 2D matrix of scores.
+        axis: axis of judges.
         turns: number of turns.
     """
     if turns > 1:
@@ -254,7 +274,7 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     The score of one match is defined by the `wins` function.
 
     Args:
-        m: Preference matrix.
+        m: 2D matrix of scores (preference matrix).
         axis: Judge axis. /!\
         wins: Function returning True if a wins against b. `rk.copeland_wins` used by default.
         return_graph: If True, returns the 1-1 matches result matrix.
@@ -288,8 +308,8 @@ def copeland(m, axis=1, **kwargs):
     This function is an alias of calling `rk.pairwise` function with `rk.copeland_wins` as the wins function.
 
     Args:
-        m: Preference matrix.
-        axis: Judge axis.
+        m: 2D matrix of scores.
+        axis: axis of judges.
         **kwargs: Arguments to be passed to `rk.pairwise` function.
     """
     return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)
@@ -302,9 +322,9 @@ def kemeny_young(m, axis=1, **kwargs):
     according to Kendall's distance.
 
     Args:
-        m: Preference matrix.
-        axis: Judge axis.
-        **kwargs: Arguments to be passed to `rk.center` function.
+        m: 2D matrix of scores.
+        axis: axis of judges.
+        **kwargs: arguments to be passed to `rk.center` function.
     """
     return center(m, axis=axis, method='kendalltau', **kwargs)
 

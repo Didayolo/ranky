@@ -74,6 +74,9 @@ class Test(unittest.TestCase):
         np.testing.assert_array_equal(rk.rank(self.__class__.M), rank_M)
     def test_borda(self):
         np.testing.assert_array_almost_equal(rk.borda(self.__class__.M), np.array([2.66666667, 1., 2.66666667, 3.66666667, 5.]))
+        m = np.array([[0.1, 0.1, 0.1], [0.3, 0.3, 0.3], [0.5, 0.5, 0.5]])
+        np.testing.assert_array_equal(rk.borda(m, axis=0), np.array([2, 2, 2]))
+        np.testing.assert_array_equal(rk.borda(m, axis=1), np.array([3, 2, 1]))
     def test_majority(self):
         np.testing.assert_array_equal(rk.majority(self.__class__.M), np.array([0.4, 0.8, 0.5, 0.2, 0.]))
     def test_pairwise(self):
