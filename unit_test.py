@@ -141,7 +141,7 @@ class Test(unittest.TestCase):
 if __name__ == '__main__':
     print('Compute various measures...')
     m = np.array([[1, 2, 3, 4], [1, 2, 4, 3], [1, 2, 4, 3], [1, 3, 2, 4], [2, 1, 3, 4], [1, 4, 3, 2]])
-    #print(evolution_strategy(m, axis=1, l=5))
+    print('Evolution strategy: {}'.format(rk.evolution_strategy(m, axis=1, l=5)))
     print('Matrix:\n{}'.format(m))
     print('Concordance: {}'.format(rk.concordance(m, axis=0)))
     print('Kendall W: {}'.format(rk.kendall_w(m, axis=0)))

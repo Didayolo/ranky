@@ -10,8 +10,8 @@ from scipy.optimize import differential_evolution
 from random import random as _random
 from tqdm import tqdm
 import itertools as it
-#import ranky.metric as metric
 import ranky as rk
+from .metric import centrality
 
 #####################
 ##### Functions #####
