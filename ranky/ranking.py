@@ -25,7 +25,7 @@ def rank(m, axis=0, method='average', ascending=False, reverse=False):
     TODO: save parameters to add values to an already fitted ranking.
 
     Args:
-        m: Preference matrix.
+        m: Score matrix.
         axis: Candidates axis.
         method: 'average', 'min', 'max', 'dense', 'ordinal'
         ascending: Ascending or descending order.

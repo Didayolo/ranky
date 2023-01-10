@@ -11,6 +11,22 @@ import numpy as np
 from scipy.stats import binom_test
 from baycomp import two_on_single, two_on_multiple
 
+def declare_ties(a, b, comparison_func=None, **kwargs):
+    """ Declare ties between a and b using an assymetrical boolean comparison function in both directions.
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        comparison_func: Assymetrical function used to compare two candidates.
+        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
+        By default it's p_wins (defined in the same module), performing a binomial test.
+        reverse: If True, a and b are considered equivalent.
+        kwargs: Argument of the comparison function.
+    """
+    if comparison_func is None:
+        comparison_func = p_wins
+    return comparison_func(a, b, **kwargs) == comparison_func(b, a, **kwargs)
+
 def hard_wins(a, b, reverse=False):
     """ Function returning True if a wins against b in a majority vote.
 
@@ -47,7 +63,7 @@ def copeland_wins(a, b, reverse=False):
         return 0.5
 
 def p_wins(a, b, pval=0.05, reverse=False):
-    """ Function returning True if a significantly wins against b.
+    """ Function returning True if a significantly wins against b (binomial test).
 
     Args:
         a: Ballot representing one candidate (array-like).

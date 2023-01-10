@@ -50,7 +50,7 @@ def read_codalab_csv(csv_file):
     Args:
         csv_file: The leaderboard downloaded from Codalab.
     &#34;&#34;&#34;
-    m = pd.read_csv(&#39;data/chems.csv&#39;, usecols=np.arange(0,5), index_col=1)
+    m = pd.read_csv(csv_file, usecols=np.arange(0,5), index_col=1)
     m = m.drop(&#39;submission_pk&#39;, axis=1)
     m = m.applymap(str_to_float)
     return m</code></pre>
@@ -83,7 +83,7 @@ def read_codalab_csv(csv_file):
     Args:
         csv_file: The leaderboard downloaded from Codalab.
     &#34;&#34;&#34;
-    m = pd.read_csv(&#39;data/chems.csv&#39;, usecols=np.arange(0,5), index_col=1)
+    m = pd.read_csv(csv_file, usecols=np.arange(0,5), index_col=1)
     m = m.drop(&#39;submission_pk&#39;, axis=1)
     m = m.applymap(str_to_float)
     return m</code></pre>

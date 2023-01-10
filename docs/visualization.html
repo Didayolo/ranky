@@ -32,14 +32,17 @@
 
 import numpy as np
 import pandas as pd
+from math import ceil
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import seaborn as sns
 import networkx as nx
 import ranky as rk
 from sklearn.manifold import TSNE, MDS
 from mpl_toolkits.mplot3d import Axes3D
 
-sns.set(style = &#34;darkgrid&#34;)
+# critical difference does not work when this is enabled
+#sns.set_theme(style = &#34;darkgrid&#34;)
 
 def autolabel(rects, values, round=2):
     &#34;&#34;&#34; Function used by `rk.show` to annotate bar plots.
@@ -68,6 +71,8 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;ro
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
     &#34;&#34;&#34;
+    if isinstance(m, list): # convert to np.ndarray if needed
+        m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
@@ -223,9 +228,119 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
     # Call the plot functions
     mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
+def overlaps(pos, not_sig):
+    #Used by critical difference.
+    #Checks if the horizontal line overlaps any existing horizontal line.
+    i, j = pos
+    for i1, j1 in not_sig:
+        if (i1 &lt;= i and j1 &gt; j) or (i1 &lt; i and j1 &gt;= j):
+            return True
+    return False
 
-# Critical difference diagrams
-# https://github.com/hfawaz/cd-diagram/blob/master/main.py</code></pre>
+def merge_couples(couples):
+    # Used by critical difference
+    longest = [(i, j) for i, j in not_sig if not overlaps((i, j), couples)]
+    return longest
+
+def critical_difference(m, comparison_func=None, axis=1, **kwargs):
+    &#34;&#34;&#34; Computes and draws a critical difference diagram.
+
+    The goal of critical difference diagrams is to show the average scores of
+    different candidates, and to group if their performance are not significantly
+    different (using pairwise statistical tests).
+    This function uses a comparison function (rk.p_wins by default).
+    A comparison function f(a, b) should return True if a is significantly better than b.
+
+    Args:
+        m: Score matrix, array-like (use pd.DataFrame to name the candidates).
+        comparison_func: Assymetrical function used to compare two candidates.
+        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
+        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
+        axis: Axis of judges.
+        kwargs: Arguments for the comparison_func function.
+    &#34;&#34;&#34;
+    m = pd.DataFrame(m) # casting if necessary
+    scores = rk.score(m, axis=axis).sort_values()
+    if axis == 0:
+        m = m.T # if the candidates are in column, transpose the matrix
+    couples = []
+    for i in range(len(scores) - 1):
+        for j in range(1, len(scores)):
+            if i &lt; j:
+                _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
+                a, b = m.iloc[_i], m.iloc[_j]
+                if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
+                    couples.append((i, j))
+    show_critical_difference(scores, couples)
+
+def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, link_vgap=.1, xlabel=None):
+    &#34;&#34;&#34; Draws a critical difference diagram.
+
+    The goal of critical difference diagrams is to show the average scores of
+    different candidates, and to group if their performance are not significantly
+    different (using pairwise statistical tests).
+
+    Forked from https://github.com/mbatchkarov/critical_difference
+
+    Critical difference diagrams can be seen in the following publications:
+    - Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1--30, 2006.
+    - H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
+
+    Args:
+        scores: List of average methods&#39; scores, array-like. If scores is a pd.Series, the index will be used as names.
+        couples: list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.
+        arrow_vgap: vertical space between the arrows that point to method names, between 0 and 1.
+        link_vgap: vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size
+        link_voffset: offset from the axis of the links that connect non-significant methods
+    &#34;&#34;&#34;
+    size = len(scores)
+    names = list(range(size)) # default names: [0, 1, ...]
+    if isinstance(scores, pd.Series):
+        names = scores.index
+    scores, names = (list(t) for t in zip(*sorted(zip(scores, names))))
+    for pair in couples:
+        assert all(0 &lt;= idx &lt; size for idx in pair), &#39;Check indices&#39;
+    # remove axes
+    fig, ax = plt.subplots(1, 1, figsize=(6, 2), subplot_kw=dict(frameon=False))
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().set_visible(False)
+    y = [0] * size
+    ax.plot(scores, y, &#39;ko&#39;)
+    plt.xlim(0.9 * scores[0], 1.1 * scores[-1])
+    plt.ylim(0, 1)
+    # draw the x axis again
+    xmin, xmax = ax.get_xaxis().get_view_interval()
+    ymin, ymax = ax.get_yaxis().get_view_interval()
+    ax.add_artist(Line2D((xmin, xmax), (ymin, ymin), color=&#39;black&#39;, linewidth=2))
+    if xlabel: # add an optional label to the x axis
+        ax.annotate(xlabel, xy=(xmax, 0), xytext=(0.95, 0.1), textcoords=&#39;axes fraction&#39;,
+                                ha=&#39;center&#39;, va=&#39;center&#39;, fontsize=9)  # text slightly smaller
+    half = int(ceil(size / 2.))
+    # make sure the topmost annotation in at 90% of figure height
+    ycoords = list(reversed([0.9 - arrow_vgap * i for i in range(half)]))
+    ycoords.extend(reversed(ycoords))
+    for i in range(size):
+        ax.annotate(str(names[i]),
+                    xy=(scores[i], y[i]),
+                    xytext=(-.05 if i &lt; half else .95, ycoords[i]),
+                    textcoords=&#39;axes fraction&#39;, ha=&#39;center&#39;, va=&#39;center&#39;,
+                    arrowprops={&#39;arrowstyle&#39;: &#39;-&#39;, &#39;connectionstyle&#39;: &#39;angle,angleA=0,angleB=90&#39;})
+    # draw horizontal lines linking non-significant methods
+    linked_methods = merge_couples(couples)
+    # where do the existing lines begin and end, (X, Y) coords
+    used_endpoints = set()
+    y = link_voffset
+    dy = link_vgap
+    # draw lines
+    for i, (x1, x2) in enumerate(sorted(linked_methods)):
+        if y &gt; link_voffset and overlaps((x1, y - dy), used_endpoints):
+            y -= dy
+        elif overlaps((x1, y), used_endpoints):
+            y += dy
+        plt.hlines(y, scores[x1], scores[x2], linewidth=3)  # y, x0, x1
+        used_endpoints.add((x1, y))
+        used_endpoints.add((x2, y))
+    plt.show()</code></pre>
 </details>
 </section>
 <section>
@@ -253,6 +368,65 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
         plt.text(rect.get_x() + rect.get_width()/2., 1.05*height,
                 values[idx],
                 ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.critical_difference"><code class="name flex">
+<span>def <span class="ident">critical_difference</span></span>(<span>m, comparison_func=None, axis=1, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Computes and draws a critical difference diagram.</p>
+<p>The goal of critical difference diagrams is to show the average scores of
+different candidates, and to group if their performance are not significantly
+different (using pairwise statistical tests).
+This function uses a comparison function (rk.p_wins by default).
+A comparison function f(a, b) should return True if a is significantly better than b.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Score matrix, array-like (use pd.DataFrame to name the candidates).</dd>
+<dt><strong><code>comparison_func</code></strong></dt>
+<dd>Assymetrical function used to compare two candidates.</dd>
+<dt>The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.</dt>
+<dt>By default it's p_wins (defined in the same module), performing a binomial test.</dt>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of judges.</dd>
+<dt><strong><code>kwargs</code></strong></dt>
+<dd>Arguments for the comparison_func function.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def critical_difference(m, comparison_func=None, axis=1, **kwargs):
+    &#34;&#34;&#34; Computes and draws a critical difference diagram.
+
+    The goal of critical difference diagrams is to show the average scores of
+    different candidates, and to group if their performance are not significantly
+    different (using pairwise statistical tests).
+    This function uses a comparison function (rk.p_wins by default).
+    A comparison function f(a, b) should return True if a is significantly better than b.
+
+    Args:
+        m: Score matrix, array-like (use pd.DataFrame to name the candidates).
+        comparison_func: Assymetrical function used to compare two candidates.
+        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
+        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
+        axis: Axis of judges.
+        kwargs: Arguments for the comparison_func function.
+    &#34;&#34;&#34;
+    m = pd.DataFrame(m) # casting if necessary
+    scores = rk.score(m, axis=axis).sort_values()
+    if axis == 0:
+        m = m.T # if the candidates are in column, transpose the matrix
+    couples = []
+    for i in range(len(scores) - 1):
+        for j in range(1, len(scores)):
+            if i &lt; j:
+                _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
+                a, b = m.iloc[_i], m.iloc[_j]
+                if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
+                    couples.append((i, j))
+    show_critical_difference(scores, couples)</code></pre>
 </details>
 </dd>
 <dt id="ranky.visualization.mds"><code class="name flex">
@@ -341,6 +515,40 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
     m_transformed = transformer.fit_transform(distance_matrix)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.merge_couples"><code class="name flex">
+<span>def <span class="ident">merge_couples</span></span>(<span>couples)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_couples(couples):
+    # Used by critical difference
+    longest = [(i, j) for i, j in not_sig if not overlaps((i, j), couples)]
+    return longest</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.overlaps"><code class="name flex">
+<span>def <span class="ident">overlaps</span></span>(<span>pos, not_sig)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def overlaps(pos, not_sig):
+    #Used by critical difference.
+    #Checks if the horizontal line overlaps any existing horizontal line.
+    i, j = pos
+    for i1, j1 in not_sig:
+        if (i1 &lt;= i and j1 &gt; j) or (i1 &lt; i and j1 &gt;= j):
+            return True
+    return False</code></pre>
 </details>
 </dd>
 <dt id="ranky.visualization.scatterplot"><code class="name flex">
@@ -459,6 +667,8 @@ If m is 2D: show preferences (heatmap).</p>
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
     &#34;&#34;&#34;
+    if isinstance(m, list): # convert to np.ndarray if needed
+        m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
         x = np.arange(len(m))
@@ -477,6 +687,105 @@ If m is 2D: show preferences (heatmap).</p>
         raise(Exception(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim)))
     if title is not None:
         plt.title(title)
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ranky.visualization.show_critical_difference"><code class="name flex">
+<span>def <span class="ident">show_critical_difference</span></span>(<span>scores, couples, arrow_vgap=0.2, link_voffset=0.15, link_vgap=0.1, xlabel=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Draws a critical difference diagram.</p>
+<p>The goal of critical difference diagrams is to show the average scores of
+different candidates, and to group if their performance are not significantly
+different (using pairwise statistical tests).</p>
+<p>Forked from <a href="https://github.com/mbatchkarov/critical_difference">https://github.com/mbatchkarov/critical_difference</a></p>
+<p>Critical difference diagrams can be seen in the following publications:
+- Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1&ndash;30, 2006.
+- H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>scores</code></strong></dt>
+<dd>List of average methods' scores, array-like. If scores is a pd.Series, the index will be used as names.</dd>
+<dt><strong><code>couples</code></strong></dt>
+<dd>list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.</dd>
+<dt><strong><code>arrow_vgap</code></strong></dt>
+<dd>vertical space between the arrows that point to method names, between 0 and 1.</dd>
+<dt><strong><code>link_vgap</code></strong></dt>
+<dd>vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size</dd>
+<dt><strong><code>link_voffset</code></strong></dt>
+<dd>offset from the axis of the links that connect non-significant methods</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, link_vgap=.1, xlabel=None):
+    &#34;&#34;&#34; Draws a critical difference diagram.
+
+    The goal of critical difference diagrams is to show the average scores of
+    different candidates, and to group if their performance are not significantly
+    different (using pairwise statistical tests).
+
+    Forked from https://github.com/mbatchkarov/critical_difference
+
+    Critical difference diagrams can be seen in the following publications:
+    - Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1--30, 2006.
+    - H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
+
+    Args:
+        scores: List of average methods&#39; scores, array-like. If scores is a pd.Series, the index will be used as names.
+        couples: list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.
+        arrow_vgap: vertical space between the arrows that point to method names, between 0 and 1.
+        link_vgap: vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size
+        link_voffset: offset from the axis of the links that connect non-significant methods
+    &#34;&#34;&#34;
+    size = len(scores)
+    names = list(range(size)) # default names: [0, 1, ...]
+    if isinstance(scores, pd.Series):
+        names = scores.index
+    scores, names = (list(t) for t in zip(*sorted(zip(scores, names))))
+    for pair in couples:
+        assert all(0 &lt;= idx &lt; size for idx in pair), &#39;Check indices&#39;
+    # remove axes
+    fig, ax = plt.subplots(1, 1, figsize=(6, 2), subplot_kw=dict(frameon=False))
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().set_visible(False)
+    y = [0] * size
+    ax.plot(scores, y, &#39;ko&#39;)
+    plt.xlim(0.9 * scores[0], 1.1 * scores[-1])
+    plt.ylim(0, 1)
+    # draw the x axis again
+    xmin, xmax = ax.get_xaxis().get_view_interval()
+    ymin, ymax = ax.get_yaxis().get_view_interval()
+    ax.add_artist(Line2D((xmin, xmax), (ymin, ymin), color=&#39;black&#39;, linewidth=2))
+    if xlabel: # add an optional label to the x axis
+        ax.annotate(xlabel, xy=(xmax, 0), xytext=(0.95, 0.1), textcoords=&#39;axes fraction&#39;,
+                                ha=&#39;center&#39;, va=&#39;center&#39;, fontsize=9)  # text slightly smaller
+    half = int(ceil(size / 2.))
+    # make sure the topmost annotation in at 90% of figure height
+    ycoords = list(reversed([0.9 - arrow_vgap * i for i in range(half)]))
+    ycoords.extend(reversed(ycoords))
+    for i in range(size):
+        ax.annotate(str(names[i]),
+                    xy=(scores[i], y[i]),
+                    xytext=(-.05 if i &lt; half else .95, ycoords[i]),
+                    textcoords=&#39;axes fraction&#39;, ha=&#39;center&#39;, va=&#39;center&#39;,
+                    arrowprops={&#39;arrowstyle&#39;: &#39;-&#39;, &#39;connectionstyle&#39;: &#39;angle,angleA=0,angleB=90&#39;})
+    # draw horizontal lines linking non-significant methods
+    linked_methods = merge_couples(couples)
+    # where do the existing lines begin and end, (X, Y) coords
+    used_endpoints = set()
+    y = link_voffset
+    dy = link_vgap
+    # draw lines
+    for i, (x1, x2) in enumerate(sorted(linked_methods)):
+        if y &gt; link_voffset and overlaps((x1, y - dy), used_endpoints):
+            y -= dy
+        elif overlaps((x1, y), used_endpoints):
+            y += dy
+        plt.hlines(y, scores[x1], scores[x2], linewidth=3)  # y, x0, x1
+        used_endpoints.add((x1, y))
+        used_endpoints.add((x2, y))
     plt.show()</code></pre>
 </details>
 </dd>
@@ -603,10 +912,14 @@ If m is 2D: show preferences (heatmap).</p>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="ranky.visualization.autolabel" href="#ranky.visualization.autolabel">autolabel</a></code></li>
+<li><code><a title="ranky.visualization.critical_difference" href="#ranky.visualization.critical_difference">critical_difference</a></code></li>
 <li><code><a title="ranky.visualization.mds" href="#ranky.visualization.mds">mds</a></code></li>
 <li><code><a title="ranky.visualization.mds_from_dist_matrix" href="#ranky.visualization.mds_from_dist_matrix">mds_from_dist_matrix</a></code></li>
+<li><code><a title="ranky.visualization.merge_couples" href="#ranky.visualization.merge_couples">merge_couples</a></code></li>
+<li><code><a title="ranky.visualization.overlaps" href="#ranky.visualization.overlaps">overlaps</a></code></li>
 <li><code><a title="ranky.visualization.scatterplot" href="#ranky.visualization.scatterplot">scatterplot</a></code></li>
 <li><code><a title="ranky.visualization.show" href="#ranky.visualization.show">show</a></code></li>
+<li><code><a title="ranky.visualization.show_critical_difference" href="#ranky.visualization.show_critical_difference">show_critical_difference</a></code></li>
 <li><code><a title="ranky.visualization.show_graph" href="#ranky.visualization.show_graph">show_graph</a></code></li>
 <li><code><a title="ranky.visualization.show_learning_curve" href="#ranky.visualization.show_learning_curve">show_learning_curve</a></code></li>
 <li><code><a title="ranky.visualization.tsne" href="#ranky.visualization.tsne">tsne</a></code></li>

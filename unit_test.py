@@ -5,7 +5,6 @@
 import unittest
 import numpy as np
 import pandas as pd
-#from ranky import *
 import ranky as rk
 
 def test_distance_matrix():

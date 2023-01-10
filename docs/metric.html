@@ -589,8 +589,6 @@ def symmetrical_winner_distance(r1, r2, reverse=False):
 def centrality(m, r, axis=0, method=&#39;swap&#39;):
     &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
 
-    Also called centrality.
-
     Args:
         method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
     &#34;&#34;&#34;
@@ -797,7 +795,6 @@ Y: List of scores of size n</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.</p>
-<p>Also called centrality.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>method</code></strong></dt>
@@ -809,8 +806,6 @@ Y: List of scores of size n</p></div>
 </summary>
 <pre><code class="python">def centrality(m, r, axis=0, method=&#39;swap&#39;):
     &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
-
-    Also called centrality.
 
     Args:
         method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
