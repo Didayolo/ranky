@@ -90,6 +90,8 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 * You can use `rk.tsne` similarly to `rk.mds`.
 
+* Use `rk.critical_difference` to plot a [critical difference diagram](https://github.com/mbatchkarov/critical_difference), comparing candidates' performance and grouping them by statistical equivalence. Such diagrams can be seen in \[2, 3\].
+
 `>>> rk.critical_difference(m, comparison_func=rk.bayes_wins)`
 
 ![Critical difference example](img/critical_difference_example.png)
@@ -120,6 +122,10 @@ Please cite ranky in your publications if this is useful for your research. Here
 ```
 
 \[1\] Storn R. and Price K., Differential Evolution - a Simple and Efficient Heuristic for Global Optimization over Continuous Spaces, Journal of Global Optimization, 1997, 11, 341 - 359.
+
+\[2\] Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1--30, 2006.
+
+\[3\] H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
 
 
 # License
