@@ -90,9 +90,9 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 * You can use `rk.tsne` similarly to `rk.mds`.
 
-![Critical difference example](img/critical_difference_example.png)
+`>>> rk.critical_difference(m, comparison_func=rk.bayes_wins)`
 
-`rk.critical_difference(m, comparison_func=rk.bayes_wins)``
+![Critical difference example](img/critical_difference_example.png)
 
 
 ## Other
