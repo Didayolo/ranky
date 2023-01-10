@@ -200,18 +200,20 @@ def mds(m, axis=0, dim=2, method='spearman', **kwargs):
     # Call the plot functions
     mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
-def overlaps(pos, not_sig):
-    #Used by critical difference.
-    #Checks if the horizontal line overlaps any existing horizontal line.
+def overlaps(pos, couples):
+    """ Used by critical difference.
+
+    Checks if the horizontal line overlaps any existing horizontal line.
+    """
     i, j = pos
-    for i1, j1 in not_sig:
+    for i1, j1 in couples:
         if (i1 <= i and j1 > j) or (i1 < i and j1 >= j):
             return True
     return False
 
 def merge_couples(couples):
     # Used by critical difference
-    longest = [(i, j) for i, j in not_sig if not overlaps((i, j), couples)]
+    longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
     return longest
 
 def critical_difference(m, comparison_func=None, axis=1, **kwargs):
@@ -240,7 +242,7 @@ def critical_difference(m, comparison_func=None, axis=1, **kwargs):
         for j in range(1, len(scores)):
             if i < j:
                 _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.iloc[_i], m.iloc[_j]
+                a, b = m.loc[_i], m.loc[_j]
                 if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
                     couples.append((i, j))
     show_critical_difference(scores, couples)
