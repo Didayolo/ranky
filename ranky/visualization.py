@@ -26,7 +26,8 @@ def autolabel(rects, values, round=2):
                 values[idx],
                 ha='center', va='bottom', rotation=0)
 
-def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue', cmap=None):
+def show(m, rotation=90, title=None, size=2, annot=False,
+         ylabel=None, xlabel=None, round=2, color='royalblue', cmap=None):
     """ Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
@@ -39,6 +40,8 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalb
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
+        ylabel: string - y axis label.
+        xlabel: string - x axis label.
         round: Number of decimals to display if annot is True.
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
@@ -63,6 +66,10 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color='royalb
         raise(Exception('Passed array must have only 1 or 2 dimension, not {}.'.format(dim)))
     if title is not None:
         plt.title(title)
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+    if ylabel is not None:
+        plt.ylabel(ylabel)
     plt.show()
 
 def show_learning_curve(h):
