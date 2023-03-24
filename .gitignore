@@ -6,3 +6,4 @@ update.sh
 dist/
 build/
 ranky.egg-info/
+.DS_Store

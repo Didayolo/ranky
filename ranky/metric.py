@@ -8,7 +8,8 @@ import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
-import ranky.ranking as rk
+import importlib
+rk = importlib.import_module('ranky.ranking') # circular import
 import itertools as it
 from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
