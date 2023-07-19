@@ -22,7 +22,17 @@ def read_codalab_csv(csv_file):
     Args:
         csv_file: The leaderboard downloaded from Codalab.
     """
-    m = pd.read_csv(csv_file, usecols=np.arange(0,5), index_col=1)
+    # Read the CSV file just to get the column names
+    df_temp = pd.read_csv(csv_file, nrows=0)  # Read no rows, but it does read the header row
+    col_names = df_temp.columns.tolist()
+    # Add a name for the extra column
+    col_names.append('extra')
+    # Read the CSV file again with the updated column names
+    m = pd.read_csv(csv_file, names=col_names, skiprows=1)
+    # Now you can drop the extra column
+    m = m.drop(columns=['extra'])
     m = m.drop('submission_pk', axis=1)
+    m.index = m['User']
+    m = m.drop('User', axis=1)
     m = m.applymap(str_to_float)
     return m
