@@ -83,12 +83,16 @@ def show_learning_curve(h):
     plt.ylabel('score')
     plt.show()
 
-def show_graph(matrix, names=None):
+def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight='bold', arrowsize=10):
     """ Show a directed graph represented by a binary matrix.
 
     Args:
         matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
         names: list representing the names of the vertices.
+        with_labels: Display names if True.
+        node_size: Size of the nodes.
+        font_size: Size of the font to display names.
+        font_weight: 'bold' for bold, else refer to networkx documentation.
     """
     G = nx.DiGraph()
     n = len(matrix)
@@ -100,7 +104,7 @@ def show_graph(matrix, names=None):
         for j in range(n):
             if matrix[i][j] == 1:
                 G.add_edge(nodes[i], nodes[j])
-    nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight='bold')
+    nx.draw_circular(G, with_labels=with_labels, node_size=node_size, font_size=font_size, font_weight=font_weight, arrowsize=arrowsize)
     plt.show()
 
 def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc='best'):

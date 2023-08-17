@@ -96,6 +96,8 @@ _To add: general edit distances, kemeny distance, regression metrics..._
 
 ![Critical difference example](img/critical_difference_example.png)
 
+* Show Condorcet graphs using `rk.show_graph(graph)`, based on \[4\].
+
 
 ## Other
 
@@ -126,6 +128,8 @@ Please cite ranky in your publications if this is useful for your research. Here
 \[2\] Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1--30, 2006.
 
 \[3\] H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
+
+\[4\] Aric A. Hagberg, Daniel A. Schult and Pieter J. Swart, “Exploring network structure, dynamics, and function using NetworkX”, in Proceedings of the 7th Python in Science Conference (SciPy2008), Gäel Varoquaux, Travis Vaught, and Jarrod Millman (Eds), (Pasadena, CA USA), pp. 11–15, Aug 2008.
 
 
 # License
