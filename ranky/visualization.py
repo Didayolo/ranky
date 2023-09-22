@@ -126,7 +126,7 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
         colors = names
     if dim == 2: # 2 dimensions
         x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x, y, hue=colors, s=pointsize, legend=(legend and 'brief'))
+        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and 'brief'))
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
@@ -143,6 +143,9 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
     if big_display:
         fi = plt.gcf()
         fi.set_size_inches(12, 8) # change plot size
+    # Put back old matplotlib grid
+    scat.set_facecolor('#EAEAF2') 
+    scat.grid(True, color='white')
     plt.show()
 
 def tsne(m, axis=0, dim=2, **kwargs):
