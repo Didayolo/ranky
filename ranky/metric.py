@@ -256,7 +256,7 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     #    print('Could not compute {}. Retuning missing_score. Error: {}'.format(method, e))
     #    return missing_score # MISSING SCORE
     # REVERSE LOSS
-    is_loss = method in ['mxe', 'mse', 'rmse']
+    is_loss = method in ['mxe', 'mse', 'rmse', 'mae']
     if reverse_loss and is_loss:
         score = 1 - score
     return score
