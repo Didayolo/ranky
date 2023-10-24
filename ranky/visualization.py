@@ -33,8 +33,6 @@ def show(m, rotation=90, title=None, size=2, annot=False,
     If m is 1D: show ballot (bar plot).
     If m is 2D: show preferences (heatmap).
 
-    TODO: annot argument adding the values in the plot.
-
     Args:
         rotation: x labels rotation.
         title: string - title of the figure.
@@ -50,8 +48,11 @@ def show(m, rotation=90, title=None, size=2, annot=False,
         m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
+        fig, ax = plt.subplots()
         x = np.arange(len(m))
         bar_plot = plt.bar(x, m, align='center', color=color)
+        ax.yaxis.grid(True)
+        ax.set_axisbelow(True) # set the lines below the bars
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
