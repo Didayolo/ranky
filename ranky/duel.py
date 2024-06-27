@@ -8,7 +8,7 @@
 # TODO: clarify names, add scored version of NHST and more.
 
 import numpy as np
-from scipy.stats import binom_test
+from scipy.stats import binomtest
 from baycomp import two_on_single, two_on_multiple
 
 def declare_ties(a, b, comparison_func=None, **kwargs):
@@ -76,7 +76,7 @@ def p_wins(a, b, pval=0.05, reverse=False):
     Wa, Wb = np.sum(a > b), np.sum(b > a)
     if reverse:
         Wa, Wb = np.sum(a < b), np.sum(b < a)
-    significant = binom_test(Wa, n=len(a), p=0.5) <= pval
+    significant = binomtest(Wa, n=len(a), p=0.5).pvalue <= pval
     wins = Wa > Wb
     return significant and wins # count only significant wins
 

@@ -2,8 +2,8 @@
 pandas
 numpy
 matplotlib
-scikit-learn==0.23.2
-scipy
+scikit-learn>=1.0
+scipy>=1.7.0
 seaborn
 networkx
 python-Levenshtein
