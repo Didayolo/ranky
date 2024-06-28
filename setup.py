@@ -25,7 +25,7 @@ setup(
          "Operating System :: Unix",
      ],
      install_requires=[
-        'pandas', 'numpy', 'matplotlib', 'scikit-learn>=0.23.2', 
-        'scipy', 'seaborn', 'networkx', 'python-Levenshtein', 'tqdm', 'baycomp',
+        'pandas', 'numpy', 'matplotlib', 'scikit-learn>=1.0', 
+        'scipy>=1.7.0', 'seaborn', 'networkx', 'python-Levenshtein', 'tqdm', 'baycomp',
      ],
  )
