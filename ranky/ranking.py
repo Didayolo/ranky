@@ -156,6 +156,21 @@ def select_best(m, reverse=False):
     """
     return select_k_best(m, k=1, reverse=reverse)[0]
 
+def take_by_axis(m, indices, axis=0):
+    """ Returns a new array with only the rows or columns corresponding to `indices`.
+    
+    If axis=0, we select rows. If axis=1, we select columns.
+    """
+    m = np.array(m)
+    if axis == 0:
+        # Select given indices from rows, keep all columns
+        return m[indices, :]
+    elif axis == 1:
+        # Select given indices from columns, keep all rows
+        return m[:, indices]
+    else:
+        raise ValueError("axis must be 0 or 1 for a 2D array")
+
 # upsampling
 # downsampling
 
@@ -252,20 +267,30 @@ def score(m, axis=1):
     r = np.mean(m, axis=axis)
     return process_vote(m, r, axis=axis)
 
-def uninominal(m, axis=1, turns=1):
-    """ Uninominal.
+def uninominal(m, axis=1, turns=1, keep_ranking=True):
+    """ Uninominal voting (multi-turn instant-runoff).
 
     Args:
         m: 2D matrix of scores.
         axis: axis of judges.
         turns: number of turns.
+        keep_ranking: if False, return the results with a score of 0 for all candidates that did not pass the first turn.
     """
-    if turns > 1:
-        raise(Exception('Uninominal system is currently implemented only in one turn setting.'))
+    _m = m
+    m = np.array(m)
+    if turns >= m.shape[1-axis]: # if more turns than candidates
+        raise(Exception('The number of turns must be lower than the number of candidates.')) 
     ranking = rank(m, axis=1-axis) # convert to rank
-    #for turn in range(turns): # TODO replace 1 by turn in next line
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
-    return process_vote(m, r, axis=axis)
+    if turns >= 2:
+        bests = np.argsort(r)[-turns:] # take the two (or more) highest scores
+        m2 = take_by_axis(m, bests, axis=1-axis) # take the best candidates
+        r2 = uninominal(m2, axis=axis, turns=turns-1) # recursive call
+        # re-create a general ranking with the results of the last turn
+        if not keep_ranking:
+            r = np.zeros_like(r)
+        r[bests] = r2
+    return process_vote(_m, r, axis=axis)
 
 def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     """ Pairwise method.

@@ -78,6 +78,8 @@ class Test(unittest.TestCase):
         np.testing.assert_array_equal(rk.borda(m, axis=1), np.array([3, 2, 1]))
     def test_majority(self):
         np.testing.assert_array_equal(rk.majority(self.__class__.M), np.array([0.4, 0.8, 0.5, 0.2, 0.]))
+    def test_uninominal(self)
+        np.testing.assert_array_equal(rk.uninominal(self.__class__.M), np.array([0, 3, 0, 0, 0]))
     def test_pairwise(self):
         np.testing.assert_array_equal(rk.pairwise(self.__class__.M), np.array([2., 4., 3., 1., 0.]))
     def test_pairwise2(self):
