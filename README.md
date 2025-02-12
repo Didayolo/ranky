@@ -46,6 +46,7 @@ The rank aggregation methods available include:
 * Score Voting (mean): `rk.score(m)`
 * Borda Count (average rank): `rk.borda(m)`
 * Majority Judgement (median): `rk.majority(m)`
+* Uninominal Voting (multi-turn instant-runoff): `rk.uninominal(m, turns=2)`
 * Pairwise methods. Copeland's method: `rk.pairwise(m)`, Success rate: `rk.pairwise(m, wins=rk.success_rate)` and more. You can specify your own "wins" function or select one from the `rk.duel` module.
 * **Optimal rank aggregation** using any rank metric: `rk.center(m)`, `rk.center(m, method='kendalltau')`. Solver used \[1\].
 * _(Kemeny-Young method is optimal rank aggregation using Kendall's tau as metric.)_
