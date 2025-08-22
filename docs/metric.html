@@ -36,7 +36,8 @@ import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
-import ranky.ranking as rk
+import importlib
+rk = importlib.import_module(&#39;ranky.ranking&#39;) # circular import
 import itertools as it
 from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
@@ -283,7 +284,7 @@ def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missin
     #    print(&#39;Could not compute {}. Retuning missing_score. Error: {}&#39;.format(method, e))
     #    return missing_score # MISSING SCORE
     # REVERSE LOSS
-    is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;]
+    is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;]
     if reverse_loss and is_loss:
         score = 1 - score
     return score
@@ -1456,7 +1457,7 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
     #    print(&#39;Could not compute {}. Retuning missing_score. Error: {}&#39;.format(method, e))
     #    return missing_score # MISSING SCORE
     # REVERSE LOSS
-    is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;]
+    is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;]
     if reverse_loss and is_loss:
         score = 1 - score
     return score</code></pre>

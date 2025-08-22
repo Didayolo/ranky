@@ -184,6 +184,21 @@ def select_best(m, reverse=False):
     &#34;&#34;&#34;
     return select_k_best(m, k=1, reverse=reverse)[0]
 
+def take_by_axis(m, indices, axis=0):
+    &#34;&#34;&#34; Returns a new array with only the rows or columns corresponding to `indices`.
+    
+    If axis=0, we select rows. If axis=1, we select columns.
+    &#34;&#34;&#34;
+    m = np.array(m)
+    if axis == 0:
+        # Select given indices from rows, keep all columns
+        return m[indices, :]
+    elif axis == 1:
+        # Select given indices from columns, keep all rows
+        return m[:, indices]
+    else:
+        raise ValueError(&#34;axis must be 0 or 1 for a 2D array&#34;)
+
 # upsampling
 # downsampling
 
@@ -240,8 +255,8 @@ def dictator(m, axis=1):
     r = np.take(np.array(m), voter, axis=axis) #m[:, voter]
     return process_vote(m, r, axis=axis)
 
-def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
-    &#34;&#34;&#34; Borda count.
+def average_rank(m, axis=1, method=&#39;mean&#39;, reverse=False):
+    &#34;&#34;&#34; Average rank.
 
     Args:
         m: 2D matrix of scores.
@@ -257,8 +272,13 @@ def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
     elif method == &#39;median&#39;:
         r = ranking.median(axis=axis)
     else:
-        raise(Exception(&#39;Unknown method for borda system: {}&#39;.format(method)))
+        raise(Exception(&#39;Unknown method for average rank system: {}&#39;.format(method)))
     return process_vote(m, r, axis=axis)
+
+def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
+    &#34;&#34;&#34; Alias of `average_rank` function.
+    &#34;&#34;&#34;
+    return average_rank(m, axis=axis, method=method, reverse=reverse)
 
 def majority(m, axis=1):
     &#34;&#34;&#34; Majority judgement.
@@ -280,20 +300,30 @@ def score(m, axis=1):
     r = np.mean(m, axis=axis)
     return process_vote(m, r, axis=axis)
 
-def uninominal(m, axis=1, turns=1):
-    &#34;&#34;&#34; Uninominal.
+def uninominal(m, axis=1, turns=1, keep_ranking=True):
+    &#34;&#34;&#34; Uninominal voting (multi-turn instant-runoff).
 
     Args:
         m: 2D matrix of scores.
         axis: axis of judges.
         turns: number of turns.
+        keep_ranking: if False, return the results with a score of 0 for all candidates that did not pass the first turn.
     &#34;&#34;&#34;
-    if turns &gt; 1:
-        raise(Exception(&#39;Uninominal system is currently implemented only in one turn setting.&#39;))
+    _m = m
+    m = np.array(m)
+    if turns &gt;= m.shape[1-axis]: # if more turns than candidates
+        raise(Exception(&#39;The number of turns must be lower than the number of candidates.&#39;)) 
     ranking = rank(m, axis=1-axis) # convert to rank
-    #for turn in range(turns): # TODO replace 1 by turn in next line
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
-    return process_vote(m, r, axis=axis)
+    if turns &gt;= 2:
+        bests = np.argsort(r)[-turns:] # take the two (or more) highest scores
+        m2 = take_by_axis(m, bests, axis=1-axis) # take the best candidates
+        r2 = uninominal(m2, axis=axis, turns=turns-1) # recursive call
+        # re-create a general ranking with the results of the last turn
+        if not keep_ranking:
+            r = np.zeros_like(r)
+        r[bests] = r2
+    return process_vote(_m, r, axis=axis)
 
 def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     &#34;&#34;&#34; Pairwise method.
@@ -489,6 +519,47 @@ def consensus(m, axis=0):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="ranky.ranking.average_rank"><code class="name flex">
+<span>def <span class="ident">average_rank</span></span>(<span>m, axis=1, method='mean', reverse=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Average rank.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>2D matrix of scores.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>axis of judges.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'mean' or 'median'.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>reverse the ranking.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def average_rank(m, axis=1, method=&#39;mean&#39;, reverse=False):
+    &#34;&#34;&#34; Average rank.
+
+    Args:
+        m: 2D matrix of scores.
+        axis: axis of judges.
+        method: &#39;mean&#39; or &#39;median&#39;.
+        reverse: reverse the ranking.
+    &#34;&#34;&#34;
+    ranking = rank(m, axis=1-axis)
+    if reverse:
+        ranking = rank(-m, axis=1-axis)
+    if method == &#39;mean&#39;:
+        r = ranking.mean(axis=axis)
+    elif method == &#39;median&#39;:
+        r = ranking.median(axis=axis)
+    else:
+        raise(Exception(&#39;Unknown method for average rank system: {}&#39;.format(method)))
+    return process_vote(m, r, axis=axis)</code></pre>
+</details>
+</dd>
 <dt id="ranky.ranking.bootstrap"><code class="name flex">
 <span>def <span class="ident">bootstrap</span></span>(<span>m, axis=0, n=None, replace=True, return_holdout=False)</span>
 </code></dt>
@@ -538,41 +609,15 @@ def consensus(m, axis=0):
 <span>def <span class="ident">borda</span></span>(<span>m, axis=1, method='mean', reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Borda count.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>2D matrix of scores.</dd>
-<dt><strong><code>axis</code></strong></dt>
-<dd>axis of judges.</dd>
-<dt><strong><code>method</code></strong></dt>
-<dd>'mean' or 'median'.</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>reverse the ranking.</dd>
-</dl></div>
+<div class="desc"><p>Alias of <code><a title="ranky.ranking.average_rank" href="#ranky.ranking.average_rank">average_rank()</a></code> function.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def borda(m, axis=1, method=&#39;mean&#39;, reverse=False):
-    &#34;&#34;&#34; Borda count.
-
-    Args:
-        m: 2D matrix of scores.
-        axis: axis of judges.
-        method: &#39;mean&#39; or &#39;median&#39;.
-        reverse: reverse the ranking.
+    &#34;&#34;&#34; Alias of `average_rank` function.
     &#34;&#34;&#34;
-    ranking = rank(m, axis=1-axis)
-    if reverse:
-        ranking = rank(-m, axis=1-axis)
-    if method == &#39;mean&#39;:
-        r = ranking.mean(axis=axis)
-    elif method == &#39;median&#39;:
-        r = ranking.median(axis=axis)
-    else:
-        raise(Exception(&#39;Unknown method for borda system: {}&#39;.format(method)))
-    return process_vote(m, r, axis=axis)</code></pre>
+    return average_rank(m, axis=axis, method=method, reverse=reverse)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.brute_force"><code class="name flex">
@@ -1233,6 +1278,32 @@ Ranked preference matrix.</p></div>
     return m.sort_values(ascending=reverse).index[:k]</code></pre>
 </details>
 </dd>
+<dt id="ranky.ranking.take_by_axis"><code class="name flex">
+<span>def <span class="ident">take_by_axis</span></span>(<span>m, indices, axis=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a new array with only the rows or columns corresponding to <code>indices</code>.</p>
+<p>If axis=0, we select rows. If axis=1, we select columns.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def take_by_axis(m, indices, axis=0):
+    &#34;&#34;&#34; Returns a new array with only the rows or columns corresponding to `indices`.
+    
+    If axis=0, we select rows. If axis=1, we select columns.
+    &#34;&#34;&#34;
+    m = np.array(m)
+    if axis == 0:
+        # Select given indices from rows, keep all columns
+        return m[indices, :]
+    elif axis == 1:
+        # Select given indices from columns, keep all rows
+        return m[:, indices]
+    else:
+        raise ValueError(&#34;axis must be 0 or 1 for a 2D array&#34;)</code></pre>
+</details>
+</dd>
 <dt id="ranky.ranking.tie"><code class="name flex">
 <span>def <span class="ident">tie</span></span>(<span>r, threshold=0.1)</span>
 </code></dt>
@@ -1304,10 +1375,10 @@ Ranked preference matrix.</p></div>
 </details>
 </dd>
 <dt id="ranky.ranking.uninominal"><code class="name flex">
-<span>def <span class="ident">uninominal</span></span>(<span>m, axis=1, turns=1)</span>
+<span>def <span class="ident">uninominal</span></span>(<span>m, axis=1, turns=1, keep_ranking=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Uninominal.</p>
+<div class="desc"><p>Uninominal voting (multi-turn instant-runoff).</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>m</code></strong></dt>
@@ -1316,25 +1387,37 @@ Ranked preference matrix.</p></div>
 <dd>axis of judges.</dd>
 <dt><strong><code>turns</code></strong></dt>
 <dd>number of turns.</dd>
+<dt><strong><code>keep_ranking</code></strong></dt>
+<dd>if False, return the results with a score of 0 for all candidates that did not pass the first turn.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def uninominal(m, axis=1, turns=1):
-    &#34;&#34;&#34; Uninominal.
+<pre><code class="python">def uninominal(m, axis=1, turns=1, keep_ranking=True):
+    &#34;&#34;&#34; Uninominal voting (multi-turn instant-runoff).
 
     Args:
         m: 2D matrix of scores.
         axis: axis of judges.
         turns: number of turns.
+        keep_ranking: if False, return the results with a score of 0 for all candidates that did not pass the first turn.
     &#34;&#34;&#34;
-    if turns &gt; 1:
-        raise(Exception(&#39;Uninominal system is currently implemented only in one turn setting.&#39;))
+    _m = m
+    m = np.array(m)
+    if turns &gt;= m.shape[1-axis]: # if more turns than candidates
+        raise(Exception(&#39;The number of turns must be lower than the number of candidates.&#39;)) 
     ranking = rank(m, axis=1-axis) # convert to rank
-    #for turn in range(turns): # TODO replace 1 by turn in next line
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
-    return process_vote(m, r, axis=axis)</code></pre>
+    if turns &gt;= 2:
+        bests = np.argsort(r)[-turns:] # take the two (or more) highest scores
+        m2 = take_by_axis(m, bests, axis=1-axis) # take the best candidates
+        r2 = uninominal(m2, axis=axis, turns=turns-1) # recursive call
+        # re-create a general ranking with the results of the last turn
+        if not keep_ranking:
+            r = np.zeros_like(r)
+        r[bests] = r2
+    return process_vote(_m, r, axis=axis)</code></pre>
 </details>
 </dd>
 <dt id="ranky.ranking.weigher"><code class="name flex">
@@ -1389,6 +1472,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="ranky.ranking.average_rank" href="#ranky.ranking.average_rank">average_rank</a></code></li>
 <li><code><a title="ranky.ranking.bootstrap" href="#ranky.ranking.bootstrap">bootstrap</a></code></li>
 <li><code><a title="ranky.ranking.borda" href="#ranky.ranking.borda">borda</a></code></li>
 <li><code><a title="ranky.ranking.brute_force" href="#ranky.ranking.brute_force">brute_force</a></code></li>
@@ -1410,6 +1494,7 @@ The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r 
 <li><code><a title="ranky.ranking.score" href="#ranky.ranking.score">score</a></code></li>
 <li><code><a title="ranky.ranking.select_best" href="#ranky.ranking.select_best">select_best</a></code></li>
 <li><code><a title="ranky.ranking.select_k_best" href="#ranky.ranking.select_k_best">select_k_best</a></code></li>
+<li><code><a title="ranky.ranking.take_by_axis" href="#ranky.ranking.take_by_axis">take_by_axis</a></code></li>
 <li><code><a title="ranky.ranking.tie" href="#ranky.ranking.tie">tie</a></code></li>
 <li><code><a title="ranky.ranking.to_series" href="#ranky.ranking.to_series">to_series</a></code></li>
 <li><code><a title="ranky.ranking.top_k_method" href="#ranky.ranking.top_k_method">top_k_method</a></code></li>

@@ -54,19 +54,20 @@ def autolabel(rects, values, round=2):
                 values[idx],
                 ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)
 
-def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;royalblue&#39;, cmap=None):
+def show(m, rotation=90, title=None, size=2, annot=False,
+         ylabel=None, xlabel=None, round=2, color=&#39;royalblue&#39;, cmap=None):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
     If m is 2D: show preferences (heatmap).
-
-    TODO: annot argument adding the values in the plot.
 
     Args:
         rotation: x labels rotation.
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
+        ylabel: string - y axis label.
+        xlabel: string - x axis label.
         round: Number of decimals to display if annot is True.
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
@@ -75,8 +76,11 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;ro
         m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
+        fig, ax = plt.subplots()
         x = np.arange(len(m))
         bar_plot = plt.bar(x, m, align=&#39;center&#39;, color=color)
+        ax.yaxis.grid(True)
+        ax.set_axisbelow(True) # set the lines below the bars
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
@@ -91,6 +95,10 @@ def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;ro
         raise(Exception(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim)))
     if title is not None:
         plt.title(title)
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+    if ylabel is not None:
+        plt.ylabel(ylabel)
     plt.show()
 
 def show_learning_curve(h):
@@ -104,12 +112,16 @@ def show_learning_curve(h):
     plt.ylabel(&#39;score&#39;)
     plt.show()
 
-def show_graph(matrix, names=None):
+def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;, arrowsize=10):
     &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
 
     Args:
         matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
         names: list representing the names of the vertices.
+        with_labels: Display names if True.
+        node_size: Size of the nodes.
+        font_size: Size of the font to display names.
+        font_weight: &#39;bold&#39; for bold, else refer to networkx documentation.
     &#34;&#34;&#34;
     G = nx.DiGraph()
     n = len(matrix)
@@ -121,7 +133,7 @@ def show_graph(matrix, names=None):
         for j in range(n):
             if matrix[i][j] == 1:
                 G.add_edge(nodes[i], nodes[j])
-    nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;)
+    nx.draw_circular(G, with_labels=with_labels, node_size=node_size, font_size=font_size, font_weight=font_weight, arrowsize=arrowsize)
     plt.show()
 
 def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc=&#39;best&#39;):
@@ -143,7 +155,7 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
         colors = names
     if dim == 2: # 2 dimensions
         x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x, y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
+        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
@@ -160,6 +172,9 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
     if big_display:
         fi = plt.gcf()
         fi.set_size_inches(12, 8) # change plot size
+    # Put back old matplotlib grid
+    scat.set_facecolor(&#39;#EAEAF2&#39;) 
+    scat.grid(True, color=&#39;white&#39;)
     plt.show()
 
 def tsne(m, axis=0, dim=2, **kwargs):
@@ -228,18 +243,20 @@ def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
     # Call the plot functions
     mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
-def overlaps(pos, not_sig):
-    #Used by critical difference.
-    #Checks if the horizontal line overlaps any existing horizontal line.
+def overlaps(pos, couples):
+    &#34;&#34;&#34; Used by critical difference.
+
+    Checks if the horizontal line overlaps any existing horizontal line.
+    &#34;&#34;&#34;
     i, j = pos
-    for i1, j1 in not_sig:
+    for i1, j1 in couples:
         if (i1 &lt;= i and j1 &gt; j) or (i1 &lt; i and j1 &gt;= j):
             return True
     return False
 
 def merge_couples(couples):
     # Used by critical difference
-    longest = [(i, j) for i, j in not_sig if not overlaps((i, j), couples)]
+    longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
     return longest
 
 def critical_difference(m, comparison_func=None, axis=1, **kwargs):
@@ -268,7 +285,7 @@ def critical_difference(m, comparison_func=None, axis=1, **kwargs):
         for j in range(1, len(scores)):
             if i &lt; j:
                 _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.iloc[_i], m.iloc[_j]
+                a, b = m.loc[_i], m.loc[_j]
                 if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
                     couples.append((i, j))
     show_critical_difference(scores, couples)
@@ -423,7 +440,7 @@ A comparison function f(a, b) should return True if a is significantly better th
         for j in range(1, len(scores)):
             if i &lt; j:
                 _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.iloc[_i], m.iloc[_j]
+                a, b = m.loc[_i], m.loc[_j]
                 if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
                     couples.append((i, j))
     show_critical_difference(scores, couples)</code></pre>
@@ -528,24 +545,27 @@ A comparison function f(a, b) should return True if a is significantly better th
 </summary>
 <pre><code class="python">def merge_couples(couples):
     # Used by critical difference
-    longest = [(i, j) for i, j in not_sig if not overlaps((i, j), couples)]
+    longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
     return longest</code></pre>
 </details>
 </dd>
 <dt id="ranky.visualization.overlaps"><code class="name flex">
-<span>def <span class="ident">overlaps</span></span>(<span>pos, not_sig)</span>
+<span>def <span class="ident">overlaps</span></span>(<span>pos, couples)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Used by critical difference.</p>
+<p>Checks if the horizontal line overlaps any existing horizontal line.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def overlaps(pos, not_sig):
-    #Used by critical difference.
-    #Checks if the horizontal line overlaps any existing horizontal line.
+<pre><code class="python">def overlaps(pos, couples):
+    &#34;&#34;&#34; Used by critical difference.
+
+    Checks if the horizontal line overlaps any existing horizontal line.
+    &#34;&#34;&#34;
     i, j = pos
-    for i1, j1 in not_sig:
+    for i1, j1 in couples:
         if (i1 &lt;= i and j1 &gt; j) or (i1 &lt; i and j1 &gt;= j):
             return True
     return False</code></pre>
@@ -601,7 +621,7 @@ If None it will be replaced by names.</dd>
         colors = names
     if dim == 2: # 2 dimensions
         x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x, y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
+        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
                 scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
@@ -618,17 +638,19 @@ If None it will be replaced by names.</dd>
     if big_display:
         fi = plt.gcf()
         fi.set_size_inches(12, 8) # change plot size
+    # Put back old matplotlib grid
+    scat.set_facecolor(&#39;#EAEAF2&#39;) 
+    scat.grid(True, color=&#39;white&#39;)
     plt.show()</code></pre>
 </details>
 </dd>
 <dt id="ranky.visualization.show"><code class="name flex">
-<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, round=2, color='royalblue', cmap=None)</span>
+<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, ylabel=None, xlabel=None, round=2, color='royalblue', cmap=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Display a ranking or a prefrence matrix.</p>
 <p>If m is 1D: show ballot (bar plot).
 If m is 2D: show preferences (heatmap).</p>
-<p>TODO: annot argument adding the values in the plot.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>rotation</code></strong></dt>
@@ -639,6 +661,10 @@ If m is 2D: show preferences (heatmap).</p>
 <dd>integer - higher value for a smaller figure.</dd>
 <dt><strong><code>annot</code></strong></dt>
 <dd>If True, write the values.</dd>
+<dt><strong><code>ylabel</code></strong></dt>
+<dd>string - y axis label.</dd>
+<dt><strong><code>xlabel</code></strong></dt>
+<dd>string - x axis label.</dd>
 <dt><strong><code>round</code></strong></dt>
 <dd>Number of decimals to display if annot is True.</dd>
 <dt><strong><code>color</code></strong></dt>
@@ -650,19 +676,20 @@ If m is 2D: show preferences (heatmap).</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False, round=2, color=&#39;royalblue&#39;, cmap=None):
+<pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False,
+         ylabel=None, xlabel=None, round=2, color=&#39;royalblue&#39;, cmap=None):
     &#34;&#34;&#34; Display a ranking or a prefrence matrix.
 
     If m is 1D: show ballot (bar plot).
     If m is 2D: show preferences (heatmap).
-
-    TODO: annot argument adding the values in the plot.
 
     Args:
         rotation: x labels rotation.
         title: string - title of the figure.
         size: integer - higher value for a smaller figure.
         annot: If True, write the values.
+        ylabel: string - y axis label.
+        xlabel: string - x axis label.
         round: Number of decimals to display if annot is True.
         color: Color for 1D bar plot.
         cmap: Color map for 2D heatmap.
@@ -671,8 +698,11 @@ If m is 2D: show preferences (heatmap).</p>
         m = np.array(m)
     dim = len(m.shape)
     if dim == 1: # 1D
+        fig, ax = plt.subplots()
         x = np.arange(len(m))
         bar_plot = plt.bar(x, m, align=&#39;center&#39;, color=color)
+        ax.yaxis.grid(True)
+        ax.set_axisbelow(True) # set the lines below the bars
         if annot:
             autolabel(bar_plot, m, round=round)
         if rk.is_series(m):
@@ -687,6 +717,10 @@ If m is 2D: show preferences (heatmap).</p>
         raise(Exception(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim)))
     if title is not None:
         plt.title(title)
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+    if ylabel is not None:
+        plt.ylabel(ylabel)
     plt.show()</code></pre>
 </details>
 </dd>
@@ -790,7 +824,7 @@ different (using pairwise statistical tests).</p>
 </details>
 </dd>
 <dt id="ranky.visualization.show_graph"><code class="name flex">
-<span>def <span class="ident">show_graph</span></span>(<span>matrix, names=None)</span>
+<span>def <span class="ident">show_graph</span></span>(<span>matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight='bold', arrowsize=10)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Show a directed graph represented by a binary matrix.</p>
@@ -800,17 +834,29 @@ different (using pairwise statistical tests).</p>
 <dd>binary matrix. matrix[i, j] = 1 indicates an edge from i to j.</dd>
 <dt><strong><code>names</code></strong></dt>
 <dd>list representing the names of the vertices.</dd>
+<dt><strong><code>with_labels</code></strong></dt>
+<dd>Display names if True.</dd>
+<dt><strong><code>node_size</code></strong></dt>
+<dd>Size of the nodes.</dd>
+<dt><strong><code>font_size</code></strong></dt>
+<dd>Size of the font to display names.</dd>
+<dt><strong><code>font_weight</code></strong></dt>
+<dd>'bold' for bold, else refer to networkx documentation.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show_graph(matrix, names=None):
+<pre><code class="python">def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;, arrowsize=10):
     &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
 
     Args:
         matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
         names: list representing the names of the vertices.
+        with_labels: Display names if True.
+        node_size: Size of the nodes.
+        font_size: Size of the font to display names.
+        font_weight: &#39;bold&#39; for bold, else refer to networkx documentation.
     &#34;&#34;&#34;
     G = nx.DiGraph()
     n = len(matrix)
@@ -822,7 +868,7 @@ different (using pairwise statistical tests).</p>
         for j in range(n):
             if matrix[i][j] == 1:
                 G.add_edge(nodes[i], nodes[j])
-    nx.draw_circular(G, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;)
+    nx.draw_circular(G, with_labels=with_labels, node_size=node_size, font_size=font_size, font_weight=font_weight, arrowsize=arrowsize)
     plt.show()</code></pre>
 </details>
 </dd>
