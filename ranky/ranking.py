@@ -227,8 +227,8 @@ def dictator(m, axis=1):
     r = np.take(np.array(m), voter, axis=axis) #m[:, voter]
     return process_vote(m, r, axis=axis)
 
-def borda(m, axis=1, method='mean', reverse=False):
-    """ Borda count.
+def average_rank(m, axis=1, method='mean', reverse=False):
+    """ Average rank.
 
     Args:
         m: 2D matrix of scores.
@@ -244,8 +244,13 @@ def borda(m, axis=1, method='mean', reverse=False):
     elif method == 'median':
         r = ranking.median(axis=axis)
     else:
-        raise(Exception('Unknown method for borda system: {}'.format(method)))
+        raise(Exception('Unknown method for average rank system: {}'.format(method)))
     return process_vote(m, r, axis=axis)
+
+def borda(m, axis=1, method='mean', reverse=False):
+    """ Alias of `average_rank` function.
+    """
+    return average_rank(m, axis=axis, method=method, reverse=reverse)
 
 def majority(m, axis=1):
     """ Majority judgement.

@@ -27,13 +27,13 @@ Let's consider the following preference matrix:
 
 ![matrix](img/preference_matrix.png)
 
-Each row is a candidate and each column is a judge. Here is the results of `rk.borda(matrix)`, computing the mean rank of each candidate:
+Each row is a candidate and each column is a judge. Here is the results of `rk.average_rank(matrix)`, computing the mean rank of each candidate:
 
 ![borda](img/borda_example.png)
 
 We can see that candidate2 has the best average rank among the four judges.
 
-Let's display it using `rk.show(rk.borda(matrix))`:
+Let's display it using `rk.show(rk.average_rank(matrix))`:
 
 ![display](img/show_example.png)
 
@@ -44,7 +44,7 @@ The rank aggregation methods available include:
 
 * Random Dictator: `rk.dictator(m)`
 * Score Voting (mean): `rk.score(m)`
-* Borda Count (average rank): `rk.borda(m)`
+* Borda Count (average rank): `rk.average_rank(m)`
 * Majority Judgement (median): `rk.majority(m)`
 * Uninominal Voting (multi-turn instant-runoff): `rk.uninominal(m, turns=2)`
 * Pairwise methods. Copeland's method: `rk.pairwise(m)`, Success rate: `rk.pairwise(m, wins=rk.success_rate)` and more. You can specify your own "wins" function or select one from the `rk.duel` module.

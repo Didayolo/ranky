@@ -72,10 +72,13 @@ class Test(unittest.TestCase):
         rank_M = np.array([[2., 3., 3.], [1., 1., 1.], [4., 2., 2.], [3., 4., 4.], [5., 5., 5.]])
         np.testing.assert_array_equal(rk.rank(self.__class__.M), rank_M)
     def test_borda(self):
-        np.testing.assert_array_almost_equal(rk.borda(self.__class__.M), np.array([2.66666667, 1., 2.66666667, 3.66666667, 5.]))
         m = np.array([[0.1, 0.1, 0.1], [0.3, 0.3, 0.3], [0.5, 0.5, 0.5]])
+        np.testing.assert_array_almost_equal(rk.borda(self.__class__.M), np.array([2.66666667, 1., 2.66666667, 3.66666667, 5.]))
         np.testing.assert_array_equal(rk.borda(m, axis=0), np.array([2, 2, 2]))
         np.testing.assert_array_equal(rk.borda(m, axis=1), np.array([3, 2, 1]))
+        np.testing.assert_array_almost_equal(rk.average_rank(self.__class__.M), np.array([2.66666667, 1., 2.66666667, 3.66666667, 5.]))
+        np.testing.assert_array_equal(rk.average_rank(m, axis=0), np.array([2, 2, 2]))
+        np.testing.assert_array_equal(rk.average_rank(m, axis=1), np.array([3, 2, 1]))
     def test_majority(self):
         np.testing.assert_array_equal(rk.majority(self.__class__.M), np.array([0.4, 0.8, 0.5, 0.2, 0.]))
     def test_uninominal(self)
