@@ -2,10 +2,14 @@
 ### RANKING SYSTEMS ###
 #######################
 
+# Conventions: a preference matrix has candidates as rows and judges as columns.
+# Most ranking systems take `axis`, the axis of the judges (1 by default).
+# Some lower-level functions (`rank`, `evolution_strategy`, `brute_force`,
+# `consensus`) take the axis of the candidates instead; see their docstrings.
+
 import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
-from scipy.optimize import minimize
 from scipy.optimize import differential_evolution
 from random import random as _random
 from tqdm import tqdm
@@ -19,21 +23,24 @@ from .metric import centrality
 
 # Convert to ranking
 def rank(m, axis=0, method='average', ascending=False, reverse=False):
-    """ Replace values by their rank in the column.
+    """ Replace values by their rank along an axis.
 
-    By default, higher is better.
-    TODO: save parameters to add values to an already fitted ranking.
+    By default, higher is better: the highest value gets rank 1.
 
     Args:
-        m: Score matrix.
+        m: Score matrix or 1D array of scores.
         axis: Candidates axis.
-        method: 'average', 'min', 'max', 'dense', 'ordinal'
-        ascending: Ascending or descending order.
-        reverse: Reverse order.
+        method: How to rank ties: 'average', 'min', 'max', 'dense' or 'ordinal'.
+            See `scipy.stats.rankdata`.
+        ascending: If True, lower is better.
+        reverse: If True, reverse the order. Setting both `ascending` and
+            `reverse` to True gives back the default order.
 
     Returns:
-        np.ndarray, pd.Series, pd.DataFrame
-        Ranked preference matrix.
+        Ranks with the same shape and type as `m` (np.ndarray, pd.Series or pd.DataFrame).
+
+    >>> rank([0.2, 0.9, 0.5])
+    array([3., 1., 2.])
     """
     if isinstance(m, list):
         m = np.array(m)
@@ -43,75 +50,63 @@ def rank(m, axis=0, method='average', ascending=False, reverse=False):
     return process_vote(m, r)
 
 def weigher(r, method='hyperbolic'):
-    """ The weigher function.
+    """ Map a rank to a weight.
 
-    Must map nonnegative integers (zero representing the most important element) to a nonnegative weight.
-    The default method, 'hyperbolic', provides hyperbolic weighing, that is, rank r is mapped to weight 1/(r+1)
+    Ranks start at zero (most important element). The 'hyperbolic' method maps
+    rank r to the weight 1 / (r + 1).
 
     Args:
-        r: Integer value (supposedly a rank) to weight
-        method: Weighing method. 'hyperbolic'
+        r: Nonnegative integer (or array of integers) to weight.
+        method: Weighing method. Only 'hyperbolic' is available.
     """
     if method == 'hyperbolic':
         return 1 / (r + 1)
     else:
-        raise Exception('Unknown method: {}'.format(method))
-
-def tie(r, threshold=0.1):
-    """ TODO: merge close values.
-    """
-    return 0
+        raise ValueError('Unknown method: {}'.format(method))
 
 def contains_ties(r):
-    """ Return True if r contains tied values.
+    """ Return True if r contains at least two equal values.
 
     Args:
         r: 1D array-like of scores or ranks.
     """
-    n = len(r)
-    if n==0:
-        return False
-    for i in range(n):
-        for j in range(1, n):
-            if i != j:
-                if r[i] == r[j]:
-                    return True
-    return False
+    s = np.sort(np.asarray(r))
+    return bool(np.any(s[1:] == s[:-1]))
 
 # remove rows (candidates) or columns (voters)
 def bootstrap(m, axis=0, n=None, replace=True, return_holdout=False):
-    """ Sample with replacement among an axis (and keep the same shape by default).
+    """ Sample along an axis, with replacement by default.
 
-    By convention rows reprensent candidates and columns represent voters.
+    By convention rows represent candidates and columns represent judges.
 
     Args:
-        axis: Axis concerned by bootstrap.
-        n: Number of examples to sample. By default it is the size of the matrix among the axis.
+        m: Matrix to sample from (np.ndarray or pd.DataFrame).
+        axis: Axis to sample.
+        n: Number of examples to sample. By default it is the size of the matrix along the axis.
         replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
-        return_holdout: If True, returns a tuple (bootstrap, out-of-bag set).
+        return_holdout: If True, return a tuple (bootstrap, out-of-bag set).
     """
     if n is None:
         n = m.shape[axis]
     idx = np.random.choice(m.shape[axis], n, replace=replace)
     bootstrap = np.take(m, idx, axis=axis)
     if return_holdout:
-        ran = np.arange(m.shape[axis])
-        holdout_idx = ran[np.array([x not in idx for x in ran])]
+        holdout_idx = np.setdiff1d(np.arange(m.shape[axis]), idx)
         holdout = np.take(m, holdout_idx, axis=axis)
         return bootstrap, holdout
     else:
         return bootstrap
 
 def joint_bootstrap(m_list, axis=0, n=None, replace=True):
-    """ Apply the same bootstrap on all matrices on m_list.
+    """ Apply the same bootstrap to all matrices in m_list.
 
-    Sample with replacement among an axis (and keep the same shape by default).
-    By convention rows reprensent candidates and columns represent voters.
+    All matrices must have the same size along `axis`.
 
     Args:
-        axis: Axis concerned by bootstrap.
-        n: Number of examples to sample. By default it is the size of the matrix among the axis.
-        replace: Sample with or without replacement. It is not bootstrap if the sampling is done without replacement.
+        m_list: List of matrices.
+        axis: Axis to sample.
+        n: Number of examples to sample. By default it is the size of the matrices along the axis.
+        replace: Sample with or without replacement.
     """
     size = m_list[0].shape[axis]
     if n is None:
@@ -120,86 +115,91 @@ def joint_bootstrap(m_list, axis=0, n=None, replace=True):
     return [np.take(m, idx, axis=axis) for m in m_list]
 
 def top_k_method(D, F, k=1, reverse=False):
-    """ Apply top-k method to select a winner from two rankings D and F (development and final).
+    """ Select a winner from two leaderboards D and F (development and final).
 
-    Return the index of the winner. The winner is the top of F from the k best candidates of D.
+    Only the k best candidates of D access the final phase; the winner is the
+    best of them in F.
 
     Args:
         D: 1D array-like of scores, representing the development phase (or public leaderboard).
         F: 1D array-like of scores, representing the final phase (or private leaderboard).
-        k: number of candidates that access the final phase.
-        reverse: if True lower is better (by default higher is better).
+        k: Number of candidates that access the final phase.
+        reverse: If True, lower is better (by default higher is better).
+
+    Returns:
+        The index (or label, for pd.Series) of the winner.
     """
     D, F = to_series(D), to_series(F)
     top_k = select_k_best(D, k=k, reverse=reverse)
-    return rk.select_best(F[top_k], reverse=reverse)
+    return select_best(F[top_k], reverse=reverse)
 
 def select_k_best(m, k=1, reverse=False):
-    """ Select k best candidates from the 1D array m.
+    """ Return the indices (or labels) of the k best candidates in a 1D array.
 
     Args:
         m: 1D array-like of scores.
-        k: number of best candidates to be returned.
-        reverse: if True lower is better (by default higher is better).
+        k: Number of best candidates to return.
+        reverse: If True, lower is better (by default higher is better).
     """
     m = to_series(m)
-    if k == 0 or k > len(m):
-        raise Exception('Bad value for K')
+    if k < 1 or k > len(m):
+        raise ValueError('k must be between 1 and {}, got {}.'.format(len(m), k))
     return m.sort_values(ascending=reverse).index[:k]
 
 def select_best(m, reverse=False):
-    """ Return the best candidate from the 1D array m.
+    """ Return the index (or label) of the best candidate in a 1D array.
 
     Args:
         m: 1D array-like of scores.
-        reverse: if True lower is better (by default higher is better).
+        reverse: If True, lower is better (by default higher is better).
     """
     return select_k_best(m, k=1, reverse=reverse)[0]
 
 def take_by_axis(m, indices, axis=0):
-    """ Returns a new array with only the rows or columns corresponding to `indices`.
-    
-    If axis=0, we select rows. If axis=1, we select columns.
+    """ Return a new array with only the rows (axis=0) or columns (axis=1) given by `indices`.
     """
     m = np.array(m)
     if axis == 0:
-        # Select given indices from rows, keep all columns
         return m[indices, :]
     elif axis == 1:
-        # Select given indices from columns, keep all rows
         return m[:, indices]
     else:
         raise ValueError("axis must be 0 or 1 for a 2D array")
 
-# upsampling
-# downsampling
-
 def is_series(m):
+    """ Return True if m is a pd.Series. """
     return isinstance(m, pd.Series)
 
 def is_dataframe(m):
+    """ Return True if m is a pd.DataFrame. """
     return isinstance(m, pd.DataFrame)
 
 def to_series(m):
-    if not isinstance(m, list):
-        if len(m.shape) == 2 and m.shape[1] == 1: # "column array"
-            m = m.reshape((m.shape[0]))
+    """ Convert a 1D array-like (or a single column matrix) to a pd.Series. """
+    if is_dataframe(m) and m.shape[1] == 1:
+        m = m.iloc[:, 0]
+    elif isinstance(m, np.ndarray) and m.ndim == 2 and m.shape[1] == 1: # "column array"
+        m = m.reshape(m.shape[0])
     if not is_series(m): # cast to pd.Series if needed
         m = pd.Series(m)
     return m
 
 def process_vote(m, r, axis=1):
-    """ Keep names if using pd.DataFrame.
+    """ Give the result `r` the index/column names of the input `m`, if any.
 
-        Args:
-            m: original matrix of scores (pd.DataFrame or pd.Series)
-            r: the ranking (array-like)
+    Args:
+        m: Original matrix of scores (pd.DataFrame, pd.Series or np.ndarray).
+        r: The result (array-like).
+        axis: Axis of the judges. If r is 1D, it is indexed by the other axis of m.
+
+    Returns:
+        r as a pd.Series or pd.DataFrame if m is a pandas object, unchanged otherwise.
     """
     if is_dataframe(m):
         if len(r.shape) == 1: # Series
-            if axis==0: # Voting axis
+            if axis == 0: # Voting axis
                 r = pd.Series(r, m.columns) # Participants names
-            elif axis==1:
+            elif axis == 1:
                 r = pd.Series(r, m.index)
         elif len(r.shape) == 2: # DataFrame
             r = pd.DataFrame(r, index=m.index, columns=m.columns)
@@ -211,63 +211,67 @@ def process_vote(m, r, axis=1):
 ####### RANKING SYSTEMS #########
 #################################
 
+# All ranking systems below return one value per candidate. Depending on the
+# method, higher is better (scores, number of wins) or lower is better (ranks).
+
 #################################
 ##### 1. CLASSICAL METHODS #######
 #################################
 
 def dictator(m, axis=1):
-#def random(m, axis=1): # renamed because of random module
-    """ Random dictator.
-
-        Args:
-            m: 2D matrix of scores.
-            axis: axis of judges.
-    """
-    voter = np.random.randint(m.shape[axis]) # select a column number
-    r = np.take(np.array(m), voter, axis=axis) #m[:, voter]
-    return process_vote(m, r, axis=axis)
-
-def average_rank(m, axis=1, method='mean', reverse=False):
-    """ Average rank.
+    """ Random dictator: return the ballot of a random judge.
 
     Args:
         m: 2D matrix of scores.
-        axis: axis of judges.
-        method: 'mean' or 'median'.
-        reverse: reverse the ranking.
+        axis: Axis of judges.
     """
-    ranking = rank(m, axis=1-axis)
-    if reverse:
-        ranking = rank(-m, axis=1-axis)
+    voter = np.random.randint(m.shape[axis]) # select a column number
+    r = np.take(np.array(m), voter, axis=axis)
+    return process_vote(m, r, axis=axis)
+
+def average_rank(m, axis=1, method='mean', reverse=False):
+    """ Average rank (Borda count).
+
+    Each judge's scores are converted to ranks (1 is best), then the ranks are
+    averaged. Lower is better in the output.
+
+    Args:
+        m: 2D matrix of scores.
+        axis: Axis of judges.
+        method: 'mean' or 'median'.
+        reverse: If True, lower scores are better.
+    """
+    ranking = rank(m, axis=1-axis, reverse=reverse)
+    ranking = pd.DataFrame(np.asarray(ranking))
     if method == 'mean':
         r = ranking.mean(axis=axis)
     elif method == 'median':
         r = ranking.median(axis=axis)
     else:
-        raise(Exception('Unknown method for average rank system: {}'.format(method)))
-    return process_vote(m, r, axis=axis)
+        raise ValueError('Unknown method for average rank system: {}'.format(method))
+    return process_vote(m, np.asarray(r), axis=axis)
 
 def borda(m, axis=1, method='mean', reverse=False):
-    """ Alias of `average_rank` function.
+    """ Alias of `average_rank`.
     """
     return average_rank(m, axis=axis, method=method, reverse=reverse)
 
 def majority(m, axis=1):
-    """ Majority judgement.
+    """ Majority judgement: median score of each candidate.
 
-        Args:
-            m: 2D matrix of scores.
-            axis: axis of judges.
+    Args:
+        m: 2D matrix of scores.
+        axis: Axis of judges.
     """
     r = np.median(m, axis=axis)
     return process_vote(m, r, axis=axis)
 
 def score(m, axis=1):
-    """ Score/range ranking.
+    """ Score voting (range voting): mean score of each candidate.
 
-        Args:
-            m: 2D matrix of scores.
-            axis: axis of judges.
+    Args:
+        m: 2D matrix of scores.
+        axis: Axis of judges.
     """
     r = np.mean(m, axis=axis)
     return process_vote(m, r, axis=axis)
@@ -275,20 +279,26 @@ def score(m, axis=1):
 def uninominal(m, axis=1, turns=1, keep_ranking=True):
     """ Uninominal voting (multi-turn instant-runoff).
 
+    Each judge votes for their favorite candidate. With turns >= 2, the `turns`
+    best candidates go to the next turn, and so on.
+
     Args:
         m: 2D matrix of scores.
-        axis: axis of judges.
-        turns: number of turns.
-        keep_ranking: if False, return the results with a score of 0 for all candidates that did not pass the first turn.
+        axis: Axis of judges.
+        turns: Number of turns. Must be lower than the number of candidates.
+        keep_ranking: If False, candidates eliminated in the first turn get a score of 0.
+
+    Returns:
+        Number of votes of each candidate (in the last turn they reached).
     """
     _m = m
     m = np.array(m)
     if turns >= m.shape[1-axis]: # if more turns than candidates
-        raise(Exception('The number of turns must be lower than the number of candidates.')) 
+        raise ValueError('The number of turns must be lower than the number of candidates.')
     ranking = rank(m, axis=1-axis) # convert to rank
     r = (ranking == 1).sum(axis=axis)  # count number of uninominal vote (first in judgement)
     if turns >= 2:
-        bests = np.argsort(r)[-turns:] # take the two (or more) highest scores
+        bests = np.argsort(r)[-turns:] # take the `turns` highest scores
         m2 = take_by_axis(m, bests, axis=1-axis) # take the best candidates
         r2 = uninominal(m2, axis=axis, turns=turns-1) # recursive call
         # re-create a general ranking with the results of the last turn
@@ -300,16 +310,20 @@ def uninominal(m, axis=1, turns=1, keep_ranking=True):
 def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     """ Pairwise method.
 
-    We compute the matrix of scores of all possible pairs of matches between all candidates.
-    The score of one match is defined by the `wins` function.
+    Compute the result of all one-to-one matches between candidates. The result
+    of a match is given by the `wins` function, and each candidate's final score
+    is the sum of its results.
 
     Args:
         m: 2D matrix of scores (preference matrix).
-        axis: Judge axis. /!\
-        wins: Function returning True if a wins against b. `rk.copeland_wins` used by default.
-        return_graph: If True, returns the 1-1 matches result matrix.
-        score: If True, produce scores between 0 and 1 by dividing the results by (n - 1)
-               with n the number of candidates.
+        axis: Axis of judges.
+        wins: Function wins(a, b) returning the score of a against b.
+            `rk.copeland_wins` by default. See the `rk.duel` module for other options.
+        return_graph: If True, return a tuple (scores, graph), where graph[i, j]
+            is the result of candidate i against candidate j.
+        score: If True, divide the results by (n - 1), with n the number of
+            candidates, to get values between 0 and 1.
+        **kwargs: Arguments passed to the `wins` function.
     """
     if wins is None:
         wins = rk.copeland_wins
@@ -319,12 +333,10 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
     graph = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
-            if i != j:
+            if i != j: # no comparison with itself
                 c1, c2 = np.take(m, i, 1-axis), np.take(m, j, 1-axis)
                 graph[i][j] = wins(c1, c2, **kwargs)
-            else:
-                graph[i][j] = 0 # no comparison with itself
-    r = np.sum(graph, axis=1) # collect candidates average score against all opponents
+    r = np.sum(graph, axis=1) # collect candidates score against all opponents
     r = process_vote(_m, r, axis=axis)
     if score:
         r = r / (n - 1)
@@ -335,26 +347,25 @@ def pairwise(m, axis=1, wins=None, return_graph=False, score=False, **kwargs):
 def copeland(m, axis=1, **kwargs):
     """ Copeland's method.
 
-    This function is an alias of calling `rk.pairwise` function with `rk.copeland_wins` as the wins function.
+    Alias of `rk.pairwise` with `rk.copeland_wins` as the wins function.
 
     Args:
         m: 2D matrix of scores.
-        axis: axis of judges.
-        **kwargs: Arguments to be passed to `rk.pairwise` function.
+        axis: Axis of judges.
+        **kwargs: Arguments passed to `rk.pairwise`.
     """
     return pairwise(m, axis=axis, wins=rk.copeland_wins, **kwargs)
 
 def kemeny_young(m, axis=1, **kwargs):
     """ Kemeny-Young method.
 
-    This function is an alias of calling `rk.center` function with Kendall tau as the metric.
-    Indeed, Kemeny-Young method consists in computing the ranking that is the closest to all judges,
-    according to Kendall's distance.
+    Alias of `rk.center` with Kendall tau as the metric: the result is the
+    ranking closest to all judges according to Kendall's distance.
 
     Args:
         m: 2D matrix of scores.
-        axis: axis of judges.
-        **kwargs: arguments to be passed to `rk.center` function.
+        axis: Axis of judges.
+        **kwargs: Arguments passed to `rk.center`.
     """
     return center(m, axis=axis, method='kendalltau', **kwargs)
 
@@ -366,55 +377,62 @@ def kemeny_young(m, axis=1, **kwargs):
 # Based on optimization.
 
 def brute_force(m, axis=0, method='swap'):
-    """ Brute force search.
+    """ Find the most central ranking by trying all permutations.
 
-    TODO:
-        - keep all optimal solutions.
-        - ties
-        - docs
+    Only usable with a small number of candidates (n! rankings are evaluated).
+    Ties are not considered. If several rankings are optimal, the first one found
+    is returned.
+
+    Args:
+        m: 2D matrix of scores.
+        axis: Axis of candidates.
+        method: Metric used to compute the centrality (see `rk.centrality`).
+
+    Returns:
+        A tuple giving the position of each candidate (0 is the worst).
     """
-    best_score = -1
-    best_r = np.take(m, 0, axis=axis)
+    best_score = -np.inf
+    best_r = None
     for r in tqdm(list(it.permutations(range(m.shape[axis])))): # all possible rankings
         score = centrality(m, r, axis=axis, method=method)
-        if score > best_score:
+        if best_r is None or score > best_score:
             best_score = score
             best_r = r
     return best_r
 
 def random_swap(r, n=1, tie=0.1):
-    """ Swap randomly two values in r.
+    """ Randomly swap two values in r (or tie them).
 
-    Used by evolution_strategy function.
+    Used as the mutation operator by `evolution_strategy`.
 
     Args:
-        n: number of consecutive changes
-        tie: probability of tie instead of swap
+        r: Ranking (np.ndarray) to modify. It is copied, not modified in place.
+        n: Number of consecutive changes.
+        tie: Probability of creating a tie instead of a swap.
     """
     _r = r.copy()
     for _ in range(n):
         i1, i2 = np.random.randint(len(r)), np.random.randint(len(r))
-        if tie!=0 and np.random.randint(1/tie) == 0: # generate tie with some probability
+        if np.random.random() < tie: # generate tie with some probability
             _r[i1] = _r[i2]
         else: # swap two values
             _r[i1], _r[i2] = _r[i2], _r[i1]
     return _r
 
 def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='swap', history=False, verbose=False):
-    """ Use evolution strategy to search the best centrality ranking.
-
-    Return the best ranking (and the best score of each generation if needed).
+    """ Search the most central ranking with a (mu + mu*l) evolution strategy.
 
     Args:
-        axis: candidates axis.
-        mu: population size.
-        l: mu * l = offspring size.
-        epochs: number of iterations.
-        n: number of swaps performed during a single mutation.
-        tie: probability of performing a tie instead of a swap during mutation process.
-        method: method used to compute centrality of the ranking.
-        history: if True, return a tuple (ranking, history).
-        verbose: if True, plot the learning curve.
+        m: 2D matrix of scores.
+        axis: Axis of candidates.
+        mu: Population size.
+        l: Each generation produces mu * l offspring.
+        epochs: Number of generations.
+        n: Number of swaps performed during a single mutation.
+        tie: Probability of creating a tie instead of a swap during mutation.
+        method: Metric used to compute the centrality (see `rk.centrality`).
+        history: If True, return a tuple (ranking, best score of each generation).
+        verbose: If True, plot the learning curve and print the best score.
     """
     r = np.arange(m.shape[axis])
     h = []
@@ -422,41 +440,38 @@ def evolution_strategy(m, axis=0, mu=10, l=2, epochs=50, n=1, tie=0.1, method='s
     best_ranking = population[0] # initialize best_ranking
     for epoch in tqdm(range(epochs)):
         offspring = [random_swap(x, n=n, tie=tie) for x in population*l] # random swaps to generate new ranked ballots
-        offspring.append(best_ranking) # add the previous best to the offspring to avoid losing it if no children beat it
+        offspring.append(best_ranking) # keep the previous best in case no child beats it
         scores = [centrality(m, child, axis=axis, method=method) for child in offspring] # compute fit function
         idx_best = np.argsort(scores)[len(scores)-mu:]
         population = list(np.array(offspring)[idx_best]) # select the mu best ballots
         argmax = idx_best[-1]
         best_ranking = offspring[argmax]
         h.append(scores[argmax]) # collect best score
-    r = process_vote(m, best_ranking, axis=1-axis)
+    r = process_vote(m, np.asarray(best_ranking), axis=1-axis)
     if verbose:
-        show_learning_curve(h)
+        rk.show_learning_curve(h)
         print('Best centrality score: {}'.format(h[-1]))
     if history:
-        return r, h # return the best ranking and its score
+        return r, h
     return r
 
 def center(m, axis=1, method='euclidean', verbose=True, **kwargs):
-    """ Find the geometric median or 1-center.
+    """ Optimal rank aggregation: find the ranking with the best centrality.
 
-    Solve the metric facility location problem.
-    Find the ranking maximizing the centrality.
-    Also called optimal rank aggregation.
+    This is the geometric median (or 1-center) of the judges for the given
+    metric, found by differential evolution [Storn and Price, 1997]. The search
+    is stochastic: pass `seed` to get reproducible results.
 
     Args:
-        axis: judges axis.
-        method: distance or correlation method used as metric.
-        verbose: show optimization termination message.
-        **kwargs: arguments for `scipy.differential_evolution` function.
+        m: 2D matrix of scores.
+        axis: Axis of judges.
+        method: Distance or correlation used as metric (see `rk.centrality`).
+        verbose: If True, print the optimizer termination message.
+        **kwargs: Arguments passed to `scipy.optimize.differential_evolution` (e.g. `seed`, `maxiter`).
     """
-    # Finds the global minimum of a multivariate function.
-    # Differential Evolution is stochastic in nature (does not use gradient methods) to find the minimium, and can search large areas of candidate space,
-    # but often requires larger numbers of function evaluations than conventional gradient based techniques.
-    # The algorithm is due to Storn and Price [R150].
     m_np = np.array(m)
     bounds = [(m_np.min(), m_np.max()) for _ in range(m_np.shape[1-axis])]
-    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False, **kwargs) # from scipy.optimize
+    res = differential_evolution(rk.mean_distance, bounds, (m_np, 1-axis, method), disp=False, **kwargs)
     if verbose:
         print(res.message)
     r = res.x
@@ -469,16 +484,16 @@ def center(m, axis=1, method='euclidean', verbose=True, **kwargs):
 
 def consensus(m, axis=0):
     """ Strict consensus between ranked ballots.
+
+    Args:
+        m: 2D matrix of ranks.
+        axis: Axis of candidates.
+
+    Returns:
+        For each candidate, True if all judges agree on its value.
     """
     m_arr = np.array(m)
-    if axis==0:
+    if axis == 0:
         m_arr = m_arr.T
     r = np.all(m_arr == np.take(m_arr, 0, axis=0), axis=0)
     return process_vote(m, r, axis=1-axis)
-
-
-# STATISTICAL TESTS #
-# McNemar test
-# statistic = (Yes/No - No/Yes)^2 / (Yes/No + No/Yes)
-
-# Friedman test

@@ -1,31 +1,32 @@
 #######################################
 ### EVALUATION, COMPARISON, METRICS ###
 #######################################
-# Metrics, error bars, bootstrap
+# Scoring metrics, rank distances, rank correlations and agreement measures.
 
 import numpy as np
 import pandas as pd
 from Levenshtein import distance as levenshtein
 from scipy.spatial.distance import hamming
 from scipy.stats import kendalltau, spearmanr, pearsonr
-import importlib
-rk = importlib.import_module('ranky.ranking') # circular import
 import itertools as it
-from collections import Counter
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
+from . import ranking as rk # circular import, only used at call time
 
-METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
+METRIC_METHODS = ['accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'sar', 'mae']
 CORR_METHODS = ['swap', 'kendalltau', 'spearman', 'spearmanr', 'pearson', 'pearsonr']
-DIST_METHODS = ['hamming', 'levenshtein', 'winner', 'euclidean', 'winner_distance', 'asymmetrical_winner_distance']
+DIST_METHODS = ['hamming', 'levenshtein', 'kendall', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance', 'symmetrical_winner_distance']
 
 def arr_to_str(a):
+    """ Concatenate the values of a 1D array into a string. """
     return "".join(str(x) for x in a)
 
 def to_dense(y):
-    """ Format predictions/solutions from sparse format (1D) to dense format (2D).
+    """ Convert labels from sparse format (1D, class indices) to dense format (2D, one-hot).
 
-    Sparse = 'argmax',
-    Dense = 'one-hot'
+    >>> to_dense([0, 2, 1])
+    array([[1., 0., 0.],
+           [0., 0., 1.],
+           [0., 1., 0.]])
     """
     y = np.array(y)
     if len(y.shape) == 1:
@@ -34,39 +35,40 @@ def to_dense(y):
         dense[np.arange(length), y] = 1
         return dense
     else:
-        raise Exception('y must be 1-dimensional')
+        raise ValueError('y must be 1-dimensional')
 
 def to_sparse(y, axis=1):
-    """ Format predictions/solutions from dense format (2D) to sparse format (1D).
-
-    Sparse = 'argmax',
-    Dense = 'one-hot'
+    """ Convert labels from dense format (2D, one-hot or probabilities) to sparse format (1D, argmax).
     """
     y = np.array(y)
     if len(y.shape) == 2:
         sparse = np.argmax(y, axis=axis)
         return sparse
     else:
-        raise Exception('y must be 2-dimensional')
+        raise ValueError('y must be 2-dimensional')
 
 def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
-    """ Format predictions/solutions from probabilities to binary {0, 1}.
+    """ Convert probabilities to binary values {0, 1}.
 
-    Behaviour:
-    If unilabel is False: 1 if the value is stricly greater than the threshold, 0 otherwise.
-    If unilabel is True: argmax 1, other values 0.
+    If unilabel is False, values strictly greater than the threshold become 1 and the others 0.
+    If unilabel is True, the argmax of each row becomes 1 and the others 0.
 
     Args:
-        y: vector or matrix to binarize. If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.
-        threshold: threshold for binarization (0 if below, 1 if strictly above).
+        y: Vector or matrix to binarize. If unilabel or at_least_one_class is True,
+            y must be a 2D matrix of probabilities.
+        threshold: Threshold for binarization (0 if below or equal, 1 if strictly above).
         unilabel: If True, return only one 1 for each row.
-        at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
+        at_least_one_class: If True, the argmax of each row is set to 1 even if
+            it is below the threshold.
+
+    >>> to_binary([[0.2, 0.3, 0.1], [0.5, 0.6, 0.7]], at_least_one_class=True)
+    array([[0, 1, 0],
+           [0, 1, 1]])
     """
-    # TODO: keep index and column names if y is a pd.DataFrame
     y = np.array(y)
-    if unilabel == True or at_least_one_class == True:
+    if unilabel or at_least_one_class:
         if len(y.shape) != 2:
-            raise Exception('If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.')
+            raise ValueError('If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.')
     n = y.shape[0]
     if unilabel:
         y_binary = np.zeros(y.shape, dtype=int)
@@ -78,11 +80,15 @@ def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
     return y_binary
 
 def any_metric(a, b, method, **kwargs):
-    """ Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
+    """ Compare a and b with any scoring metric, rank distance or rank correlation.
+
+    Dispatch to `metric`, `dist` or `corr` depending on the method.
 
     Args:
-        method: 'accuracy', ..., 'levenshtein', ..., 'spearman', ...
-        **kwargs: keyword arguments to pass to the metric function.
+        a: First array-like (ground truth or ranking).
+        b: Second array-like (predictions or ranking).
+        method: Name of the method, from METRIC_METHODS, DIST_METHODS or CORR_METHODS.
+        **kwargs: Arguments passed to the underlying function.
     """
     if method in METRIC_METHODS:
         return metric(a, b, method=method, **kwargs)
@@ -91,14 +97,16 @@ def any_metric(a, b, method, **kwargs):
     elif method in CORR_METHODS:
         return corr(a, b, method=method, **kwargs)
     else:
-        raise Exception('Unknown method: {}'.format(method))
+        raise ValueError('Unknown method: {}'.format(method))
 
 def balanced_accuracy(y_true, y_pred):
-    """ Compute balanced accuracy between y_true and y_pred.
+    """ Balanced accuracy, averaged over classes.
+
+    For each class (column), compute the mean of sensitivity and specificity.
 
     Args:
-        y_true: Ground truth in 2D dense format.
-        y_pred: Predictions in 2D dense format.
+        y_true: Ground truth in 2D dense binary format.
+        y_pred: Predictions in 2D dense binary format.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     recip_y_true = 1 - y_true
@@ -108,8 +116,8 @@ def balanced_accuracy(y_true, y_pred):
     balanced_acc = np.mean((sensitivity + specificity) / 2.)
     return balanced_acc
 
-def accuracy_multilabel(y_true,y_pred):
-    """ Soft multi-label accuracy.
+def accuracy_multilabel(y_true, y_pred):
+    """ Soft multi-label accuracy (mean intersection over union of each row).
 
     Args:
         y_true: Ground truth in 2D dense format.
@@ -117,77 +125,57 @@ def accuracy_multilabel(y_true,y_pred):
     """
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
-    if len(y_true.shape)==1:
+    if len(y_true.shape) == 1:
         x = np.where(y_true-y_pred == 0)[0]
-        return(len(x) / y_true.shape[0])
+        return len(x) / y_true.shape[0]
     inter = np.sum(y_true * y_pred, axis=1)
-    union = np.sum(np.maximum(y_true,y_pred), axis=1)
+    union = np.sum(np.maximum(y_true, y_pred), axis=1)
     return np.mean(inter / union)
 
 def loss(x, y, method='absolute'):
-    """ Compute the error between two scalars or vectors.
+    """ Compute the error between two scalars or vectors (element-wise).
 
-        Args:
-            x: float, usually representing a ground truth value.
-            y: float, usually representing a single prediction.
-            method: 'absolute', 'squared', ...
+    Args:
+        x: Usually the ground truth.
+        y: Usually the prediction.
+        method: 'absolute' or 'squared'.
     """
-    # TODO
     if method == 'absolute':
         return np.abs(x - y)
     elif method == 'squared':
         return (x - y) ** 2
     else:
-        raise Exception('Unknown method: {}'.format(method))
-
-def relative_metric(y_true, y_pred_list, loss='absolute', ranking_function=None, **kwargs):
-    """ ...
-
-    For example you can compute the Mean Rank of Absolute Error (averaged by class)
-    by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_function=rk.borda, reverse=True)
-
-    Args:
-        y_true: Ground truth (format?)
-        y_pred_list: List of predictions (format?)
-        loss: 'method' argument to be passed to the function 'loss'
-        ranking_function: Ranking method from rk.ranking. rk.score by default.
-        **kwargs: Arguments to be passed to the ranking function.
-    """
-    # TODO
-    if ranking_function is None:
-        ranking_function = rk.score
-    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
-    m = pd.DataFrame(np.array(m), index=None)
-    return ranking_function(m, reverse=True, **kwargs)
+        raise ValueError('Unknown method: {}'.format(method))
 
 def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1, unilabel=False):
     """ Compute a classification scoring metric between y_true and y_pred.
 
-    Predictions format:
-    [[0.2, 0.3, 0.5]
-    [0.1, 0.8, 0.1]]
-    ...
+    Inputs are expected in dense format (one row per example, one column per class):
 
-    Ground truth format:
-    [[0, 0, 1]
-    [0, 1, 0]]
+        y_true = [[0, 0, 1],
+                  [0, 1, 0]]
+        y_pred = [[0.2, 0.3, 0.5],
+                  [0.1, 0.8, 0.1]]
 
-    If y_true and y_pred are 1D they'll be converted using `to_dense` function.
+    1D inputs are considered to be class indices and are converted with `to_dense`.
 
     Args:
-        y_true: Ground truth (format?)
-        y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae'
-        reverse_loss: If True, return (1 - score).
-        missing_score: (DEPRECATED) Value to return if the computation fails.
-        unilabel: If True, only one label per example. If False it's multi-label case.
+        y_true: Ground truth.
+        y_pred: Predictions.
+        method: Name of the metric, one of: 'accuracy', 'balanced_accuracy',
+            'balanced_accuracy_sklearn', 'precision', 'average_precision', 'f1_score',
+            'mxe' (log loss), 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae',
+            'sar' (mean of accuracy, roc_auc and 1 - rmse).
+        reverse_loss: If True, losses ('mxe', 'mse', 'rmse', 'mae') are returned as (1 - loss).
+        missing_score: Deprecated, ignored.
+        unilabel: If True, there is only one label per example. If False, it is the multi-label case.
     """
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
-        raise Exception('y_true and y_pred must have the same shape. {} != {}'.format(y_true.shape, y_pred.shape))
+        raise ValueError('y_true and y_pred must have the same shape. {} != {}'.format(y_true.shape, y_pred.shape))
     if len(y_true.shape) == 1:
         y_true, y_pred = to_dense(y_true), to_dense(y_pred)
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
+    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall
     # PARAMETERS
     average = 'binary'
     if y_true.shape[1] > 2: # target is not binary
@@ -197,30 +185,6 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
     if method in ['balanced_accuracy_sklearn'] or average == 'binary': # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-
-    # TODO
-    #y_true, y_pred = np.array(y_true), np.array(y_pred)
-    #average = 'binary'
-    #if y_true.shape != y_pred.shape:
-    #    raise Exception('y_true and y_pred must have the same shape. {} != {}'.format(y_true.shape, y_pred.shape))
-    #if len(y_true.shape) == 1:
-    #    try:
-    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
-    #        if y_true.shape[1] > 2: # target is not binary
-    #            average = 'micro'
-    #    except: # TODO, TMP Ad-Hoc fix?
-    #        y_true, y_pred = y_true.T, y_pred.T
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
-    # PREPROCESSING
-    #if method in ['accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'f1_score', 'recall', 'jaccard']: # binarize with 0.5 threshold
-    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    #if method in ['balanced_accuracy_sklearn'] or average == 'binary': # sparse format
-    #    try:
-    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-    #    except:
-    #        pass
-    #        # TMP TODO
-    #try:
     # COMPUTE SCORE
     if method == 'accuracy':
         score = accuracy_score(y_true, y_pred)
@@ -245,16 +209,13 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     elif method == 'mse':
         score = mean_squared_error(y_true, y_pred)
     elif method == 'rmse':
-        score = mean_squared_error(y_true, y_pred, squared=False)
+        score = np.sqrt(mean_squared_error(y_true, y_pred))
     elif method == 'mae':
         score = mean_absolute_error(y_true, y_pred)
     elif method == 'sar':
         score = combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean')
     else:
-        raise Exception('Unknown method: {}'.format(method))
-    #except Exception as e: # could not compute the score
-    #    print('Could not compute {}. Retuning missing_score. Error: {}'.format(method, e))
-    #    return missing_score # MISSING SCORE
+        raise ValueError('Unknown method: {}'.format(method))
     # REVERSE LOSS
     is_loss = method in ['mxe', 'mse', 'rmse', 'mae']
     if reverse_loss and is_loss:
@@ -262,44 +223,50 @@ def metric(y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=
     return score
 
 def combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean'):
-    """ Combine several metrics as one.
+    """ Combine several metrics into one.
 
-    For example, you can compute SAR metric by calling:
-    combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rms'])
+    Losses are converted to (1 - loss) before being combined. The default
+    corresponds to the SAR metric (squared error, accuracy, ROC AUC).
 
     Args:
-        metrics: List of metric names.
-        ranking: A ranking system from ranky.
+        y_true: Ground truth.
+        y_pred: Predictions.
+        metrics: List of metric names (see `metric`).
+        method: 'mean' or 'median'.
     """
-    score = -1
     scores = [metric(y_true, y_pred, m, reverse_loss=True) for m in metrics]
     if method == 'mean':
         score = np.mean(scores)
     elif method == 'median':
         score = np.median(scores)
     else:
-        raise Exception('Unknwon method: {}'.format(method))
+        raise ValueError('Unknown method: {}'.format(method))
     return score
 
 def dist(r1, r2, method='hamming'):
-    """ Levenshtein/Wasserstein type distance between two ranked ballots.
+    """ Distance between two ranked ballots.
 
-    Between 0 and 1+
+    Available methods:
+
+    - 'hamming': proportion of positions that differ.
+    - 'levenshtein': edit distance between the ballots written as strings
+      (values are concatenated, so it is only meaningful for single digit values).
+    - 'kendall' (or 'kendalltau'): number of swaps of neighbors, see `kendall_tau_distance`.
+    - 'winner': r2[i] - r1[i], where i is the position of the lowest value in r1.
+    - 'euclidean': Euclidean distance.
+    - 'winner_mistake': 0 if the lowest value is at the same position in both ballots, 1 otherwise.
+    - 'winner_distance' (or 'asymmetrical_winner_distance'): see `winner_distance`.
+    - 'symmetrical_winner_distance': see `symmetrical_winner_distance`.
 
     Args:
-        method: 'hamming', 'levenshtein', 'kendall', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.
+        r1: 1D array-like.
+        r2: 1D array-like.
+        method: Name of the method.
     """
+    # Other possible distances:
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
-    # L1 norm between permutation matrices (does it work with ties?)
-    # Normalized Rank Transformation
-    # Footrule distance
-    # Damareau-Levenshtein - transposition distance
-    # Cayley distance - Kendall but with any pairs
-    # Ulam / LCS distance - number of delete-shift-insert operations (no ties)
-    # Chebyshev /maximum distance
-    # Minkowski distance
-    # Jaro-Winkler distance - only transpositions
+    # Footrule, Damerau-Levenshtein, Cayley, Ulam, Chebyshev, Minkowski, Jaro-Winkler
     if method == 'hamming': # Hamming distance: number of differences
         d = hamming(r1, r2)
     elif method == 'levenshtein': # Levenshtein distance - deletion, insertion, substitution
@@ -308,31 +275,29 @@ def dist(r1, r2, method='hamming'):
         d = kendall_tau_distance(r1, r2)
     elif method == 'winner': # How much the ranked first in r1 is far from the first place in r2
         i = np.argmin(r1)
-        d = r2[i] - r1[i] # TODO: should be an absolute value?
+        d = r2[i] - r1[i]
     elif method == 'euclidean':
-        if not isinstance(r1, np.ndarray):
-            r1, r2 = np.array(r1), np.array(r2)
-        d = np.linalg.norm(r1 - r2)
+        d = np.linalg.norm(np.asarray(r1) - np.asarray(r2))
     elif method == 'winner_mistake': # 0 if the winner is the same (TODO: ties?)
         d = 1
         if np.argmin(r1) == np.argmin(r2):
             d = 0
-    elif method == 'winner_distance':
+    elif method in ['winner_distance', 'asymmetrical_winner_distance']:
         d = winner_distance(r1, r2)
     elif method == 'symmetrical_winner_distance':
         d = symmetrical_winner_distance(r1, r2)
     else:
-        raise(Exception('Unknown distance method: {}'.format(method)))
+        raise ValueError('Unknown distance method: {}'.format(method))
     return d
 
 def corr(r1, r2, method='swap', return_p_value=False):
-    """ Levenshtein/Wasserstein type correlation between two ordinal distributions.
-
-    Between -1 and 1.
+    """ Correlation between two ranked ballots, between -1 and 1.
 
     Args:
-        method: 'swap', 'spearman', 'pearson'
-        p_value: If True, return a tuple (score, p_value)
+        r1: 1D array-like.
+        r2: 1D array-like.
+        method: 'swap' or 'kendalltau' (Kendall tau-b), 'spearman' or 'pearson'.
+        return_p_value: If True, return a tuple (correlation, p_value).
     """
     if method in ['swap', 'kendalltau']: # Kendalltau: swap distance
         c, p_value = kendalltau(r1, r2)
@@ -340,38 +305,34 @@ def corr(r1, r2, method='swap', return_p_value=False):
         c, p_value = spearmanr(r1, r2)
     elif method in ['pearson', 'pearsonr']: # Pearson correlation
         c, p_value = pearsonr(r1, r2)
-    # Add weightedtau
-    # Add weightedspearman
+    # TODO: weightedtau, weighted spearman
     else:
-        raise(Exception('Unknown correlation method: {}'.format(method)))
+        raise ValueError('Unknown correlation method: {}'.format(method))
     if return_p_value:
         return c, p_value
     return c
 
 def kendall_tau_distance(r1, r2, normalize=False):
-    """ Compute the absolute Kendall distance between two ranks (array-like).
+    """ Absolute Kendall distance between two rankings.
 
-    This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
+    This is the minimal number of swaps of neighbors needed to transform r1
+    into r2. It is computed from Kendall's tau-b, so ties are supported.
 
-    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
+    See https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
 
-    >>> kendall_tau_distance([0, 1, 2], [1, 2, 0])
-    2
-
-    >>> kendall_tau_distance([0, 1, 2], [0, 1, 2])
-    0
-
-    Ties management:
-    >>> kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
-    4
+    >>> float(kendall_tau_distance([0, 1, 2], [1, 2, 0]))
+    2.0
+    >>> float(kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])) # with ties
+    4.0
 
     Args:
-        normalize: If True, divide the results by the length of the lists.
+        r1: 1D array-like.
+        r2: 1D array-like, of the same length as r1.
+        normalize: If True, divide the result by the length of the rankings.
     """
     n = len(r1)
     if len(r1) != len(r2):
-        print("WARNING: r1 and r2 don't have the same length ({} != {})".format(len(r1), len(r2)))
+        raise ValueError("r1 and r2 must have the same length ({} != {})".format(len(r1), len(r2)))
     distance = corr(r1, r2, method='kendalltau') # scipy's Kendall tau b
     distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
     if normalize:
@@ -381,12 +342,13 @@ def kendall_tau_distance(r1, r2, normalize=False):
 def kendall_w(matrix, axis=0, ties=False):
     """ Kendall's W coefficient of concordance.
 
-    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
+    Measures the agreement between judges, from 0 (no agreement) to 1 (complete agreement).
+    See https://en.wikipedia.org/wiki/Kendall%27s_W
 
     Args:
         matrix: Preference matrix.
         axis: Axis of judges.
-        ties: If True, apply the correction for ties
+        ties: If True, apply the correction for ties.
     """
     if ties:
         return kendall_w_ties(matrix, axis=axis)
@@ -401,12 +363,13 @@ def kendall_w(matrix, axis=0, ties=False):
 def kendall_w_ties(matrix, axis=0):
     """ Kendall's W coefficient of concordance with correction for ties.
 
-    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
+    Without this correction, ties in the rankings lower the coefficient.
 
     Args:
         matrix: Preference matrix.
         axis: Axis of judges.
     """
+    matrix = np.asarray(matrix)
     if axis == 1:
         matrix = matrix.T
     m = matrix.shape[0] # judges
@@ -415,90 +378,82 @@ def kendall_w_ties(matrix, axis=0):
     T = [] # correction factors, one by judge
     for j in range(m):
         _, counts = np.unique(matrix[j], return_counts=True) # tied groups
-        correction = np.sum([(t**3 - t) for t in counts])
-        T.append(correction)
+        T.append(np.sum(counts**3 - counts))
     denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
-    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
-    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
+    sum_squares = np.sum(np.sum(matrix, axis=0) ** 2)
+    numerator = 12 * sum_squares - 3 * m**2 * n * (n + 1)**2
     return numerator / denominator
 
 def concordance(m, method='spearman', axis=0):
-    """ Coefficient of concordance between ballots.
+    """ Mean correlation between all pairs of judges.
 
-    This is a measure of agreement between raters.
-    The computation is the mean of the correlation between all possible pairs of judges.
+    This is a measure of agreement between judges.
 
     Args:
-        axis: Axis of raters.
+        m: Preference matrix.
+        method: Correlation method (see `corr`).
+        axis: Axis of judges.
     """
-    # Idea: Kendall's W - linearly related to spearman between all pairwise
-    if rk.is_dataframe(m):
-        m = np.array(m)
+    m = np.asarray(m)
     idx = range(m.shape[axis])
     scores = []
-    for pair in it.permutations(idx, 2):
-        r1 = np.take(m, pair[0], axis=axis)
-        r2 = np.take(m, pair[1], axis=axis)
-        c, p_value = corr(r1, r2, method=method, return_p_value=True)
-        scores.append(c)
+    for i, j in it.combinations(idx, 2):
+        r1 = np.take(m, i, axis=axis)
+        r2 = np.take(m, j, axis=axis)
+        scores.append(corr(r1, r2, method=method))
     return np.mean(scores)
 
 def distance_matrix(m, method='spearman', axis=0, names=None, **kwargs):
-    """ Compute all pairwise distances.
-
-    Distances can be dist, corr, metric.
+    """ Compute all pairwise distances (or correlations, or scores) between rows or columns.
 
     Args:
-        method: metric, distance or correlation to use.
-        axis: axis of items to compare (0 for rows or 1 for columns).
-        names: list of size m[axis] of names of objects to compare.
-                      Will be overwritten by index or columns if m is a pd.DataFrame.
-        **kwargs: keywords argument for the metric function.
+        m: 2D matrix.
+        method: Any method accepted by `any_metric`. Note that for a correlation
+            (the default), higher means closer.
+        axis: Axis of the items to compare (0 for rows or 1 for columns).
+        names: Names of the items to compare. If m is a pd.DataFrame, its index
+            or columns are used instead.
+        **kwargs: Arguments passed to the metric function.
+
+    Returns:
+        A square matrix, as a pd.DataFrame if m is a pd.DataFrame or if names
+        are given, as a np.ndarray otherwise.
     """
-    dataframe = False
+    if axis not in [0, 1]:
+        raise ValueError('axis must be 0 or 1.')
     if rk.is_dataframe(m):
-        dataframe = True
-        if axis == 0:
-            names = m.index
-        elif axis == 1:
-            names = m.columns
-        else:
-            raise Exception('axis must be 0 or 1.')
+        names = m.index if axis == 0 else m.columns
         m = np.array(m)
     n = m.shape[axis]
-    idx = range(n)
     dist_matrix = np.zeros((n, n))
-    for pair in it.product(idx, repeat=2):
-        i, j = pair[0], pair[1]
+    for i, j in it.product(range(n), repeat=2):
         r1 = np.take(m, i, axis=axis)
         r2 = np.take(m, j, axis=axis)
-        d = any_metric(r1, r2, method=method, **kwargs)
-        dist_matrix[i, j] = d
-    if dataframe: # if m was originally a pd.DataFrame
-        dist_matrix = pd.DataFrame(dist_matrix)
-        if names is not None:
-            dist_matrix.columns = names
-            dist_matrix.index = names
+        dist_matrix[i, j] = any_metric(r1, r2, method=method, **kwargs)
+    if names is not None:
+        dist_matrix = pd.DataFrame(dist_matrix, index=names, columns=names)
     return dist_matrix
 
 def auc_step(X, Y):
-    """ Compute area under curve using step function (in 'post' mode).
+    """ Area under a step curve ('post' mode), with time on a log scale.
 
-    X: List of timestamps of size n
-    Y: List of scores of size n
+    Used to evaluate learning curves (score as a function of time). Time is
+    transformed with log(1 + t / 60) / log(1 + 1200 / 60), so 1200 is the
+    end of the curve. The point (0, 0) is added at the beginning and the
+    last score is extended to the end of the curve.
+
+    Args:
+        X: List of timestamps of size n.
+        Y: List of scores of size n.
     """
-    # Log scale
     def transform_time(t, T=1200, t0=60):
         return np.log(1 + t / t0) / np.log(1 + T / t0)
-    X = [transform_time(t) for t in X]
-    # Add origin and final point
-    X.insert(0, 0)
-    Y.insert(0, 0)
-    X.append(1)
-    Y.append(Y[-1])
     if len(X) != len(Y):
         raise ValueError("The length of X and Y should be equal but got " +
                          "{} and {} !".format(len(X), len(Y)))
+    X = [0] + [transform_time(t) for t in X] + [1]
+    Y = [0] + list(Y)
+    Y.append(Y[-1])
     # Compute area
     area = 0
     for i in range(len(X) - 1):
@@ -507,63 +462,66 @@ def auc_step(X, Y):
     return area
 
 def get_valid_columns(solution):
-    """ Get a list of column indices for which the column has more than one class.
+    """ Get the indices of the columns containing more than one class.
 
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don't make sense (or you have to add an epsilon to remedy the situation).
 
     Args:
-        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
+        solution: Matrix of binary entries, of shape (num_examples, num_features).
+
     Returns:
-        valid_columns: a list of indices for which the column has more than one class.
+        Array of indices of the valid columns.
     """
     num_examples = solution.shape[0]
     col_sum = np.sum(solution, axis=0)
     valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
     return valid_columns
 
-#TODO
-#def relative_consensus or consensus_graph
-
 def winner_distance(r1, r2, reverse=False):
     """ Asymmetrical winner distance.
 
-        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
-        (rank(r1 winner)) - 1 / (n - 1)
-        Assuming no ties.
+    The rank of the winner of r1 in r2, normalized to be between 0 and 1:
+    (rank - 1) / (n - 1). Ties are not handled.
 
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
+    Args:
+        r1: 1D vector of scores representing a judge.
+        r2: 1D vector of scores representing a judge.
+        reverse: If True, lower is better.
     """
     r1, r2 = np.array(r1), np.array(r2)
     if reverse:
         w1 = np.argmin(r1) # r1 winner
     else:
         w1 = np.argmax(r1) # r1 winner
-    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)
+    return (rk.rank(r2, reverse=reverse)[w1] - 1) / (len(r2) - 1)
 
 def symmetrical_winner_distance(r1, r2, reverse=False):
     """ Symmetrical winner distance.
 
-        Average of dist(r1, r2) and dist(r2, r1).
+    Average of winner_distance(r1, r2) and winner_distance(r2, r1).
 
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
+    Args:
+        r1: 1D vector of scores representing a judge.
+        r2: 1D vector of scores representing a judge.
+        reverse: If True, lower is better.
     """
     d1 = winner_distance(r1, r2, reverse=reverse)
     d2 = winner_distance(r2, r1, reverse=reverse)
     return (d1 + d2) / 2
 
 def centrality(m, r, axis=0, method='swap'):
-    """ Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
+    """ How central a ranking is among the judges of m. Higher is better.
+
+    This is the mean correlation between r and all the judges, or minus the
+    mean distance if `method` is a distance.
 
     Args:
-        method: 'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.
+        m: Preference matrix.
+        r: 1D ranking of the candidates.
+        axis: Axis of candidates.
+        method: A correlation method (see `corr`) or a distance method (see `dist`).
     """
     if method in CORR_METHODS: # correlation
         scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
@@ -572,37 +530,45 @@ def centrality(m, r, axis=0, method='swap'):
     return scores.mean()
 
 def mean_distance(r, m, axis, method):
-    """ Mean distance between r and all points in m.
+    """ Opposite of `centrality`, used as the objective function by `rk.center`.
     """
     return - centrality(m, r, axis=axis, method=method)
 
 def correct_metric(metric, model, X_test, y_test, average='weighted', multi_class='ovo'):
-    """ Compute the model's score by making predictions on X_test and comparing them with y_test.
+    """ Score a scikit-learn model on (X_test, y_test) with a scikit-learn metric.
 
-    Try different configuration to be robust to all sklearn metrics.
+    Use predicted probabilities if the model supports them, otherwise use
+    predictions. Different call signatures are tried, so that most
+    scikit-learn metrics work without extra configuration.
+
+    Args:
+        metric: A scikit-learn metric function, e.g. `sklearn.metrics.roc_auc_score`.
+        model: A fitted model.
+        X_test: Test data.
+        y_test: Test labels.
+        average: `average` argument of the metric, if it accepts it.
+        multi_class: `multi_class` argument of the metric, if it accepts it.
     """
-    ### /!\ TODO: CLEAN CODE BELOW /!\ ###
-    # TODO: Vector case and one-hot case
     try:
         y_pred = model.predict_proba(X_test) # SOFT
         try:
-            score = metric(y_test, y_pred, average=average, multi_class='ovo') #labels=np.unique(y_pred))
-        except:
+            score = metric(y_test, y_pred, average=average, multi_class=multi_class)
+        except Exception:
             try:
                 score = metric(y_test, y_pred, average=average)
-            except:
+            except Exception:
                 score = metric(y_test, y_pred)
-    except:
+    except Exception:
         y_pred = model.predict(X_test) # HARD
         try:
-            score = metric(y_test, y_pred, average=average, multi_class='ovo')
-        except:
+            score = metric(y_test, y_pred, average=average, multi_class=multi_class)
+        except Exception:
             try:
                 score = metric(y_test, y_pred, average=average)
-            except:
+            except Exception:
                 try:
                     score = metric(y_test, y_pred)
-                except:
+                except Exception:
                     labels = np.unique(y_pred)
                     score = metric(y_test, y_pred, labels=labels)
     return score

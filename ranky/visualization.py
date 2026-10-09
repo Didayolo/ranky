@@ -2,6 +2,8 @@
 ######## VISUALIZATIONS #########
 #################################
 
+import inspect
+import itertools as it
 import numpy as np
 import pandas as pd
 from math import ceil
@@ -13,8 +15,7 @@ import ranky as rk
 from sklearn.manifold import TSNE, MDS
 from mpl_toolkits.mplot3d import Axes3D
 
-# critical difference does not work when this is enabled
-#sns.set_theme(style = "darkgrid")
+# All plotting functions call plt.show() at the end.
 
 def autolabel(rects, values, round=2):
     """ Function used by `rk.show` to annotate bar plots.
@@ -28,21 +29,22 @@ def autolabel(rects, values, round=2):
 
 def show(m, rotation=90, title=None, size=2, annot=False,
          ylabel=None, xlabel=None, round=2, color='royalblue', cmap=None):
-    """ Display a ranking or a prefrence matrix.
+    """ Display a ranking or a preference matrix.
 
-    If m is 1D: show ballot (bar plot).
-    If m is 2D: show preferences (heatmap).
+    If m is 1D: show the ballot as a bar plot.
+    If m is 2D: show the preferences as a heatmap.
 
     Args:
-        rotation: x labels rotation.
-        title: string - title of the figure.
-        size: integer - higher value for a smaller figure.
+        m: 1D or 2D array-like. Use pd.Series or pd.DataFrame to display names.
+        rotation: Rotation of the x labels.
+        title: Title of the figure.
+        size: Higher value for a smaller figure (2D only).
         annot: If True, write the values.
-        ylabel: string - y axis label.
-        xlabel: string - x axis label.
+        ylabel: Label of the y axis.
+        xlabel: Label of the x axis.
         round: Number of decimals to display if annot is True.
-        color: Color for 1D bar plot.
-        cmap: Color map for 2D heatmap.
+        color: Color of the bars (1D only).
+        cmap: Color map of the heatmap (2D only).
     """
     if isinstance(m, list): # convert to np.ndarray if needed
         m = np.array(m)
@@ -60,11 +62,11 @@ def show(m, rotation=90, title=None, size=2, annot=False,
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
         sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt='0.'+str(round), cmap=cmap)
-        x = np.arange(m.shape[1])
+        x = np.arange(m.shape[1]) + 0.5 # heatmap cells are centered on x + 0.5
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
     else:
-        raise(Exception('Passed array must have only 1 or 2 dimension, not {}.'.format(dim)))
+        raise ValueError('Passed array must have only 1 or 2 dimension, not {}.'.format(dim))
     if title is not None:
         plt.title(title)
     if xlabel is not None:
@@ -74,10 +76,10 @@ def show(m, rotation=90, title=None, size=2, annot=False,
     plt.show()
 
 def show_learning_curve(h):
-    """ Display learning curve.
+    """ Display a learning curve (score as a function of epochs).
 
     Args:
-        h: list representing the history of scores.
+        h: List of scores, one per epoch.
     """
     plt.plot(range(len(h)), h)
     plt.xlabel('epochs')
@@ -87,13 +89,16 @@ def show_learning_curve(h):
 def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight='bold', arrowsize=10):
     """ Show a directed graph represented by a binary matrix.
 
+    Can be used to display the graph returned by `rk.pairwise(m, return_graph=True)`.
+
     Args:
-        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        names: list representing the names of the vertices.
+        matrix: Binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
+        names: Names of the vertices.
         with_labels: Display names if True.
         node_size: Size of the nodes.
         font_size: Size of the font to display names.
         font_weight: 'bold' for bold, else refer to networkx documentation.
+        arrowsize: Size of the arrows.
     """
     G = nx.DiGraph()
     n = len(matrix)
@@ -112,50 +117,56 @@ def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big
     """ 2D or 3D scatterplot.
 
     Args:
-        m: data
+        m: np.ndarray of shape (n_points, dim).
         dim: 2 or 3.
-        names: vector of names to display on each point.
-        colors: vector of numbers or categories of the size of the number of points.
-                If None it will be replaced by names.
-        fontsize: text font size (integer).
-        pointsize: size of data points (integer).
-        big_display: plot the figure in a big format if True.
-        legend: if True, add legend of colors.
-        legend_loc: location of legend. See matplotlib.pyplot.legend for details.
+        names: Names to display next to each point.
+        colors: Numbers or categories, one per point, used to color the points.
+            If None, names are used (2D only).
+        fontsize: Font size of the names.
+        pointsize: Size of the points.
+        big_display: If True, plot the figure in a big format.
+        legend: If True, add a legend of the colors (2D only).
+        legend_loc: Location of the legend. See matplotlib.pyplot.legend for details.
     """
+    m = np.asarray(m)
     if colors is None:
         colors = names
     if dim == 2: # 2 dimensions
-        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and 'brief'))
+        x, y = m[:, 0], m[:, 1]
+        fig, ax = plt.subplots()
+        sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and 'brief'), ax=ax)
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
-                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
-                         fontsize=fontsize, color='black', weight='semibold')
-        #if legend:
-        #    plt.legend(colors, loc=legend_loc)
+                ax.text(x[line]+0.01, y[line], names[line], horizontalalignment='left',
+                        fontsize=fontsize, color='black', weight='semibold')
+        if legend and colors is not None:
+            ax.legend(loc=legend_loc)
+        # Put back old matplotlib grid
+        ax.set_facecolor('#EAEAF2')
+        ax.grid(True, color='white')
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection = '3d')
-        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
-        ax.scatter(x, y, z) #, c=range(len(names)))
+        ax = fig.add_subplot(111, projection='3d')
+        x, y, z = m[:, 0], m[:, 1], m[:, 2]
+        ax.scatter(x, y, z, s=pointsize)
+        if names is not None:
+            for line in range(0, m.shape[0]):
+                ax.text(x[line], y[line], z[line], names[line], fontsize=fontsize)
     else:
-        raise Exception('dim must be 2 or 3.')
+        raise ValueError('dim must be 2 or 3.')
     if big_display:
-        fi = plt.gcf()
-        fi.set_size_inches(12, 8) # change plot size
-    # Put back old matplotlib grid
-    scat.set_facecolor('#EAEAF2') 
-    scat.grid(True, color='white')
+        plt.gcf().set_size_inches(12, 8) # change plot size
     plt.show()
 
-def tsne(m, axis=0, dim=2, **kwargs):
-    """ Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
+def tsne(m, axis=0, dim=2, perplexity=None, **kwargs):
+    """ Plot the rows or columns of m in 2D or 3D, using t-SNE.
 
     Args:
-        axis: axis of dimensionality reduction.
-        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
+        m: 2D matrix. Use a pd.DataFrame to display names.
+        axis: 0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).
+        dim: Number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        perplexity: t-SNE perplexity. By default min(30, n_points - 1).
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize, pointsize).
     """
     names = None
     if axis == 0:
@@ -166,8 +177,11 @@ def tsne(m, axis=0, dim=2, **kwargs):
         if rk.is_dataframe(m):
             names = m.index
     else:
-        raise Excpetion('axis must be 0 or 1.')
-    m_transformed = TSNE(n_components=dim).fit_transform(m)
+        raise ValueError('axis must be 0 or 1.')
+    m = np.asarray(m)
+    if perplexity is None:
+        perplexity = min(30, m.shape[0] - 1) # must be lower than the number of points
+    m_transformed = TSNE(n_components=dim, perplexity=perplexity).fit_transform(m)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)
 
@@ -177,14 +191,17 @@ def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
     See: https://en.wikipedia.org/wiki/Multidimensional_scaling
 
     Args:
-        m: distance matrix.
-        dim: number of dimensions to plot (2 or 3).
-        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
+        distance_matrix: Square matrix of distances.
+        dim: Number of dimensions to plot (2 or 3).
+        names: Names of the objects. Overwritten if distance_matrix is a pd.DataFrame.
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize).
     """
     if rk.is_dataframe(distance_matrix):
         names = distance_matrix.columns
-    transformer = MDS(n_components=dim, dissimilarity='precomputed')
+    if 'metric_mds' in inspect.signature(MDS).parameters: # scikit-learn >= 1.8
+        transformer = MDS(n_components=dim, metric='precomputed', init='random')
+    else:
+        transformer = MDS(n_components=dim, dissimilarity='precomputed')
     m_transformed = transformer.fit_transform(distance_matrix)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)
@@ -192,13 +209,18 @@ def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
 def mds(m, axis=0, dim=2, method='spearman', **kwargs):
     """ Multidimensional scaling plot from a preference matrix.
 
+    Pairwise distances are computed with `method`, then the points are placed
+    in 2D or 3D so that their distances are preserved as much as possible.
+    Correlations are converted to distances with (1 - correlation).
+
     See: https://en.wikipedia.org/wiki/Multidimensional_scaling
 
     Args:
-        m: preference matrix.
-        dim: number of dimensions to plot (2 or 3).
-        method: any metric method.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
+        m: Preference matrix. Use a pd.DataFrame to display names.
+        axis: 0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).
+        dim: Number of dimensions to plot (2 or 3).
+        method: Distance or correlation method (see `rk.any_metric`).
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize).
     """
     names = None
     if axis == 0:
@@ -209,16 +231,18 @@ def mds(m, axis=0, dim=2, method='spearman', **kwargs):
         if rk.is_dataframe(m):
             names = m.index
     else:
-        raise Excpetion('axis must be 0 or 1.')
+        raise ValueError('axis must be 0 or 1.')
     # Compute pairwise distances
     dist_matrix = rk.distance_matrix(m, method=method)
+    if method in rk.CORR_METHODS: # higher correlation means closer
+        dist_matrix = 1 - dist_matrix
     # Call the plot functions
     mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
 
 def overlaps(pos, couples):
-    """ Used by critical difference.
+    """ Check if the horizontal line `pos` is contained in a line of `couples`.
 
-    Checks if the horizontal line overlaps any existing horizontal line.
+    Used by `show_critical_difference`.
     """
     i, j = pos
     for i1, j1 in couples:
@@ -227,47 +251,45 @@ def overlaps(pos, couples):
     return False
 
 def merge_couples(couples):
-    # Used by critical difference
+    """ Keep only the couples that are not contained in a longer one.
+
+    Used by `show_critical_difference`.
+    """
     longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
     return longest
 
 def critical_difference(m, comparison_func=None, axis=1, **kwargs):
-    """ Computes and draws a critical difference diagram.
+    """ Compute and draw a critical difference diagram.
 
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
-    This function uses a comparison function (rk.p_wins by default).
-    A comparison function f(a, b) should return True if a is significantly better than b.
+    Critical difference diagrams show the average score of each candidate, and
+    link the candidates whose performances are not significantly different
+    (using pairwise statistical tests).
 
     Args:
         m: Score matrix, array-like (use pd.DataFrame to name the candidates).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it's p_wins (defined in the same module), performing a binomial test.
+        comparison_func: Asymmetrical function used to compare two candidates.
+            comparison_func(a, b) should return 1 (or True) if a is significantly
+            better than b and 0 otherwise. By default it is `rk.p_wins`, performing
+            a binomial test. See the `rk.duel` module for other options.
         axis: Axis of judges.
-        kwargs: Arguments for the comparison_func function.
+        **kwargs: Arguments passed to comparison_func (e.g. pval for `rk.p_wins`).
     """
     m = pd.DataFrame(m) # casting if necessary
     scores = rk.score(m, axis=axis).sort_values()
     if axis == 0:
         m = m.T # if the candidates are in column, transpose the matrix
     couples = []
-    for i in range(len(scores) - 1):
-        for j in range(1, len(scores)):
-            if i < j:
-                _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.loc[_i], m.loc[_j]
-                if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
-                    couples.append((i, j))
+    for i, j in it.combinations(range(len(scores)), 2):
+        _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
+        a, b = m.loc[_i], m.loc[_j]
+        if rk.declare_ties(a, b, comparison_func=comparison_func, **kwargs):
+            couples.append((i, j))
     show_critical_difference(scores, couples)
 
 def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, link_vgap=.1, xlabel=None):
-    """ Draws a critical difference diagram.
+    """ Draw a critical difference diagram from precomputed scores and ties.
 
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
+    See `critical_difference` to compute the ties automatically.
 
     Forked from https://github.com/mbatchkarov/critical_difference
 
@@ -276,11 +298,14 @@ def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, l
     - H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
 
     Args:
-        scores: List of average methods' scores, array-like. If scores is a pd.Series, the index will be used as names.
-        couples: list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.
-        arrow_vgap: vertical space between the arrows that point to method names, between 0 and 1.
-        link_vgap: vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size
-        link_voffset: offset from the axis of the links that connect non-significant methods
+        scores: Average score of each method, array-like. If scores is a pd.Series, its index is used as names.
+        couples: List of tuples of indices (in the sorted scores) of methods that are not
+            significantly different, e.g. [(0, 1), (1, 2), (4, 5)].
+        arrow_vgap: Vertical space between the arrows that point to method names, between 0 and 1.
+        link_voffset: Offset from the axis of the links that connect non-significant methods.
+        link_vgap: Vertical space between the lines that connect methods that are not
+            significantly different. Fraction of the axis size, between 0 and 1.
+        xlabel: Optional label of the x axis.
     """
     size = len(scores)
     names = list(range(size)) # default names: [0, 1, ...]

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ranky"
+dynamic = ["version"]
+description = "Compute rankings in Python."
+readme = "README.md"
+authors = [{ name = "Adrien Pavao", email = "adrien.pavao@gmail.com" }]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "scikit-learn>=1.0",
+    "scipy>=1.7.0",
+    "seaborn",
+    "networkx",
+    "Levenshtein",
+    "tqdm",
+    "baycomp",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "build", "twine", "pdoc3", "markdown<3.11"] # markdown 3.11 breaks pdoc3 docstring rendering
+
+[project.urls]
+Homepage = "https://github.com/didayolo/ranky"
+Documentation = "https://didayolo.github.io/ranky/"
+"Bug Tracker" = "https://github.com/didayolo/ranky/issues"
+"Source Code" = "https://github.com/didayolo/ranky"
+
+[tool.setuptools]
+packages = ["ranky"]
+
+[tool.setuptools.dynamic]
+version = { attr = "ranky.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "ranky"]
+addopts = "--doctest-modules"
