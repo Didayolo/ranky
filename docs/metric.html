@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>ranky.metric API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -22,619 +36,6 @@
 <h1 class="title">Module <code>ranky.metric</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">#######################################
-### EVALUATION, COMPARISON, METRICS ###
-#######################################
-# Metrics, error bars, bootstrap
-
-import numpy as np
-import pandas as pd
-from Levenshtein import distance as levenshtein
-from scipy.spatial.distance import hamming
-from scipy.stats import kendalltau, spearmanr, pearsonr
-import importlib
-rk = importlib.import_module(&#39;ranky.ranking&#39;) # circular import
-import itertools as it
-from collections import Counter
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, average_precision_score, f1_score, log_loss, precision_score, recall_score, jaccard_score, roc_auc_score, mean_squared_error, mean_absolute_error
-
-METRIC_METHODS = [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;sar&#39;, &#39;mae&#39;]
-CORR_METHODS = [&#39;swap&#39;, &#39;kendalltau&#39;, &#39;spearman&#39;, &#39;spearmanr&#39;, &#39;pearson&#39;, &#39;pearsonr&#39;]
-DIST_METHODS = [&#39;hamming&#39;, &#39;levenshtein&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;]
-
-def arr_to_str(a):
-    return &#34;&#34;.join(str(x) for x in a)
-
-def to_dense(y):
-    &#34;&#34;&#34; Format predictions/solutions from sparse format (1D) to dense format (2D).
-
-    Sparse = &#39;argmax&#39;,
-    Dense = &#39;one-hot&#39;
-    &#34;&#34;&#34;
-    y = np.array(y)
-    if len(y.shape) == 1:
-        length = y.shape[0]
-        dense = np.zeros((length, y.max()+1))
-        dense[np.arange(length), y] = 1
-        return dense
-    else:
-        raise Exception(&#39;y must be 1-dimensional&#39;)
-
-def to_sparse(y, axis=1):
-    &#34;&#34;&#34; Format predictions/solutions from dense format (2D) to sparse format (1D).
-
-    Sparse = &#39;argmax&#39;,
-    Dense = &#39;one-hot&#39;
-    &#34;&#34;&#34;
-    y = np.array(y)
-    if len(y.shape) == 2:
-        sparse = np.argmax(y, axis=axis)
-        return sparse
-    else:
-        raise Exception(&#39;y must be 2-dimensional&#39;)
-
-def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
-    &#34;&#34;&#34; Format predictions/solutions from probabilities to binary {0, 1}.
-
-    Behaviour:
-    If unilabel is False: 1 if the value is stricly greater than the threshold, 0 otherwise.
-    If unilabel is True: argmax 1, other values 0.
-
-    Args:
-        y: vector or matrix to binarize. If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.
-        threshold: threshold for binarization (0 if below, 1 if strictly above).
-        unilabel: If True, return only one 1 for each row.
-        at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
-    &#34;&#34;&#34;
-    # TODO: keep index and column names if y is a pd.DataFrame
-    y = np.array(y)
-    if unilabel == True or at_least_one_class == True:
-        if len(y.shape) != 2:
-            raise Exception(&#39;If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.&#39;)
-    n = y.shape[0]
-    if unilabel:
-        y_binary = np.zeros(y.shape, dtype=int)
-        y_binary[np.arange(n), np.argmax(y, axis=1)] = 1
-    else: # multi-label
-        y_binary = np.where(y &gt; threshold, 1, 0)
-        if at_least_one_class:
-            y_binary[np.arange(n), np.argmax(y, axis=1)] = 1
-    return y_binary
-
-def any_metric(a, b, method, **kwargs):
-    &#34;&#34;&#34; Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
-
-    Args:
-        method: &#39;accuracy&#39;, ..., &#39;levenshtein&#39;, ..., &#39;spearman&#39;, ...
-        **kwargs: keyword arguments to pass to the metric function.
-    &#34;&#34;&#34;
-    if method in METRIC_METHODS:
-        return metric(a, b, method=method, **kwargs)
-    elif method in DIST_METHODS:
-        return dist(a, b, method=method, **kwargs)
-    elif method in CORR_METHODS:
-        return corr(a, b, method=method, **kwargs)
-    else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))
-
-def balanced_accuracy(y_true, y_pred):
-    &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
-
-    Args:
-        y_true: Ground truth in 2D dense format.
-        y_pred: Predictions in 2D dense format.
-    &#34;&#34;&#34;
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
-    recip_y_true = 1 - y_true
-    recip_y_pred = 1 - y_pred
-    sensitivity = np.sum(y_true * y_pred, axis=0) / np.sum(y_true, axis=0)
-    specificity = np.sum(recip_y_true * recip_y_pred, axis=0) / np.sum(recip_y_true, axis=0)
-    balanced_acc = np.mean((sensitivity + specificity) / 2.)
-    return balanced_acc
-
-def accuracy_multilabel(y_true,y_pred):
-    &#34;&#34;&#34; Soft multi-label accuracy.
-
-    Args:
-        y_true: Ground truth in 2D dense format.
-        y_pred: Predictions in 2D dense format.
-    &#34;&#34;&#34;
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-    if len(y_true.shape)==1:
-        x = np.where(y_true-y_pred == 0)[0]
-        return(len(x) / y_true.shape[0])
-    inter = np.sum(y_true * y_pred, axis=1)
-    union = np.sum(np.maximum(y_true,y_pred), axis=1)
-    return np.mean(inter / union)
-
-def loss(x, y, method=&#39;absolute&#39;):
-    &#34;&#34;&#34; Compute the error between two scalars or vectors.
-
-        Args:
-            x: float, usually representing a ground truth value.
-            y: float, usually representing a single prediction.
-            method: &#39;absolute&#39;, &#39;squared&#39;, ...
-    &#34;&#34;&#34;
-    # TODO
-    if method == &#39;absolute&#39;:
-        return np.abs(x - y)
-    elif method == &#39;squared&#39;:
-        return (x - y) ** 2
-    else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))
-
-def relative_metric(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=None, **kwargs):
-    &#34;&#34;&#34; ...
-
-    For example you can compute the Mean Rank of Absolute Error (averaged by class)
-    by calling relative_metrics(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=rk.borda, reverse=True)
-
-    Args:
-        y_true: Ground truth (format?)
-        y_pred_list: List of predictions (format?)
-        loss: &#39;method&#39; argument to be passed to the function &#39;loss&#39;
-        ranking_function: Ranking method from rk.ranking. rk.score by default.
-        **kwargs: Arguments to be passed to the ranking function.
-    &#34;&#34;&#34;
-    # TODO
-    if ranking_function is None:
-        ranking_function = rk.score
-    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
-    m = pd.DataFrame(np.array(m), index=None)
-    return ranking_function(m, reverse=True, **kwargs)
-
-def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missing_score=-1, unilabel=False):
-    &#34;&#34;&#34; Compute a classification scoring metric between y_true and y_pred.
-
-    Predictions format:
-    [[0.2, 0.3, 0.5]
-    [0.1, 0.8, 0.1]]
-    ...
-
-    Ground truth format:
-    [[0, 0, 1]
-    [0, 1, 0]]
-
-    If y_true and y_pred are 1D they&#39;ll be converted using `to_dense` function.
-
-    Args:
-        y_true: Ground truth (format?)
-        y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;
-        reverse_loss: If True, return (1 - score).
-        missing_score: (DEPRECATED) Value to return if the computation fails.
-        unilabel: If True, only one label per example. If False it&#39;s multi-label case.
-    &#34;&#34;&#34;
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
-    if y_true.shape != y_pred.shape:
-        raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
-    if len(y_true.shape) == 1:
-        y_true, y_pred = to_dense(y_true), to_dense(y_pred)
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
-    # PARAMETERS
-    average = &#39;binary&#39;
-    if y_true.shape[1] &gt; 2: # target is not binary
-        average = &#39;micro&#39;
-    # PREPROCESSING
-    if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
-        y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
-        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-
-    # TODO
-    #y_true, y_pred = np.array(y_true), np.array(y_pred)
-    #average = &#39;binary&#39;
-    #if y_true.shape != y_pred.shape:
-    #    raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
-    #if len(y_true.shape) == 1:
-    #    try:
-    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
-    #        if y_true.shape[1] &gt; 2: # target is not binary
-    #            average = &#39;micro&#39;
-    #    except: # TODO, TMP Ad-Hoc fix?
-    #        y_true, y_pred = y_true.T, y_pred.T
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
-    # PREPROCESSING
-    #if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
-    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    #if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
-    #    try:
-    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-    #    except:
-    #        pass
-    #        # TMP TODO
-    #try:
-    # COMPUTE SCORE
-    if method == &#39;accuracy&#39;:
-        score = accuracy_score(y_true, y_pred)
-    elif method == &#39;balanced_accuracy&#39;:
-        score = balanced_accuracy(y_true, y_pred)
-    elif method == &#39;balanced_accuracy_sklearn&#39;:
-        score = balanced_accuracy_score(y_true, y_pred)
-    elif method == &#39;precision&#39;:
-        score = precision_score(y_true, y_pred, average=average)
-    elif method == &#39;average_precision&#39;:
-        score = average_precision_score(y_true, y_pred)
-    elif method == &#39;f1_score&#39;:
-        score = f1_score(y_true, y_pred, average=average)
-    elif method == &#39;mxe&#39;:
-        score = log_loss(y_true, y_pred)
-    elif method == &#39;recall&#39;:
-        score = recall_score(y_true, y_pred, average=average)
-    elif method == &#39;jaccard&#39;:
-        score = jaccard_score(y_true, y_pred, average=average)
-    elif method == &#39;roc_auc&#39;:
-        score = roc_auc_score(y_true, y_pred)
-    elif method == &#39;mse&#39;:
-        score = mean_squared_error(y_true, y_pred)
-    elif method == &#39;rmse&#39;:
-        score = mean_squared_error(y_true, y_pred, squared=False)
-    elif method == &#39;mae&#39;:
-        score = mean_absolute_error(y_true, y_pred)
-    elif method == &#39;sar&#39;:
-        score = combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;)
-    else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))
-    #except Exception as e: # could not compute the score
-    #    print(&#39;Could not compute {}. Retuning missing_score. Error: {}&#39;.format(method, e))
-    #    return missing_score # MISSING SCORE
-    # REVERSE LOSS
-    is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;]
-    if reverse_loss and is_loss:
-        score = 1 - score
-    return score
-
-def combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;):
-    &#34;&#34;&#34; Combine several metrics as one.
-
-    For example, you can compute SAR metric by calling:
-    combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rms&#39;])
-
-    Args:
-        metrics: List of metric names.
-        ranking: A ranking system from ranky.
-    &#34;&#34;&#34;
-    score = -1
-    scores = [metric(y_true, y_pred, m, reverse_loss=True) for m in metrics]
-    if method == &#39;mean&#39;:
-        score = np.mean(scores)
-    elif method == &#39;median&#39;:
-        score = np.median(scores)
-    else:
-        raise Exception(&#39;Unknwon method: {}&#39;.format(method))
-    return score
-
-def dist(r1, r2, method=&#39;hamming&#39;):
-    &#34;&#34;&#34; Levenshtein/Wasserstein type distance between two ranked ballots.
-
-    Between 0 and 1+
-
-    Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;kendall&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
-    &#34;&#34;&#34;
-    # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
-    # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
-    # L1 norm between permutation matrices (does it work with ties?)
-    # Normalized Rank Transformation
-    # Footrule distance
-    # Damareau-Levenshtein - transposition distance
-    # Cayley distance - Kendall but with any pairs
-    # Ulam / LCS distance - number of delete-shift-insert operations (no ties)
-    # Chebyshev /maximum distance
-    # Minkowski distance
-    # Jaro-Winkler distance - only transpositions
-    if method == &#39;hamming&#39;: # Hamming distance: number of differences
-        d = hamming(r1, r2)
-    elif method == &#39;levenshtein&#39;: # Levenshtein distance - deletion, insertion, substitution
-        d = levenshtein(arr_to_str(r1), arr_to_str(r2))
-    elif method in [&#39;kendall&#39;, &#39;kendalltau&#39;]: # Absolute Kendall distance, defined below
-        d = kendall_tau_distance(r1, r2)
-    elif method == &#39;winner&#39;: # How much the ranked first in r1 is far from the first place in r2
-        i = np.argmin(r1)
-        d = r2[i] - r1[i] # TODO: should be an absolute value?
-    elif method == &#39;euclidean&#39;:
-        if not isinstance(r1, np.ndarray):
-            r1, r2 = np.array(r1), np.array(r2)
-        d = np.linalg.norm(r1 - r2)
-    elif method == &#39;winner_mistake&#39;: # 0 if the winner is the same (TODO: ties?)
-        d = 1
-        if np.argmin(r1) == np.argmin(r2):
-            d = 0
-    elif method == &#39;winner_distance&#39;:
-        d = winner_distance(r1, r2)
-    elif method == &#39;symmetrical_winner_distance&#39;:
-        d = symmetrical_winner_distance(r1, r2)
-    else:
-        raise(Exception(&#39;Unknown distance method: {}&#39;.format(method)))
-    return d
-
-def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
-    &#34;&#34;&#34; Levenshtein/Wasserstein type correlation between two ordinal distributions.
-
-    Between -1 and 1.
-
-    Args:
-        method: &#39;swap&#39;, &#39;spearman&#39;, &#39;pearson&#39;
-        p_value: If True, return a tuple (score, p_value)
-    &#34;&#34;&#34;
-    if method in [&#39;swap&#39;, &#39;kendalltau&#39;]: # Kendalltau: swap distance
-        c, p_value = kendalltau(r1, r2)
-    elif method in [&#39;spearman&#39;, &#39;spearmanr&#39;]: # Spearman rank-order
-        c, p_value = spearmanr(r1, r2)
-    elif method in [&#39;pearson&#39;, &#39;pearsonr&#39;]: # Pearson correlation
-        c, p_value = pearsonr(r1, r2)
-    # Add weightedtau
-    # Add weightedspearman
-    else:
-        raise(Exception(&#39;Unknown correlation method: {}&#39;.format(method)))
-    if return_p_value:
-        return c, p_value
-    return c
-
-def kendall_tau_distance(r1, r2, normalize=False):
-    &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
-
-    This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
-
-    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
-
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
-    2
-
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
-    0
-
-    Ties management:
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
-    4
-
-    Args:
-        normalize: If True, divide the results by the length of the lists.
-    &#34;&#34;&#34;
-    n = len(r1)
-    if len(r1) != len(r2):
-        print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
-    distance = corr(r1, r2, method=&#39;kendalltau&#39;) # scipy&#39;s Kendall tau b
-    distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
-    if normalize:
-        distance = distance / n
-    return distance
-
-def kendall_w(matrix, axis=0, ties=False):
-    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
-
-    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
-
-    Args:
-        matrix: Preference matrix.
-        axis: Axis of judges.
-        ties: If True, apply the correction for ties
-    &#34;&#34;&#34;
-    if ties:
-        return kendall_w_ties(matrix, axis=axis)
-    matrix = rk.rank(matrix, axis=1-axis) # compute on ranks
-    m = matrix.shape[axis] # judges
-    n = matrix.shape[1-axis] # candidates
-    denominator = m**2 * (n**3 - n)
-    rating_sums = np.sum(matrix, axis=axis)
-    S = n * np.var(rating_sums)
-    return 12 * S / denominator
-
-def kendall_w_ties(matrix, axis=0):
-    &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance with correction for ties.
-
-    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
-
-    Args:
-        matrix: Preference matrix.
-        axis: Axis of judges.
-    &#34;&#34;&#34;
-    if axis == 1:
-        matrix = matrix.T
-    m = matrix.shape[0] # judges
-    n = matrix.shape[1] # candidates
-    matrix = rk.rank(matrix, axis=1) # compute on ranks
-    T = [] # correction factors, one by judge
-    for j in range(m):
-        _, counts = np.unique(matrix[j], return_counts=True) # tied groups
-        correction = np.sum([(t**3 - t) for t in counts])
-        T.append(correction)
-    denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
-    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
-    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
-    return numerator / denominator
-
-def concordance(m, method=&#39;spearman&#39;, axis=0):
-    &#34;&#34;&#34; Coefficient of concordance between ballots.
-
-    This is a measure of agreement between raters.
-    The computation is the mean of the correlation between all possible pairs of judges.
-
-    Args:
-        axis: Axis of raters.
-    &#34;&#34;&#34;
-    # Idea: Kendall&#39;s W - linearly related to spearman between all pairwise
-    if rk.is_dataframe(m):
-        m = np.array(m)
-    idx = range(m.shape[axis])
-    scores = []
-    for pair in it.permutations(idx, 2):
-        r1 = np.take(m, pair[0], axis=axis)
-        r2 = np.take(m, pair[1], axis=axis)
-        c, p_value = corr(r1, r2, method=method, return_p_value=True)
-        scores.append(c)
-    return np.mean(scores)
-
-def distance_matrix(m, method=&#39;spearman&#39;, axis=0, names=None, **kwargs):
-    &#34;&#34;&#34; Compute all pairwise distances.
-
-    Distances can be dist, corr, metric.
-
-    Args:
-        method: metric, distance or correlation to use.
-        axis: axis of items to compare (0 for rows or 1 for columns).
-        names: list of size m[axis] of names of objects to compare.
-                      Will be overwritten by index or columns if m is a pd.DataFrame.
-        **kwargs: keywords argument for the metric function.
-    &#34;&#34;&#34;
-    dataframe = False
-    if rk.is_dataframe(m):
-        dataframe = True
-        if axis == 0:
-            names = m.index
-        elif axis == 1:
-            names = m.columns
-        else:
-            raise Exception(&#39;axis must be 0 or 1.&#39;)
-        m = np.array(m)
-    n = m.shape[axis]
-    idx = range(n)
-    dist_matrix = np.zeros((n, n))
-    for pair in it.product(idx, repeat=2):
-        i, j = pair[0], pair[1]
-        r1 = np.take(m, i, axis=axis)
-        r2 = np.take(m, j, axis=axis)
-        d = any_metric(r1, r2, method=method, **kwargs)
-        dist_matrix[i, j] = d
-    if dataframe: # if m was originally a pd.DataFrame
-        dist_matrix = pd.DataFrame(dist_matrix)
-        if names is not None:
-            dist_matrix.columns = names
-            dist_matrix.index = names
-    return dist_matrix
-
-def auc_step(X, Y):
-    &#34;&#34;&#34; Compute area under curve using step function (in &#39;post&#39; mode).
-
-    X: List of timestamps of size n
-    Y: List of scores of size n
-    &#34;&#34;&#34;
-    # Log scale
-    def transform_time(t, T=1200, t0=60):
-        return np.log(1 + t / t0) / np.log(1 + T / t0)
-    X = [transform_time(t) for t in X]
-    # Add origin and final point
-    X.insert(0, 0)
-    Y.insert(0, 0)
-    X.append(1)
-    Y.append(Y[-1])
-    if len(X) != len(Y):
-        raise ValueError(&#34;The length of X and Y should be equal but got &#34; +
-                         &#34;{} and {} !&#34;.format(len(X), len(Y)))
-    # Compute area
-    area = 0
-    for i in range(len(X) - 1):
-        delta_X = X[i + 1] - X[i]
-        area += delta_X * Y[i]
-    return area
-
-def get_valid_columns(solution):
-    &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
-
-    This is necessary when computing BAC or AUC which involves true positive and
-    true negative in the denominator. When some class is missing, these scores
-    don&#39;t make sense (or you have to add an epsilon to remedy the situation).
-
-    Args:
-        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
-    Returns:
-        valid_columns: a list of indices for which the column has more than one class.
-    &#34;&#34;&#34;
-    num_examples = solution.shape[0]
-    col_sum = np.sum(solution, axis=0)
-    valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
-    return valid_columns
-
-#TODO
-#def relative_consensus or consensus_graph
-
-def winner_distance(r1, r2, reverse=False):
-    &#34;&#34;&#34; Asymmetrical winner distance.
-
-        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
-        (rank(r1 winner)) - 1 / (n - 1)
-        Assuming no ties.
-
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    r1, r2 = np.array(r1), np.array(r2)
-    if reverse:
-        w1 = np.argmin(r1) # r1 winner
-    else:
-        w1 = np.argmax(r1) # r1 winner
-    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)
-
-def symmetrical_winner_distance(r1, r2, reverse=False):
-    &#34;&#34;&#34; Symmetrical winner distance.
-
-        Average of dist(r1, r2) and dist(r2, r1).
-
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    d1 = winner_distance(r1, r2, reverse=reverse)
-    d2 = winner_distance(r2, r1, reverse=reverse)
-    return (d1 + d2) / 2
-
-def centrality(m, r, axis=0, method=&#39;swap&#39;):
-    &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
-
-    Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
-    &#34;&#34;&#34;
-    if method in CORR_METHODS: # correlation
-        scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
-    else: # distance
-        scores = - np.apply_along_axis(dist, axis, m, r, method) # minus because higher is better, best 0
-    return scores.mean()
-
-def mean_distance(r, m, axis, method):
-    &#34;&#34;&#34; Mean distance between r and all points in m.
-    &#34;&#34;&#34;
-    return - centrality(m, r, axis=axis, method=method)
-
-def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, multi_class=&#39;ovo&#39;):
-    &#34;&#34;&#34; Compute the model&#39;s score by making predictions on X_test and comparing them with y_test.
-
-    Try different configuration to be robust to all sklearn metrics.
-    &#34;&#34;&#34;
-    ### /!\ TODO: CLEAN CODE BELOW /!\ ###
-    # TODO: Vector case and one-hot case
-    try:
-        y_pred = model.predict_proba(X_test) # SOFT
-        try:
-            score = metric(y_test, y_pred, average=average, multi_class=&#39;ovo&#39;) #labels=np.unique(y_pred))
-        except:
-            try:
-                score = metric(y_test, y_pred, average=average)
-            except:
-                score = metric(y_test, y_pred)
-    except:
-        y_pred = model.predict(X_test) # HARD
-        try:
-            score = metric(y_test, y_pred, average=average, multi_class=&#39;ovo&#39;)
-        except:
-            try:
-                score = metric(y_test, y_pred, average=average)
-            except:
-                try:
-                    score = metric(y_test, y_pred)
-                except:
-                    labels = np.unique(y_pred)
-                    score = metric(y_test, y_pred, labels=labels)
-    return score</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -647,20 +48,12 @@ def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, mu
 <span>def <span class="ident">accuracy_multilabel</span></span>(<span>y_true, y_pred)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Soft multi-label accuracy.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>y_true</code></strong></dt>
-<dd>Ground truth in 2D dense format.</dd>
-<dt><strong><code>y_pred</code></strong></dt>
-<dd>Predictions in 2D dense format.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def accuracy_multilabel(y_true,y_pred):
-    &#34;&#34;&#34; Soft multi-label accuracy.
+<pre><code class="python">def accuracy_multilabel(y_true, y_pred):
+    &#34;&#34;&#34; Soft multi-label accuracy (mean intersection over union of each row).
 
     Args:
         y_true: Ground truth in 2D dense format.
@@ -668,36 +61,40 @@ def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, mu
     &#34;&#34;&#34;
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
-    if len(y_true.shape)==1:
+    if len(y_true.shape) == 1:
         x = np.where(y_true-y_pred == 0)[0]
-        return(len(x) / y_true.shape[0])
+        return len(x) / y_true.shape[0]
     inter = np.sum(y_true * y_pred, axis=1)
-    union = np.sum(np.maximum(y_true,y_pred), axis=1)
+    union = np.sum(np.maximum(y_true, y_pred), axis=1)
     return np.mean(inter / union)</code></pre>
 </details>
+<div class="desc"><p>Soft multi-label accuracy (mean intersection over union of each row).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth in 2D dense format.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions in 2D dense format.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.any_metric"><code class="name flex">
 <span>def <span class="ident">any_metric</span></span>(<span>a, b, method, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>'accuracy', &hellip;, 'levenshtein', &hellip;, 'spearman', &hellip;</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>keyword arguments to pass to the metric function.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def any_metric(a, b, method, **kwargs):
-    &#34;&#34;&#34; Compute distance or correlation between a and b using any scoring metric, rank distance or rank correlation method.
+    &#34;&#34;&#34; Compare a and b with any scoring metric, rank distance or rank correlation.
+
+    Dispatch to `metric`, `dist` or `corr` depending on the method.
 
     Args:
-        method: &#39;accuracy&#39;, ..., &#39;levenshtein&#39;, ..., &#39;spearman&#39;, ...
-        **kwargs: keyword arguments to pass to the metric function.
+        a: First array-like (ground truth or ranking).
+        b: Second array-like (predictions or ranking).
+        method: Name of the method, from METRIC_METHODS, DIST_METHODS or CORR_METHODS.
+        **kwargs: Arguments passed to the underlying function.
     &#34;&#34;&#34;
     if method in METRIC_METHODS:
         return metric(a, b, method=method, **kwargs)
@@ -706,51 +103,64 @@ def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, mu
     elif method in CORR_METHODS:
         return corr(a, b, method=method, **kwargs)
     else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))</code></pre>
+        raise ValueError(&#39;Unknown method: {}&#39;.format(method))</code></pre>
 </details>
+<div class="desc"><p>Compare a and b with any scoring metric, rank distance or rank correlation.</p>
+<p>Dispatch to <code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric()</a></code>, <code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist()</a></code> or <code><a title="ranky.metric.corr" href="#ranky.metric.corr">corr()</a></code> depending on the method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>First array-like (ground truth or ranking).</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Second array-like (predictions or ranking).</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Name of the method, from METRIC_METHODS, DIST_METHODS or CORR_METHODS.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments passed to the underlying function.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.arr_to_str"><code class="name flex">
 <span>def <span class="ident">arr_to_str</span></span>(<span>a)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def arr_to_str(a):
+    &#34;&#34;&#34; Concatenate the values of a 1D array into a string. &#34;&#34;&#34;
     return &#34;&#34;.join(str(x) for x in a)</code></pre>
 </details>
+<div class="desc"><p>Concatenate the values of a 1D array into a string.</p></div>
 </dd>
 <dt id="ranky.metric.auc_step"><code class="name flex">
 <span>def <span class="ident">auc_step</span></span>(<span>X, Y)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute area under curve using step function (in 'post' mode).</p>
-<p>X: List of timestamps of size n
-Y: List of scores of size n</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def auc_step(X, Y):
-    &#34;&#34;&#34; Compute area under curve using step function (in &#39;post&#39; mode).
+    &#34;&#34;&#34; Area under a step curve (&#39;post&#39; mode), with time on a log scale.
 
-    X: List of timestamps of size n
-    Y: List of scores of size n
+    Used to evaluate learning curves (score as a function of time). Time is
+    transformed with log(1 + t / 60) / log(1 + 1200 / 60), so 1200 is the
+    end of the curve. The point (0, 0) is added at the beginning and the
+    last score is extended to the end of the curve.
+
+    Args:
+        X: List of timestamps of size n.
+        Y: List of scores of size n.
     &#34;&#34;&#34;
-    # Log scale
     def transform_time(t, T=1200, t0=60):
         return np.log(1 + t / t0) / np.log(1 + T / t0)
-    X = [transform_time(t) for t in X]
-    # Add origin and final point
-    X.insert(0, 0)
-    Y.insert(0, 0)
-    X.append(1)
-    Y.append(Y[-1])
     if len(X) != len(Y):
         raise ValueError(&#34;The length of X and Y should be equal but got &#34; +
                          &#34;{} and {} !&#34;.format(len(X), len(Y)))
+    X = [0] + [transform_time(t) for t in X] + [1]
+    Y = [0] + list(Y)
+    Y.append(Y[-1])
     # Compute area
     area = 0
     for i in range(len(X) - 1):
@@ -758,29 +168,35 @@ Y: List of scores of size n</p></div>
         area += delta_X * Y[i]
     return area</code></pre>
 </details>
+<div class="desc"><p>Area under a step curve ('post' mode), with time on a log scale.</p>
+<p>Used to evaluate learning curves (score as a function of time). Time is
+transformed with log(1 + t / 60) / log(1 + 1200 / 60), so 1200 is the
+end of the curve. The point (0, 0) is added at the beginning and the
+last score is extended to the end of the curve.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>X</code></strong></dt>
+<dd>List of timestamps of size n.</dd>
+<dt><strong><code>Y</code></strong></dt>
+<dd>List of scores of size n.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.balanced_accuracy"><code class="name flex">
 <span>def <span class="ident">balanced_accuracy</span></span>(<span>y_true, y_pred)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute balanced accuracy between y_true and y_pred.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>y_true</code></strong></dt>
-<dd>Ground truth in 2D dense format.</dd>
-<dt><strong><code>y_pred</code></strong></dt>
-<dd>Predictions in 2D dense format.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def balanced_accuracy(y_true, y_pred):
-    &#34;&#34;&#34; Compute balanced accuracy between y_true and y_pred.
+    &#34;&#34;&#34; Balanced accuracy, averaged over classes.
+
+    For each class (column), compute the mean of sensitivity and specificity.
 
     Args:
-        y_true: Ground truth in 2D dense format.
-        y_pred: Predictions in 2D dense format.
+        y_true: Ground truth in 2D dense binary format.
+        y_pred: Predictions in 2D dense binary format.
     &#34;&#34;&#34;
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     recip_y_true = 1 - y_true
@@ -790,26 +206,35 @@ Y: List of scores of size n</p></div>
     balanced_acc = np.mean((sensitivity + specificity) / 2.)
     return balanced_acc</code></pre>
 </details>
+<div class="desc"><p>Balanced accuracy, averaged over classes.</p>
+<p>For each class (column), compute the mean of sensitivity and specificity.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth in 2D dense binary format.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions in 2D dense binary format.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.centrality"><code class="name flex">
 <span>def <span class="ident">centrality</span></span>(<span>m, r, axis=0, method='swap')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>'hamming', 'levenshtein' for distance. 'swap', 'spearman' for correlation.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def centrality(m, r, axis=0, method=&#39;swap&#39;):
-    &#34;&#34;&#34; Compute how good a ranking is by doing the sum of the correlations between the ranking and all ballots in m.
+    &#34;&#34;&#34; How central a ranking is among the judges of m. Higher is better.
+
+    This is the mean correlation between r and all the judges, or minus the
+    mean distance if `method` is a distance.
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39; for distance. &#39;swap&#39;, &#39;spearman&#39; for correlation.
+        m: Preference matrix.
+        r: 1D ranking of the candidates.
+        axis: Axis of candidates.
+        method: A correlation method (see `corr`) or a distance method (see `dist`).
     &#34;&#34;&#34;
     if method in CORR_METHODS: # correlation
         scores = np.apply_along_axis(corr, axis, m, r, method) # best 1
@@ -817,109 +242,120 @@ Y: List of scores of size n</p></div>
         scores = - np.apply_along_axis(dist, axis, m, r, method) # minus because higher is better, best 0
     return scores.mean()</code></pre>
 </details>
+<div class="desc"><p>How central a ranking is among the judges of m. Higher is better.</p>
+<p>This is the mean correlation between r and all the judges, or minus the
+mean distance if <code>method</code> is a distance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>r</code></strong></dt>
+<dd>1D ranking of the candidates.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of candidates.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>A correlation method (see <code><a title="ranky.metric.corr" href="#ranky.metric.corr">corr()</a></code>) or a distance method (see <code><a title="ranky.metric.dist" href="#ranky.metric.dist">dist()</a></code>).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.combined_metric"><code class="name flex">
 <span>def <span class="ident">combined_metric</span></span>(<span>y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rmse'], method='mean')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Combine several metrics as one.</p>
-<p>For example, you can compute SAR metric by calling:
-combined_metric(y_true, y_pred, metrics=['accuracy', 'roc_auc', 'rms'])</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>metrics</code></strong></dt>
-<dd>List of metric names.</dd>
-<dt><strong><code>ranking</code></strong></dt>
-<dd>A ranking system from ranky.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;):
-    &#34;&#34;&#34; Combine several metrics as one.
+    &#34;&#34;&#34; Combine several metrics into one.
 
-    For example, you can compute SAR metric by calling:
-    combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rms&#39;])
+    Losses are converted to (1 - loss) before being combined. The default
+    corresponds to the SAR metric (squared error, accuracy, ROC AUC).
 
     Args:
-        metrics: List of metric names.
-        ranking: A ranking system from ranky.
+        y_true: Ground truth.
+        y_pred: Predictions.
+        metrics: List of metric names (see `metric`).
+        method: &#39;mean&#39; or &#39;median&#39;.
     &#34;&#34;&#34;
-    score = -1
     scores = [metric(y_true, y_pred, m, reverse_loss=True) for m in metrics]
     if method == &#39;mean&#39;:
         score = np.mean(scores)
     elif method == &#39;median&#39;:
         score = np.median(scores)
     else:
-        raise Exception(&#39;Unknwon method: {}&#39;.format(method))
+        raise ValueError(&#39;Unknown method: {}&#39;.format(method))
     return score</code></pre>
 </details>
+<div class="desc"><p>Combine several metrics into one.</p>
+<p>Losses are converted to (1 - loss) before being combined. The default
+corresponds to the SAR metric (squared error, accuracy, ROC AUC).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y_true</code></strong></dt>
+<dd>Ground truth.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions.</dd>
+<dt><strong><code>metrics</code></strong></dt>
+<dd>List of metric names (see <code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric()</a></code>).</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'mean' or 'median'.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.concordance"><code class="name flex">
 <span>def <span class="ident">concordance</span></span>(<span>m, method='spearman', axis=0)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Coefficient of concordance between ballots.</p>
-<p>This is a measure of agreement between raters.
-The computation is the mean of the correlation between all possible pairs of judges.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>axis</code></strong></dt>
-<dd>Axis of raters.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def concordance(m, method=&#39;spearman&#39;, axis=0):
-    &#34;&#34;&#34; Coefficient of concordance between ballots.
+    &#34;&#34;&#34; Mean correlation between all pairs of judges.
 
-    This is a measure of agreement between raters.
-    The computation is the mean of the correlation between all possible pairs of judges.
+    This is a measure of agreement between judges.
 
     Args:
-        axis: Axis of raters.
+        m: Preference matrix.
+        method: Correlation method (see `corr`).
+        axis: Axis of judges.
     &#34;&#34;&#34;
-    # Idea: Kendall&#39;s W - linearly related to spearman between all pairwise
-    if rk.is_dataframe(m):
-        m = np.array(m)
+    m = np.asarray(m)
     idx = range(m.shape[axis])
     scores = []
-    for pair in it.permutations(idx, 2):
-        r1 = np.take(m, pair[0], axis=axis)
-        r2 = np.take(m, pair[1], axis=axis)
-        c, p_value = corr(r1, r2, method=method, return_p_value=True)
-        scores.append(c)
+    for i, j in it.combinations(idx, 2):
+        r1 = np.take(m, i, axis=axis)
+        r2 = np.take(m, j, axis=axis)
+        scores.append(corr(r1, r2, method=method))
     return np.mean(scores)</code></pre>
 </details>
+<div class="desc"><p>Mean correlation between all pairs of judges.</p>
+<p>This is a measure of agreement between judges.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Correlation method (see <code><a title="ranky.metric.corr" href="#ranky.metric.corr">corr()</a></code>).</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of judges.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.corr"><code class="name flex">
 <span>def <span class="ident">corr</span></span>(<span>r1, r2, method='swap', return_p_value=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Levenshtein/Wasserstein type correlation between two ordinal distributions.</p>
-<p>Between -1 and 1.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>'swap', 'spearman', 'pearson'</dd>
-<dt><strong><code>p_value</code></strong></dt>
-<dd>If True, return a tuple (score, p_value)</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def corr(r1, r2, method=&#39;swap&#39;, return_p_value=False):
-    &#34;&#34;&#34; Levenshtein/Wasserstein type correlation between two ordinal distributions.
-
-    Between -1 and 1.
+    &#34;&#34;&#34; Correlation between two ranked ballots, between -1 and 1.
 
     Args:
-        method: &#39;swap&#39;, &#39;spearman&#39;, &#39;pearson&#39;
-        p_value: If True, return a tuple (score, p_value)
+        r1: 1D array-like.
+        r2: 1D array-like.
+        method: &#39;swap&#39; or &#39;kendalltau&#39; (Kendall tau-b), &#39;spearman&#39; or &#39;pearson&#39;.
+        return_p_value: If True, return a tuple (correlation, p_value).
     &#34;&#34;&#34;
     if method in [&#39;swap&#39;, &#39;kendalltau&#39;]: # Kendalltau: swap distance
         c, p_value = kendalltau(r1, r2)
@@ -927,91 +363,125 @@ The computation is the mean of the correlation between all possible pairs of jud
         c, p_value = spearmanr(r1, r2)
     elif method in [&#39;pearson&#39;, &#39;pearsonr&#39;]: # Pearson correlation
         c, p_value = pearsonr(r1, r2)
-    # Add weightedtau
-    # Add weightedspearman
+    # TODO: weightedtau, weighted spearman
     else:
-        raise(Exception(&#39;Unknown correlation method: {}&#39;.format(method)))
+        raise ValueError(&#39;Unknown correlation method: {}&#39;.format(method))
     if return_p_value:
         return c, p_value
     return c</code></pre>
 </details>
+<div class="desc"><p>Correlation between two ranked ballots, between -1 and 1.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D array-like.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D array-like.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'swap' or 'kendalltau' (Kendall tau-b), 'spearman' or 'pearson'.</dd>
+<dt><strong><code>return_p_value</code></strong></dt>
+<dd>If True, return a tuple (correlation, p_value).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.correct_metric"><code class="name flex">
 <span>def <span class="ident">correct_metric</span></span>(<span>metric, model, X_test, y_test, average='weighted', multi_class='ovo')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute the model's score by making predictions on X_test and comparing them with y_test.</p>
-<p>Try different configuration to be robust to all sklearn metrics.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def correct_metric(metric, model, X_test, y_test, average=&#39;weighted&#39;, multi_class=&#39;ovo&#39;):
-    &#34;&#34;&#34; Compute the model&#39;s score by making predictions on X_test and comparing them with y_test.
+    &#34;&#34;&#34; Score a scikit-learn model on (X_test, y_test) with a scikit-learn metric.
 
-    Try different configuration to be robust to all sklearn metrics.
+    Use predicted probabilities if the model supports them, otherwise use
+    predictions. Different call signatures are tried, so that most
+    scikit-learn metrics work without extra configuration.
+
+    Args:
+        metric: A scikit-learn metric function, e.g. `sklearn.metrics.roc_auc_score`.
+        model: A fitted model.
+        X_test: Test data.
+        y_test: Test labels.
+        average: `average` argument of the metric, if it accepts it.
+        multi_class: `multi_class` argument of the metric, if it accepts it.
     &#34;&#34;&#34;
-    ### /!\ TODO: CLEAN CODE BELOW /!\ ###
-    # TODO: Vector case and one-hot case
     try:
         y_pred = model.predict_proba(X_test) # SOFT
         try:
-            score = metric(y_test, y_pred, average=average, multi_class=&#39;ovo&#39;) #labels=np.unique(y_pred))
-        except:
+            score = metric(y_test, y_pred, average=average, multi_class=multi_class)
+        except Exception:
             try:
                 score = metric(y_test, y_pred, average=average)
-            except:
+            except Exception:
                 score = metric(y_test, y_pred)
-    except:
+    except Exception:
         y_pred = model.predict(X_test) # HARD
         try:
-            score = metric(y_test, y_pred, average=average, multi_class=&#39;ovo&#39;)
-        except:
+            score = metric(y_test, y_pred, average=average, multi_class=multi_class)
+        except Exception:
             try:
                 score = metric(y_test, y_pred, average=average)
-            except:
+            except Exception:
                 try:
                     score = metric(y_test, y_pred)
-                except:
+                except Exception:
                     labels = np.unique(y_pred)
                     score = metric(y_test, y_pred, labels=labels)
     return score</code></pre>
 </details>
+<div class="desc"><p>Score a scikit-learn model on (X_test, y_test) with a scikit-learn metric.</p>
+<p>Use predicted probabilities if the model supports them, otherwise use
+predictions. Different call signatures are tried, so that most
+scikit-learn metrics work without extra configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>metric</code></strong></dt>
+<dd>A scikit-learn metric function, e.g. <code>sklearn.metrics.roc_auc_score</code>.</dd>
+<dt><strong><code>model</code></strong></dt>
+<dd>A fitted model.</dd>
+<dt><strong><code>X_test</code></strong></dt>
+<dd>Test data.</dd>
+<dt><strong><code>y_test</code></strong></dt>
+<dd>Test labels.</dd>
+<dt><strong><code>average</code></strong></dt>
+<dd><code>average</code> argument of the metric, if it accepts it.</dd>
+<dt><strong><code>multi_class</code></strong></dt>
+<dd><code>multi_class</code> argument of the metric, if it accepts it.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.dist"><code class="name flex">
 <span>def <span class="ident">dist</span></span>(<span>r1, r2, method='hamming')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Levenshtein/Wasserstein type distance between two ranked ballots.</p>
-<p>Between 0 and 1+</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>'hamming', 'levenshtein', 'kendall', 'winner', 'euclidean', 'winner_mistake', 'winner_distance', 'asymmetrical_winner_distance'.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dist(r1, r2, method=&#39;hamming&#39;):
-    &#34;&#34;&#34; Levenshtein/Wasserstein type distance between two ranked ballots.
+    &#34;&#34;&#34; Distance between two ranked ballots.
 
-    Between 0 and 1+
+    Available methods:
+
+    - &#39;hamming&#39;: proportion of positions that differ.
+    - &#39;levenshtein&#39;: edit distance between the ballots written as strings
+      (values are concatenated, so it is only meaningful for single digit values).
+    - &#39;kendall&#39; (or &#39;kendalltau&#39;): number of swaps of neighbors, see `kendall_tau_distance`.
+    - &#39;winner&#39;: r2[i] - r1[i], where i is the position of the lowest value in r1.
+    - &#39;euclidean&#39;: Euclidean distance.
+    - &#39;winner_mistake&#39;: 0 if the lowest value is at the same position in both ballots, 1 otherwise.
+    - &#39;winner_distance&#39; (or &#39;asymmetrical_winner_distance&#39;): see `winner_distance`.
+    - &#39;symmetrical_winner_distance&#39;: see `symmetrical_winner_distance`.
 
     Args:
-        method: &#39;hamming&#39;, &#39;levenshtein&#39;, &#39;kendall&#39;, &#39;winner&#39;, &#39;euclidean&#39;, &#39;winner_mistake&#39;, &#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;.
+        r1: 1D array-like.
+        r2: 1D array-like.
+        method: Name of the method.
     &#34;&#34;&#34;
+    # Other possible distances:
     # https://math.stackexchange.com/questions/2492954/distance-between-two-permutations
     # https://people.revoledu.com/kardi/tutorial/Similarity/OrdinalVariables.html
-    # L1 norm between permutation matrices (does it work with ties?)
-    # Normalized Rank Transformation
-    # Footrule distance
-    # Damareau-Levenshtein - transposition distance
-    # Cayley distance - Kendall but with any pairs
-    # Ulam / LCS distance - number of delete-shift-insert operations (no ties)
-    # Chebyshev /maximum distance
-    # Minkowski distance
-    # Jaro-Winkler distance - only transpositions
+    # Footrule, Damerau-Levenshtein, Cayley, Ulam, Chebyshev, Minkowski, Jaro-Winkler
     if method == &#39;hamming&#39;: # Hamming distance: number of differences
         d = hamming(r1, r2)
     elif method == &#39;levenshtein&#39;: # Levenshtein distance - deletion, insertion, substitution
@@ -1020,198 +490,199 @@ The computation is the mean of the correlation between all possible pairs of jud
         d = kendall_tau_distance(r1, r2)
     elif method == &#39;winner&#39;: # How much the ranked first in r1 is far from the first place in r2
         i = np.argmin(r1)
-        d = r2[i] - r1[i] # TODO: should be an absolute value?
+        d = r2[i] - r1[i]
     elif method == &#39;euclidean&#39;:
-        if not isinstance(r1, np.ndarray):
-            r1, r2 = np.array(r1), np.array(r2)
-        d = np.linalg.norm(r1 - r2)
+        d = np.linalg.norm(np.asarray(r1) - np.asarray(r2))
     elif method == &#39;winner_mistake&#39;: # 0 if the winner is the same (TODO: ties?)
         d = 1
         if np.argmin(r1) == np.argmin(r2):
             d = 0
-    elif method == &#39;winner_distance&#39;:
+    elif method in [&#39;winner_distance&#39;, &#39;asymmetrical_winner_distance&#39;]:
         d = winner_distance(r1, r2)
     elif method == &#39;symmetrical_winner_distance&#39;:
         d = symmetrical_winner_distance(r1, r2)
     else:
-        raise(Exception(&#39;Unknown distance method: {}&#39;.format(method)))
+        raise ValueError(&#39;Unknown distance method: {}&#39;.format(method))
     return d</code></pre>
 </details>
+<div class="desc"><p>Distance between two ranked ballots.</p>
+<p>Available methods:</p>
+<ul>
+<li>'hamming': proportion of positions that differ.</li>
+<li>'levenshtein': edit distance between the ballots written as strings
+(values are concatenated, so it is only meaningful for single digit values).</li>
+<li>'kendall' (or 'kendalltau'): number of swaps of neighbors, see <code><a title="ranky.metric.kendall_tau_distance" href="#ranky.metric.kendall_tau_distance">kendall_tau_distance()</a></code>.</li>
+<li>'winner': r2[i] - r1[i], where i is the position of the lowest value in r1.</li>
+<li>'euclidean': Euclidean distance.</li>
+<li>'winner_mistake': 0 if the lowest value is at the same position in both ballots, 1 otherwise.</li>
+<li>'winner_distance' (or 'asymmetrical_winner_distance'): see <code><a title="ranky.metric.winner_distance" href="#ranky.metric.winner_distance">winner_distance()</a></code>.</li>
+<li>'symmetrical_winner_distance': see <code><a title="ranky.metric.symmetrical_winner_distance" href="#ranky.metric.symmetrical_winner_distance">symmetrical_winner_distance()</a></code>.</li>
+</ul>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D array-like.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D array-like.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Name of the method.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.distance_matrix"><code class="name flex">
 <span>def <span class="ident">distance_matrix</span></span>(<span>m, method='spearman', axis=0, names=None, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute all pairwise distances.</p>
-<p>Distances can be dist, corr, metric.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>method</code></strong></dt>
-<dd>metric, distance or correlation to use.</dd>
-<dt><strong><code>axis</code></strong></dt>
-<dd>axis of items to compare (0 for rows or 1 for columns).</dd>
-<dt><strong><code>names</code></strong></dt>
-<dd>list of size m[axis] of names of objects to compare.
-Will be overwritten by index or columns if m is a pd.DataFrame.</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>keywords argument for the metric function.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def distance_matrix(m, method=&#39;spearman&#39;, axis=0, names=None, **kwargs):
-    &#34;&#34;&#34; Compute all pairwise distances.
-
-    Distances can be dist, corr, metric.
+    &#34;&#34;&#34; Compute all pairwise distances (or correlations, or scores) between rows or columns.
 
     Args:
-        method: metric, distance or correlation to use.
-        axis: axis of items to compare (0 for rows or 1 for columns).
-        names: list of size m[axis] of names of objects to compare.
-                      Will be overwritten by index or columns if m is a pd.DataFrame.
-        **kwargs: keywords argument for the metric function.
+        m: 2D matrix.
+        method: Any method accepted by `any_metric`. Note that for a correlation
+            (the default), higher means closer.
+        axis: Axis of the items to compare (0 for rows or 1 for columns).
+        names: Names of the items to compare. If m is a pd.DataFrame, its index
+            or columns are used instead.
+        **kwargs: Arguments passed to the metric function.
+
+    Returns:
+        A square matrix, as a pd.DataFrame if m is a pd.DataFrame or if names
+        are given, as a np.ndarray otherwise.
     &#34;&#34;&#34;
-    dataframe = False
+    if axis not in [0, 1]:
+        raise ValueError(&#39;axis must be 0 or 1.&#39;)
     if rk.is_dataframe(m):
-        dataframe = True
-        if axis == 0:
-            names = m.index
-        elif axis == 1:
-            names = m.columns
-        else:
-            raise Exception(&#39;axis must be 0 or 1.&#39;)
+        names = m.index if axis == 0 else m.columns
         m = np.array(m)
     n = m.shape[axis]
-    idx = range(n)
     dist_matrix = np.zeros((n, n))
-    for pair in it.product(idx, repeat=2):
-        i, j = pair[0], pair[1]
+    for i, j in it.product(range(n), repeat=2):
         r1 = np.take(m, i, axis=axis)
         r2 = np.take(m, j, axis=axis)
-        d = any_metric(r1, r2, method=method, **kwargs)
-        dist_matrix[i, j] = d
-    if dataframe: # if m was originally a pd.DataFrame
-        dist_matrix = pd.DataFrame(dist_matrix)
-        if names is not None:
-            dist_matrix.columns = names
-            dist_matrix.index = names
+        dist_matrix[i, j] = any_metric(r1, r2, method=method, **kwargs)
+    if names is not None:
+        dist_matrix = pd.DataFrame(dist_matrix, index=names, columns=names)
     return dist_matrix</code></pre>
 </details>
+<div class="desc"><p>Compute all pairwise distances (or correlations, or scores) between rows or columns.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>2D matrix.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Any method accepted by <code><a title="ranky.metric.any_metric" href="#ranky.metric.any_metric">any_metric()</a></code>. Note that for a correlation
+(the default), higher means closer.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of the items to compare (0 for rows or 1 for columns).</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>Names of the items to compare. If m is a pd.DataFrame, its index
+or columns are used instead.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments passed to the metric function.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A square matrix, as a pd.DataFrame if m is a pd.DataFrame or if names
+are given, as a np.ndarray otherwise.</p></div>
 </dd>
 <dt id="ranky.metric.get_valid_columns"><code class="name flex">
 <span>def <span class="ident">get_valid_columns</span></span>(<span>solution)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get a list of column indices for which the column has more than one class.</p>
-<p>This is necessary when computing BAC or AUC which involves true positive and
-true negative in the denominator. When some class is missing, these scores
-don't make sense (or you have to add an epsilon to remedy the situation).</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>solution</code></strong></dt>
-<dd>array, a matrix of binary entries, of shape (num_examples, num_features)</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>valid_columns</code></dt>
-<dd>a list of indices for which the column has more than one class.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_valid_columns(solution):
-    &#34;&#34;&#34; Get a list of column indices for which the column has more than one class.
+    &#34;&#34;&#34; Get the indices of the columns containing more than one class.
 
     This is necessary when computing BAC or AUC which involves true positive and
     true negative in the denominator. When some class is missing, these scores
     don&#39;t make sense (or you have to add an epsilon to remedy the situation).
 
     Args:
-        solution: array, a matrix of binary entries, of shape (num_examples, num_features)
+        solution: Matrix of binary entries, of shape (num_examples, num_features).
+
     Returns:
-        valid_columns: a list of indices for which the column has more than one class.
+        Array of indices of the valid columns.
     &#34;&#34;&#34;
     num_examples = solution.shape[0]
     col_sum = np.sum(solution, axis=0)
     valid_columns = np.where(1 - np.isclose(col_sum, 0) - np.isclose(col_sum, num_examples))[0]
     return valid_columns</code></pre>
 </details>
+<div class="desc"><p>Get the indices of the columns containing more than one class.</p>
+<p>This is necessary when computing BAC or AUC which involves true positive and
+true negative in the denominator. When some class is missing, these scores
+don't make sense (or you have to add an epsilon to remedy the situation).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>solution</code></strong></dt>
+<dd>Matrix of binary entries, of shape (num_examples, num_features).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Array of indices of the valid columns.</p></div>
 </dd>
 <dt id="ranky.metric.kendall_tau_distance"><code class="name flex">
 <span>def <span class="ident">kendall_tau_distance</span></span>(<span>r1, r2, normalize=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute the absolute Kendall distance between two ranks (array-like).</p>
-<p>This distance represents the minimal number of neighbors swaps needed to
-transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.</p>
-<p><a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient">https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient</a></p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
-2
-</code></pre>
-<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
-0
-</code></pre>
-<p>Ties management:</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
-4
-</code></pre>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>normalize</code></strong></dt>
-<dd>If True, divide the results by the length of the lists.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def kendall_tau_distance(r1, r2, normalize=False):
-    &#34;&#34;&#34; Compute the absolute Kendall distance between two ranks (array-like).
+    &#34;&#34;&#34; Absolute Kendall distance between two rankings.
 
-    This distance represents the minimal number of neighbors swaps needed to
-    transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.
+    This is the minimal number of swaps of neighbors needed to transform r1
+    into r2. It is computed from Kendall&#39;s tau-b, so ties are supported.
 
-    https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
+    See https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient
 
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [1, 2, 0])
-    2
-
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 2], [0, 1, 2])
-    0
-
-    Ties management:
-    &gt;&gt;&gt; kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])
-    4
+    &gt;&gt;&gt; float(kendall_tau_distance([0, 1, 2], [1, 2, 0]))
+    2.0
+    &gt;&gt;&gt; float(kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])) # with ties
+    4.0
 
     Args:
-        normalize: If True, divide the results by the length of the lists.
+        r1: 1D array-like.
+        r2: 1D array-like, of the same length as r1.
+        normalize: If True, divide the result by the length of the rankings.
     &#34;&#34;&#34;
     n = len(r1)
     if len(r1) != len(r2):
-        print(&#34;WARNING: r1 and r2 don&#39;t have the same length ({} != {})&#34;.format(len(r1), len(r2)))
+        raise ValueError(&#34;r1 and r2 must have the same length ({} != {})&#34;.format(len(r1), len(r2)))
     distance = corr(r1, r2, method=&#39;kendalltau&#39;) # scipy&#39;s Kendall tau b
     distance = (1 - distance) * n * (n-1) / 4 # convert from correlation coeff to distance
     if normalize:
         distance = distance / n
     return distance</code></pre>
 </details>
+<div class="desc"><p>Absolute Kendall distance between two rankings.</p>
+<p>This is the minimal number of swaps of neighbors needed to transform r1
+into r2. It is computed from Kendall's tau-b, so ties are supported.</p>
+<p>See <a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient">https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient</a></p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; float(kendall_tau_distance([0, 1, 2], [1, 2, 0]))
+2.0
+&gt;&gt;&gt; float(kendall_tau_distance([0, 1, 1, 1], [1, 1, 1, 0])) # with ties
+4.0
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D array-like.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D array-like, of the same length as r1.</dd>
+<dt><strong><code>normalize</code></strong></dt>
+<dd>If True, divide the result by the length of the rankings.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.kendall_w"><code class="name flex">
 <span>def <span class="ident">kendall_w</span></span>(<span>matrix, axis=0, ties=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Kendall's W coefficient of concordance.</p>
-<p>See <a href="https://en.wikipedia.org/wiki/Kendall%27s_W">https://en.wikipedia.org/wiki/Kendall%27s_W</a> for more information.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>matrix</code></strong></dt>
-<dd>Preference matrix.</dd>
-<dt><strong><code>axis</code></strong></dt>
-<dd>Axis of judges.</dd>
-<dt><strong><code>ties</code></strong></dt>
-<dd>If True, apply the correction for ties</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1219,12 +690,13 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
 <pre><code class="python">def kendall_w(matrix, axis=0, ties=False):
     &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance.
 
-    See https://en.wikipedia.org/wiki/Kendall%27s_W for more information.
+    Measures the agreement between judges, from 0 (no agreement) to 1 (complete agreement).
+    See https://en.wikipedia.org/wiki/Kendall%27s_W
 
     Args:
         matrix: Preference matrix.
         axis: Axis of judges.
-        ties: If True, apply the correction for ties
+        ties: If True, apply the correction for ties.
     &#34;&#34;&#34;
     if ties:
         return kendall_w_ties(matrix, axis=axis)
@@ -1236,20 +708,23 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
     S = n * np.var(rating_sums)
     return 12 * S / denominator</code></pre>
 </details>
-</dd>
-<dt id="ranky.metric.kendall_w_ties"><code class="name flex">
-<span>def <span class="ident">kendall_w_ties</span></span>(<span>matrix, axis=0)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Kendall's W coefficient of concordance with correction for ties.</p>
-<p>The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.</p>
+<div class="desc"><p>Kendall's W coefficient of concordance.</p>
+<p>Measures the agreement between judges, from 0 (no agreement) to 1 (complete agreement).
+See <a href="https://en.wikipedia.org/wiki/Kendall%27s_W">https://en.wikipedia.org/wiki/Kendall%27s_W</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>matrix</code></strong></dt>
 <dd>Preference matrix.</dd>
 <dt><strong><code>axis</code></strong></dt>
 <dd>Axis of judges.</dd>
+<dt><strong><code>ties</code></strong></dt>
+<dd>If True, apply the correction for ties.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.metric.kendall_w_ties"><code class="name flex">
+<span>def <span class="ident">kendall_w_ties</span></span>(<span>matrix, axis=0)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1257,12 +732,13 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
 <pre><code class="python">def kendall_w_ties(matrix, axis=0):
     &#34;&#34;&#34; Kendall&#39;s W coefficient of concordance with correction for ties.
 
-    The goal of this correction is to avoid having a lower score in the presence of ties in the rankings.
+    Without this correction, ties in the rankings lower the coefficient.
 
     Args:
         matrix: Preference matrix.
         axis: Axis of judges.
     &#34;&#34;&#34;
+    matrix = np.asarray(matrix)
     if axis == 1:
         matrix = matrix.T
     m = matrix.shape[0] # judges
@@ -1271,92 +747,75 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
     T = [] # correction factors, one by judge
     for j in range(m):
         _, counts = np.unique(matrix[j], return_counts=True) # tied groups
-        correction = np.sum([(t**3 - t) for t in counts])
-        T.append(correction)
+        T.append(np.sum(counts**3 - counts))
     denominator = m**2 * n * (n**2 - 1) - m * np.sum(T)
-    sum = np.sum([r**2 for r in np.sum(matrix, axis=0)])
-    numerator = 12 * sum - 3 * m**2 * n * (n + 1)**2
+    sum_squares = np.sum(np.sum(matrix, axis=0) ** 2)
+    numerator = 12 * sum_squares - 3 * m**2 * n * (n + 1)**2
     return numerator / denominator</code></pre>
 </details>
+<div class="desc"><p>Kendall's W coefficient of concordance with correction for ties.</p>
+<p>Without this correction, ties in the rankings lower the coefficient.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>matrix</code></strong></dt>
+<dd>Preference matrix.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of judges.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.loss"><code class="name flex">
 <span>def <span class="ident">loss</span></span>(<span>x, y, method='absolute')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute the error between two scalars or vectors.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>x</code></strong></dt>
-<dd>float, usually representing a ground truth value.</dd>
-<dt><strong><code>y</code></strong></dt>
-<dd>float, usually representing a single prediction.</dd>
-<dt><strong><code>method</code></strong></dt>
-<dd>'absolute', 'squared', &hellip;</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def loss(x, y, method=&#39;absolute&#39;):
-    &#34;&#34;&#34; Compute the error between two scalars or vectors.
+    &#34;&#34;&#34; Compute the error between two scalars or vectors (element-wise).
 
-        Args:
-            x: float, usually representing a ground truth value.
-            y: float, usually representing a single prediction.
-            method: &#39;absolute&#39;, &#39;squared&#39;, ...
+    Args:
+        x: Usually the ground truth.
+        y: Usually the prediction.
+        method: &#39;absolute&#39; or &#39;squared&#39;.
     &#34;&#34;&#34;
-    # TODO
     if method == &#39;absolute&#39;:
         return np.abs(x - y)
     elif method == &#39;squared&#39;:
         return (x - y) ** 2
     else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))</code></pre>
+        raise ValueError(&#39;Unknown method: {}&#39;.format(method))</code></pre>
 </details>
+<div class="desc"><p>Compute the error between two scalars or vectors (element-wise).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>x</code></strong></dt>
+<dd>Usually the ground truth.</dd>
+<dt><strong><code>y</code></strong></dt>
+<dd>Usually the prediction.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>'absolute' or 'squared'.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.mean_distance"><code class="name flex">
 <span>def <span class="ident">mean_distance</span></span>(<span>r, m, axis, method)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Mean distance between r and all points in m.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mean_distance(r, m, axis, method):
-    &#34;&#34;&#34; Mean distance between r and all points in m.
+    &#34;&#34;&#34; Opposite of `centrality`, used as the objective function by `rk.center`.
     &#34;&#34;&#34;
     return - centrality(m, r, axis=axis, method=method)</code></pre>
 </details>
+<div class="desc"><p>Opposite of <code><a title="ranky.metric.centrality" href="#ranky.metric.centrality">centrality()</a></code>, used as the objective function by <code>rk.center</code>.</p></div>
 </dd>
 <dt id="ranky.metric.metric"><code class="name flex">
-<span>def <span class="ident">metric</span></span>(<span>y_true, y_pred, method='accuracy', reverse_loss=False, missing_score=-1, unilabel=False)</span>
+<span>def <span class="ident">metric</span></span>(<span>y_true,<br>y_pred,<br>method='accuracy',<br>reverse_loss=False,<br>missing_score=-1,<br>unilabel=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compute a classification scoring metric between y_true and y_pred.</p>
-<p>Predictions format:
-[[0.2, 0.3, 0.5]
-[0.1, 0.8, 0.1]]
-&hellip;</p>
-<p>Ground truth format:
-[[0, 0, 1]
-[0, 1, 0]]</p>
-<p>If y_true and y_pred are 1D they'll be converted using <code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense()</a></code> function.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>y_true</code></strong></dt>
-<dd>Ground truth (format?)</dd>
-<dt><strong><code>y_pred</code></strong></dt>
-<dd>Predictions (format?)</dd>
-<dt><strong><code>method</code></strong></dt>
-<dd>Name of the metric. Metrics available: 'accuracy', 'balanced_accuracy', 'balanced_accuracy_sklearn', 'precision', 'average_precision', 'brier', 'f1_score', 'mxe', 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae'</dd>
-<dt><strong><code>reverse_loss</code></strong></dt>
-<dd>If True, return (1 - score).</dd>
-<dt><strong><code>missing_score</code></strong></dt>
-<dd>(DEPRECATED) Value to return if the computation fails.</dd>
-<dt><strong><code>unilabel</code></strong></dt>
-<dd>If True, only one label per example. If False it's multi-label case.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1364,31 +823,32 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
 <pre><code class="python">def metric(y_true, y_pred, method=&#39;accuracy&#39;, reverse_loss=False, missing_score=-1, unilabel=False):
     &#34;&#34;&#34; Compute a classification scoring metric between y_true and y_pred.
 
-    Predictions format:
-    [[0.2, 0.3, 0.5]
-    [0.1, 0.8, 0.1]]
-    ...
+    Inputs are expected in dense format (one row per example, one column per class):
 
-    Ground truth format:
-    [[0, 0, 1]
-    [0, 1, 0]]
+        y_true = [[0, 0, 1],
+                  [0, 1, 0]]
+        y_pred = [[0.2, 0.3, 0.5],
+                  [0.1, 0.8, 0.1]]
 
-    If y_true and y_pred are 1D they&#39;ll be converted using `to_dense` function.
+    1D inputs are considered to be class indices and are converted with `to_dense`.
 
     Args:
-        y_true: Ground truth (format?)
-        y_pred: Predictions (format?)
-        method: Name of the metric. Metrics available: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;brier&#39;, &#39;f1_score&#39;, &#39;mxe&#39;, &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;
-        reverse_loss: If True, return (1 - score).
-        missing_score: (DEPRECATED) Value to return if the computation fails.
-        unilabel: If True, only one label per example. If False it&#39;s multi-label case.
+        y_true: Ground truth.
+        y_pred: Predictions.
+        method: Name of the metric, one of: &#39;accuracy&#39;, &#39;balanced_accuracy&#39;,
+            &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;average_precision&#39;, &#39;f1_score&#39;,
+            &#39;mxe&#39; (log loss), &#39;recall&#39;, &#39;jaccard&#39;, &#39;roc_auc&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;,
+            &#39;sar&#39; (mean of accuracy, roc_auc and 1 - rmse).
+        reverse_loss: If True, losses (&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;) are returned as (1 - loss).
+        missing_score: Deprecated, ignored.
+        unilabel: If True, there is only one label per example. If False, it is the multi-label case.
     &#34;&#34;&#34;
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     if y_true.shape != y_pred.shape:
-        raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
+        raise ValueError(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
     if len(y_true.shape) == 1:
         y_true, y_pred = to_dense(y_true), to_dense(y_pred)
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
+    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall
     # PARAMETERS
     average = &#39;binary&#39;
     if y_true.shape[1] &gt; 2: # target is not binary
@@ -1398,30 +858,6 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
         y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
     if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
         y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-
-    # TODO
-    #y_true, y_pred = np.array(y_true), np.array(y_pred)
-    #average = &#39;binary&#39;
-    #if y_true.shape != y_pred.shape:
-    #    raise Exception(&#39;y_true and y_pred must have the same shape. {} != {}&#39;.format(y_true.shape, y_pred.shape))
-    #if len(y_true.shape) == 1:
-    #    try:
-    #        y_true, y_pred = to_dense(y_true), to_dense(y_pred) # TODO: problem here, e.g. [0.2, 0.8] vs [0, 1]
-    #        if y_true.shape[1] &gt; 2: # target is not binary
-    #            average = &#39;micro&#39;
-    #    except: # TODO, TMP Ad-Hoc fix?
-    #        y_true, y_pred = y_true.T, y_pred.T
-    # TODO: Lift, BEP (precision/recall break-even point), Probability Calibration, Average recall, (SAR)
-    # PREPROCESSING
-    #if method in [&#39;accuracy&#39;, &#39;balanced_accuracy&#39;, &#39;balanced_accuracy_sklearn&#39;, &#39;precision&#39;, &#39;f1_score&#39;, &#39;recall&#39;, &#39;jaccard&#39;]: # binarize with 0.5 threshold
-    #    y_true, y_pred = to_binary(y_true, unilabel=unilabel, at_least_one_class=True), to_binary(y_pred, unilabel=unilabel, at_least_one_class=True)
-    #if method in [&#39;balanced_accuracy_sklearn&#39;] or average == &#39;binary&#39;: # sparse format
-    #    try:
-    #        y_true, y_pred = to_sparse(y_true), to_sparse(y_pred)
-    #    except:
-    #        pass
-    #        # TMP TODO
-    #try:
     # COMPUTE SCORE
     if method == &#39;accuracy&#39;:
         score = accuracy_score(y_true, y_pred)
@@ -1446,83 +882,50 @@ transform r1 into r2. Basically Kendall tau b without scaling between -1 and 1.<
     elif method == &#39;mse&#39;:
         score = mean_squared_error(y_true, y_pred)
     elif method == &#39;rmse&#39;:
-        score = mean_squared_error(y_true, y_pred, squared=False)
+        score = np.sqrt(mean_squared_error(y_true, y_pred))
     elif method == &#39;mae&#39;:
         score = mean_absolute_error(y_true, y_pred)
     elif method == &#39;sar&#39;:
         score = combined_metric(y_true, y_pred, metrics=[&#39;accuracy&#39;, &#39;roc_auc&#39;, &#39;rmse&#39;], method=&#39;mean&#39;)
     else:
-        raise Exception(&#39;Unknown method: {}&#39;.format(method))
-    #except Exception as e: # could not compute the score
-    #    print(&#39;Could not compute {}. Retuning missing_score. Error: {}&#39;.format(method, e))
-    #    return missing_score # MISSING SCORE
+        raise ValueError(&#39;Unknown method: {}&#39;.format(method))
     # REVERSE LOSS
     is_loss = method in [&#39;mxe&#39;, &#39;mse&#39;, &#39;rmse&#39;, &#39;mae&#39;]
     if reverse_loss and is_loss:
         score = 1 - score
     return score</code></pre>
 </details>
-</dd>
-<dt id="ranky.metric.relative_metric"><code class="name flex">
-<span>def <span class="ident">relative_metric</span></span>(<span>y_true, y_pred_list, loss='absolute', ranking_function=None, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>&hellip;</p>
-<p>For example you can compute the Mean Rank of Absolute Error (averaged by class)
-by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_function=rk.borda, reverse=True)</p>
+<div class="desc"><p>Compute a classification scoring metric between y_true and y_pred.</p>
+<p>Inputs are expected in dense format (one row per example, one column per class):</p>
+<pre><code>y_true = [[0, 0, 1],
+          [0, 1, 0]]
+y_pred = [[0.2, 0.3, 0.5],
+          [0.1, 0.8, 0.1]]
+</code></pre>
+<p>1D inputs are considered to be class indices and are converted with <code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense()</a></code>.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>y_true</code></strong></dt>
-<dd>Ground truth (format?)</dd>
-<dt><strong><code>y_pred_list</code></strong></dt>
-<dd>List of predictions (format?)</dd>
-<dt><strong><code>loss</code></strong></dt>
-<dd>'method' argument to be passed to the function 'loss'</dd>
-<dt><strong><code>ranking_function</code></strong></dt>
-<dd>Ranking method from rk.ranking. rk.score by default.</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>Arguments to be passed to the ranking function.</dd>
+<dd>Ground truth.</dd>
+<dt><strong><code>y_pred</code></strong></dt>
+<dd>Predictions.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Name of the metric, one of: 'accuracy', 'balanced_accuracy',
+'balanced_accuracy_sklearn', 'precision', 'average_precision', 'f1_score',
+'mxe' (log loss), 'recall', 'jaccard', 'roc_auc', 'mse', 'rmse', 'mae',
+'sar' (mean of accuracy, roc_auc and 1 - rmse).</dd>
+<dt><strong><code>reverse_loss</code></strong></dt>
+<dd>If True, losses ('mxe', 'mse', 'rmse', 'mae') are returned as (1 - loss).</dd>
+<dt><strong><code>missing_score</code></strong></dt>
+<dd>Deprecated, ignored.</dd>
+<dt><strong><code>unilabel</code></strong></dt>
+<dd>If True, there is only one label per example. If False, it is the multi-label case.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def relative_metric(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=None, **kwargs):
-    &#34;&#34;&#34; ...
-
-    For example you can compute the Mean Rank of Absolute Error (averaged by class)
-    by calling relative_metrics(y_true, y_pred_list, loss=&#39;absolute&#39;, ranking_function=rk.borda, reverse=True)
-
-    Args:
-        y_true: Ground truth (format?)
-        y_pred_list: List of predictions (format?)
-        loss: &#39;method&#39; argument to be passed to the function &#39;loss&#39;
-        ranking_function: Ranking method from rk.ranking. rk.score by default.
-        **kwargs: Arguments to be passed to the ranking function.
-    &#34;&#34;&#34;
-    # TODO
-    if ranking_function is None:
-        ranking_function = rk.score
-    m = [loss(y_pred, y_true, method=loss).mean(axis=1) for y_pred in m_pred]
-    m = pd.DataFrame(np.array(m), index=None)
-    return ranking_function(m, reverse=True, **kwargs)</code></pre>
-</details>
 </dd>
 <dt id="ranky.metric.symmetrical_winner_distance"><code class="name flex">
 <span>def <span class="ident">symmetrical_winner_distance</span></span>(<span>r1, r2, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Symmetrical winner distance.</p>
-<p>Average of dist(r1, r2) and dist(r2, r1).</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>r1</code></strong></dt>
-<dd>1D vector representing a judge.</dd>
-<dt><strong><code>r2</code></strong></dt>
-<dd>1D vector representing a judge.</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1530,59 +933,59 @@ by calling relative_metrics(y_true, y_pred_list, loss='absolute', ranking_functi
 <pre><code class="python">def symmetrical_winner_distance(r1, r2, reverse=False):
     &#34;&#34;&#34; Symmetrical winner distance.
 
-        Average of dist(r1, r2) and dist(r2, r1).
+    Average of winner_distance(r1, r2) and winner_distance(r2, r1).
 
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
+    Args:
+        r1: 1D vector of scores representing a judge.
+        r2: 1D vector of scores representing a judge.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     d1 = winner_distance(r1, r2, reverse=reverse)
     d2 = winner_distance(r2, r1, reverse=reverse)
     return (d1 + d2) / 2</code></pre>
 </details>
+<div class="desc"><p>Symmetrical winner distance.</p>
+<p>Average of winner_distance(r1, r2) and winner_distance(r2, r1).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D vector of scores representing a judge.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D vector of scores representing a judge.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.metric.to_binary"><code class="name flex">
 <span>def <span class="ident">to_binary</span></span>(<span>y, threshold=0.5, unilabel=False, at_least_one_class=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Format predictions/solutions from probabilities to binary {0, 1}.</p>
-<p>Behaviour:
-If unilabel is False: 1 if the value is stricly greater than the threshold, 0 otherwise.
-If unilabel is True: argmax 1, other values 0.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>y</code></strong></dt>
-<dd>vector or matrix to binarize. If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.</dd>
-<dt><strong><code>threshold</code></strong></dt>
-<dd>threshold for binarization (0 if below, 1 if strictly above).</dd>
-<dt><strong><code>unilabel</code></strong></dt>
-<dd>If True, return only one 1 for each row.</dd>
-<dt><strong><code>at_least_one_class</code></strong></dt>
-<dd>If True, for each row, if no probability is above the threshold, the argmax is set to 1.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_binary(y, threshold=0.5, unilabel=False, at_least_one_class=False):
-    &#34;&#34;&#34; Format predictions/solutions from probabilities to binary {0, 1}.
+    &#34;&#34;&#34; Convert probabilities to binary values {0, 1}.
 
-    Behaviour:
-    If unilabel is False: 1 if the value is stricly greater than the threshold, 0 otherwise.
-    If unilabel is True: argmax 1, other values 0.
+    If unilabel is False, values strictly greater than the threshold become 1 and the others 0.
+    If unilabel is True, the argmax of each row becomes 1 and the others 0.
 
     Args:
-        y: vector or matrix to binarize. If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.
-        threshold: threshold for binarization (0 if below, 1 if strictly above).
+        y: Vector or matrix to binarize. If unilabel or at_least_one_class is True,
+            y must be a 2D matrix of probabilities.
+        threshold: Threshold for binarization (0 if below or equal, 1 if strictly above).
         unilabel: If True, return only one 1 for each row.
-        at_least_one_class: If True, for each row, if no probability is above the threshold, the argmax is set to 1.
+        at_least_one_class: If True, the argmax of each row is set to 1 even if
+            it is below the threshold.
+
+    &gt;&gt;&gt; to_binary([[0.2, 0.3, 0.1], [0.5, 0.6, 0.7]], at_least_one_class=True)
+    array([[0, 1, 0],
+           [0, 1, 1]])
     &#34;&#34;&#34;
-    # TODO: keep index and column names if y is a pd.DataFrame
     y = np.array(y)
-    if unilabel == True or at_least_one_class == True:
+    if unilabel or at_least_one_class:
         if len(y.shape) != 2:
-            raise Exception(&#39;If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.&#39;)
+            raise ValueError(&#39;If unilabel is True or at_least_one_class is True, y must be in 2D dense probability format.&#39;)
     n = y.shape[0]
     if unilabel:
         y_binary = np.zeros(y.shape, dtype=int)
@@ -1593,23 +996,42 @@ If unilabel is True: argmax 1, other values 0.</p>
             y_binary[np.arange(n), np.argmax(y, axis=1)] = 1
     return y_binary</code></pre>
 </details>
+<div class="desc"><p>Convert probabilities to binary values {0, 1}.</p>
+<p>If unilabel is False, values strictly greater than the threshold become 1 and the others 0.
+If unilabel is True, the argmax of each row becomes 1 and the others 0.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>y</code></strong></dt>
+<dd>Vector or matrix to binarize. If unilabel or at_least_one_class is True,
+y must be a 2D matrix of probabilities.</dd>
+<dt><strong><code>threshold</code></strong></dt>
+<dd>Threshold for binarization (0 if below or equal, 1 if strictly above).</dd>
+<dt><strong><code>unilabel</code></strong></dt>
+<dd>If True, return only one 1 for each row.</dd>
+<dt><strong><code>at_least_one_class</code></strong></dt>
+<dd>If True, the argmax of each row is set to 1 even if
+it is below the threshold.</dd>
+</dl>
+<pre><code class="language-python-repl">&gt;&gt;&gt; to_binary([[0.2, 0.3, 0.1], [0.5, 0.6, 0.7]], at_least_one_class=True)
+array([[0, 1, 0],
+       [0, 1, 1]])
+</code></pre></div>
 </dd>
 <dt id="ranky.metric.to_dense"><code class="name flex">
 <span>def <span class="ident">to_dense</span></span>(<span>y)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Format predictions/solutions from sparse format (1D) to dense format (2D).</p>
-<p>Sparse = 'argmax',
-Dense = 'one-hot'</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_dense(y):
-    &#34;&#34;&#34; Format predictions/solutions from sparse format (1D) to dense format (2D).
+    &#34;&#34;&#34; Convert labels from sparse format (1D, class indices) to dense format (2D, one-hot).
 
-    Sparse = &#39;argmax&#39;,
-    Dense = &#39;one-hot&#39;
+    &gt;&gt;&gt; to_dense([0, 2, 1])
+    array([[1., 0., 0.],
+           [0., 0., 1.],
+           [0., 1., 0.]])
     &#34;&#34;&#34;
     y = np.array(y)
     if len(y.shape) == 1:
@@ -1618,51 +1040,39 @@ Dense = 'one-hot'</p></div>
         dense[np.arange(length), y] = 1
         return dense
     else:
-        raise Exception(&#39;y must be 1-dimensional&#39;)</code></pre>
+        raise ValueError(&#39;y must be 1-dimensional&#39;)</code></pre>
 </details>
+<div class="desc"><p>Convert labels from sparse format (1D, class indices) to dense format (2D, one-hot).</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; to_dense([0, 2, 1])
+array([[1., 0., 0.],
+       [0., 0., 1.],
+       [0., 1., 0.]])
+</code></pre></div>
 </dd>
 <dt id="ranky.metric.to_sparse"><code class="name flex">
 <span>def <span class="ident">to_sparse</span></span>(<span>y, axis=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Format predictions/solutions from dense format (2D) to sparse format (1D).</p>
-<p>Sparse = 'argmax',
-Dense = 'one-hot'</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_sparse(y, axis=1):
-    &#34;&#34;&#34; Format predictions/solutions from dense format (2D) to sparse format (1D).
-
-    Sparse = &#39;argmax&#39;,
-    Dense = &#39;one-hot&#39;
+    &#34;&#34;&#34; Convert labels from dense format (2D, one-hot or probabilities) to sparse format (1D, argmax).
     &#34;&#34;&#34;
     y = np.array(y)
     if len(y.shape) == 2:
         sparse = np.argmax(y, axis=axis)
         return sparse
     else:
-        raise Exception(&#39;y must be 2-dimensional&#39;)</code></pre>
+        raise ValueError(&#39;y must be 2-dimensional&#39;)</code></pre>
 </details>
+<div class="desc"><p>Convert labels from dense format (2D, one-hot or probabilities) to sparse format (1D, argmax).</p></div>
 </dd>
 <dt id="ranky.metric.winner_distance"><code class="name flex">
 <span>def <span class="ident">winner_distance</span></span>(<span>r1, r2, reverse=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Asymmetrical winner distance.</p>
-<p>This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
-(rank(r1 winner)) - 1 / (n - 1)
-Assuming no ties.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>r1</code></strong></dt>
-<dd>1D vector representing a judge.</dd>
-<dt><strong><code>r2</code></strong></dt>
-<dd>1D vector representing a judge.</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1670,22 +1080,33 @@ Assuming no ties.</p>
 <pre><code class="python">def winner_distance(r1, r2, reverse=False):
     &#34;&#34;&#34; Asymmetrical winner distance.
 
-        This distance is the rank of the winner of r1 in r2, normalized by the number of candidates.
-        (rank(r1 winner)) - 1 / (n - 1)
-        Assuming no ties.
+    The rank of the winner of r1 in r2, normalized to be between 0 and 1:
+    (rank - 1) / (n - 1). Ties are not handled.
 
-        Args:
-          r1: 1D vector representing a judge.
-          r2: 1D vector representing a judge.
-          reverse: If True, lower is better.
+    Args:
+        r1: 1D vector of scores representing a judge.
+        r2: 1D vector of scores representing a judge.
+        reverse: If True, lower is better.
     &#34;&#34;&#34;
     r1, r2 = np.array(r1), np.array(r2)
     if reverse:
         w1 = np.argmin(r1) # r1 winner
     else:
         w1 = np.argmax(r1) # r1 winner
-    return (rk.rank(r2)[w1] - 1) / (len(r2) - 1)</code></pre>
+    return (rk.rank(r2, reverse=reverse)[w1] - 1) / (len(r2) - 1)</code></pre>
 </details>
+<div class="desc"><p>Asymmetrical winner distance.</p>
+<p>The rank of the winner of r1 in r2, normalized to be between 0 and 1:
+(rank - 1) / (n - 1). Ties are not handled.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>r1</code></strong></dt>
+<dd>1D vector of scores representing a judge.</dd>
+<dt><strong><code>r2</code></strong></dt>
+<dd>1D vector of scores representing a judge.</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+</dl></div>
 </dd>
 </dl>
 </section>
@@ -1693,7 +1114,6 @@ Assuming no ties.</p>
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -1724,7 +1144,6 @@ Assuming no ties.</p>
 <li><code><a title="ranky.metric.loss" href="#ranky.metric.loss">loss</a></code></li>
 <li><code><a title="ranky.metric.mean_distance" href="#ranky.metric.mean_distance">mean_distance</a></code></li>
 <li><code><a title="ranky.metric.metric" href="#ranky.metric.metric">metric</a></code></li>
-<li><code><a title="ranky.metric.relative_metric" href="#ranky.metric.relative_metric">relative_metric</a></code></li>
 <li><code><a title="ranky.metric.symmetrical_winner_distance" href="#ranky.metric.symmetrical_winner_distance">symmetrical_winner_distance</a></code></li>
 <li><code><a title="ranky.metric.to_binary" href="#ranky.metric.to_binary">to_binary</a></code></li>
 <li><code><a title="ranky.metric.to_dense" href="#ranky.metric.to_dense">to_dense</a></code></li>
@@ -1736,7 +1155,7 @@ Assuming no ties.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

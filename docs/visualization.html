@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>ranky.visualization API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -22,343 +36,6 @@
 <h1 class="title">Module <code>ranky.visualization</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">#################################
-######## VISUALIZATIONS #########
-#################################
-
-import numpy as np
-import pandas as pd
-from math import ceil
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-import seaborn as sns
-import networkx as nx
-import ranky as rk
-from sklearn.manifold import TSNE, MDS
-from mpl_toolkits.mplot3d import Axes3D
-
-# critical difference does not work when this is enabled
-#sns.set_theme(style = &#34;darkgrid&#34;)
-
-def autolabel(rects, values, round=2):
-    &#34;&#34;&#34; Function used by `rk.show` to annotate bar plots.
-    &#34;&#34;&#34;
-    values = np.round(values, round)
-    for idx,rect in enumerate(rects):
-        height = rect.get_height()
-        plt.text(rect.get_x() + rect.get_width()/2., 1.05*height,
-                values[idx],
-                ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)
-
-def show(m, rotation=90, title=None, size=2, annot=False,
-         ylabel=None, xlabel=None, round=2, color=&#39;royalblue&#39;, cmap=None):
-    &#34;&#34;&#34; Display a ranking or a prefrence matrix.
-
-    If m is 1D: show ballot (bar plot).
-    If m is 2D: show preferences (heatmap).
-
-    Args:
-        rotation: x labels rotation.
-        title: string - title of the figure.
-        size: integer - higher value for a smaller figure.
-        annot: If True, write the values.
-        ylabel: string - y axis label.
-        xlabel: string - x axis label.
-        round: Number of decimals to display if annot is True.
-        color: Color for 1D bar plot.
-        cmap: Color map for 2D heatmap.
-    &#34;&#34;&#34;
-    if isinstance(m, list): # convert to np.ndarray if needed
-        m = np.array(m)
-    dim = len(m.shape)
-    if dim == 1: # 1D
-        fig, ax = plt.subplots()
-        x = np.arange(len(m))
-        bar_plot = plt.bar(x, m, align=&#39;center&#39;, color=color)
-        ax.yaxis.grid(True)
-        ax.set_axisbelow(True) # set the lines below the bars
-        if annot:
-            autolabel(bar_plot, m, round=round)
-        if rk.is_series(m):
-            plt.xticks(x, m.index, rotation=rotation)
-    elif dim == 2: # 2D
-        fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
-        sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt=&#39;0.&#39;+str(round), cmap=cmap)
-        x = np.arange(m.shape[1])
-        if rk.is_dataframe(m):
-            plt.xticks(x, m.columns, rotation=rotation)
-    else:
-        raise(Exception(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim)))
-    if title is not None:
-        plt.title(title)
-    if xlabel is not None:
-        plt.xlabel(xlabel)
-    if ylabel is not None:
-        plt.ylabel(ylabel)
-    plt.show()
-
-def show_learning_curve(h):
-    &#34;&#34;&#34; Display learning curve.
-
-    Args:
-        h: list representing the history of scores.
-    &#34;&#34;&#34;
-    plt.plot(range(len(h)), h)
-    plt.xlabel(&#39;epochs&#39;)
-    plt.ylabel(&#39;score&#39;)
-    plt.show()
-
-def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;, arrowsize=10):
-    &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
-
-    Args:
-        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        names: list representing the names of the vertices.
-        with_labels: Display names if True.
-        node_size: Size of the nodes.
-        font_size: Size of the font to display names.
-        font_weight: &#39;bold&#39; for bold, else refer to networkx documentation.
-    &#34;&#34;&#34;
-    G = nx.DiGraph()
-    n = len(matrix)
-    nodes = range(n)
-    if names is not None:
-        nodes = names
-    G.add_nodes_from(nodes)
-    for i in range(n):
-        for j in range(n):
-            if matrix[i][j] == 1:
-                G.add_edge(nodes[i], nodes[j])
-    nx.draw_circular(G, with_labels=with_labels, node_size=node_size, font_size=font_size, font_weight=font_weight, arrowsize=arrowsize)
-    plt.show()
-
-def scatterplot(m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc=&#39;best&#39;):
-    &#34;&#34;&#34; 2D or 3D scatterplot.
-
-    Args:
-        m: data
-        dim: 2 or 3.
-        names: vector of names to display on each point.
-        colors: vector of numbers or categories of the size of the number of points.
-                If None it will be replaced by names.
-        fontsize: text font size (integer).
-        pointsize: size of data points (integer).
-        big_display: plot the figure in a big format if True.
-        legend: if True, add legend of colors.
-        legend_loc: location of legend. See matplotlib.pyplot.legend for details.
-    &#34;&#34;&#34;
-    if colors is None:
-        colors = names
-    if dim == 2: # 2 dimensions
-        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
-        if names is not None: # TEXT #
-            for line in range(0, m.shape[0]):
-                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
-                         fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
-        #if legend:
-        #    plt.legend(colors, loc=legend_loc)
-    elif dim == 3: # 3 dimensions
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
-        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
-        ax.scatter(x, y, z) #, c=range(len(names)))
-    else:
-        raise Exception(&#39;dim must be 2 or 3.&#39;)
-    if big_display:
-        fi = plt.gcf()
-        fi.set_size_inches(12, 8) # change plot size
-    # Put back old matplotlib grid
-    scat.set_facecolor(&#39;#EAEAF2&#39;) 
-    scat.grid(True, color=&#39;white&#39;)
-    plt.show()
-
-def tsne(m, axis=0, dim=2, **kwargs):
-    &#34;&#34;&#34; Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
-
-    Args:
-        axis: axis of dimensionality reduction.
-        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
-    &#34;&#34;&#34;
-    names = None
-    if axis == 0:
-        if rk.is_dataframe(m):
-            names = m.columns
-        m = m.T # transpose
-    elif axis == 1:
-        if rk.is_dataframe(m):
-            names = m.index
-    else:
-        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
-    m_transformed = TSNE(n_components=dim).fit_transform(m)
-    # Display
-    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
-
-def mds_from_dist_matrix(distance_matrix, dim=2, names=None, **kwargs):
-    &#34;&#34;&#34; Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).
-
-    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
-
-    Args:
-        m: distance matrix.
-        dim: number of dimensions to plot (2 or 3).
-        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
-    &#34;&#34;&#34;
-    if rk.is_dataframe(distance_matrix):
-        names = distance_matrix.columns
-    transformer = MDS(n_components=dim, dissimilarity=&#39;precomputed&#39;)
-    m_transformed = transformer.fit_transform(distance_matrix)
-    # Display
-    scatterplot(m_transformed, dim=dim, names=names, **kwargs)
-
-def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
-    &#34;&#34;&#34; Multidimensional scaling plot from a preference matrix.
-
-    See: https://en.wikipedia.org/wiki/Multidimensional_scaling
-
-    Args:
-        m: preference matrix.
-        dim: number of dimensions to plot (2 or 3).
-        method: any metric method.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
-    &#34;&#34;&#34;
-    names = None
-    if axis == 0:
-        if rk.is_dataframe(m):
-            names = m.columns
-        m = m.T # transpose
-    elif axis == 1:
-        if rk.is_dataframe(m):
-            names = m.index
-    else:
-        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
-    # Compute pairwise distances
-    dist_matrix = rk.distance_matrix(m, method=method)
-    # Call the plot functions
-    mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)
-
-def overlaps(pos, couples):
-    &#34;&#34;&#34; Used by critical difference.
-
-    Checks if the horizontal line overlaps any existing horizontal line.
-    &#34;&#34;&#34;
-    i, j = pos
-    for i1, j1 in couples:
-        if (i1 &lt;= i and j1 &gt; j) or (i1 &lt; i and j1 &gt;= j):
-            return True
-    return False
-
-def merge_couples(couples):
-    # Used by critical difference
-    longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
-    return longest
-
-def critical_difference(m, comparison_func=None, axis=1, **kwargs):
-    &#34;&#34;&#34; Computes and draws a critical difference diagram.
-
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
-    This function uses a comparison function (rk.p_wins by default).
-    A comparison function f(a, b) should return True if a is significantly better than b.
-
-    Args:
-        m: Score matrix, array-like (use pd.DataFrame to name the candidates).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
-        axis: Axis of judges.
-        kwargs: Arguments for the comparison_func function.
-    &#34;&#34;&#34;
-    m = pd.DataFrame(m) # casting if necessary
-    scores = rk.score(m, axis=axis).sort_values()
-    if axis == 0:
-        m = m.T # if the candidates are in column, transpose the matrix
-    couples = []
-    for i in range(len(scores) - 1):
-        for j in range(1, len(scores)):
-            if i &lt; j:
-                _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.loc[_i], m.loc[_j]
-                if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
-                    couples.append((i, j))
-    show_critical_difference(scores, couples)
-
-def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, link_vgap=.1, xlabel=None):
-    &#34;&#34;&#34; Draws a critical difference diagram.
-
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
-
-    Forked from https://github.com/mbatchkarov/critical_difference
-
-    Critical difference diagrams can be seen in the following publications:
-    - Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1--30, 2006.
-    - H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
-
-    Args:
-        scores: List of average methods&#39; scores, array-like. If scores is a pd.Series, the index will be used as names.
-        couples: list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.
-        arrow_vgap: vertical space between the arrows that point to method names, between 0 and 1.
-        link_vgap: vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size
-        link_voffset: offset from the axis of the links that connect non-significant methods
-    &#34;&#34;&#34;
-    size = len(scores)
-    names = list(range(size)) # default names: [0, 1, ...]
-    if isinstance(scores, pd.Series):
-        names = scores.index
-    scores, names = (list(t) for t in zip(*sorted(zip(scores, names))))
-    for pair in couples:
-        assert all(0 &lt;= idx &lt; size for idx in pair), &#39;Check indices&#39;
-    # remove axes
-    fig, ax = plt.subplots(1, 1, figsize=(6, 2), subplot_kw=dict(frameon=False))
-    ax.get_xaxis().tick_bottom()
-    ax.get_yaxis().set_visible(False)
-    y = [0] * size
-    ax.plot(scores, y, &#39;ko&#39;)
-    plt.xlim(0.9 * scores[0], 1.1 * scores[-1])
-    plt.ylim(0, 1)
-    # draw the x axis again
-    xmin, xmax = ax.get_xaxis().get_view_interval()
-    ymin, ymax = ax.get_yaxis().get_view_interval()
-    ax.add_artist(Line2D((xmin, xmax), (ymin, ymin), color=&#39;black&#39;, linewidth=2))
-    if xlabel: # add an optional label to the x axis
-        ax.annotate(xlabel, xy=(xmax, 0), xytext=(0.95, 0.1), textcoords=&#39;axes fraction&#39;,
-                                ha=&#39;center&#39;, va=&#39;center&#39;, fontsize=9)  # text slightly smaller
-    half = int(ceil(size / 2.))
-    # make sure the topmost annotation in at 90% of figure height
-    ycoords = list(reversed([0.9 - arrow_vgap * i for i in range(half)]))
-    ycoords.extend(reversed(ycoords))
-    for i in range(size):
-        ax.annotate(str(names[i]),
-                    xy=(scores[i], y[i]),
-                    xytext=(-.05 if i &lt; half else .95, ycoords[i]),
-                    textcoords=&#39;axes fraction&#39;, ha=&#39;center&#39;, va=&#39;center&#39;,
-                    arrowprops={&#39;arrowstyle&#39;: &#39;-&#39;, &#39;connectionstyle&#39;: &#39;angle,angleA=0,angleB=90&#39;})
-    # draw horizontal lines linking non-significant methods
-    linked_methods = merge_couples(couples)
-    # where do the existing lines begin and end, (X, Y) coords
-    used_endpoints = set()
-    y = link_voffset
-    dy = link_vgap
-    # draw lines
-    for i, (x1, x2) in enumerate(sorted(linked_methods)):
-        if y &gt; link_voffset and overlaps((x1, y - dy), used_endpoints):
-            y -= dy
-        elif overlaps((x1, y), used_endpoints):
-            y += dy
-        plt.hlines(y, scores[x1], scores[x2], linewidth=3)  # y, x0, x1
-        used_endpoints.add((x1, y))
-        used_endpoints.add((x2, y))
-    plt.show()</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -371,7 +48,6 @@ def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, l
 <span>def <span class="ident">autolabel</span></span>(<span>rects, values, round=2)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Function used by <code>rk.show</code> to annotate bar plots.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -386,83 +62,67 @@ def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, l
                 values[idx],
                 ha=&#39;center&#39;, va=&#39;bottom&#39;, rotation=0)</code></pre>
 </details>
+<div class="desc"><p>Function used by <code>rk.show</code> to annotate bar plots.</p></div>
 </dd>
 <dt id="ranky.visualization.critical_difference"><code class="name flex">
 <span>def <span class="ident">critical_difference</span></span>(<span>m, comparison_func=None, axis=1, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Computes and draws a critical difference diagram.</p>
-<p>The goal of critical difference diagrams is to show the average scores of
-different candidates, and to group if their performance are not significantly
-different (using pairwise statistical tests).
-This function uses a comparison function (rk.p_wins by default).
-A comparison function f(a, b) should return True if a is significantly better than b.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>Score matrix, array-like (use pd.DataFrame to name the candidates).</dd>
-<dt><strong><code>comparison_func</code></strong></dt>
-<dd>Assymetrical function used to compare two candidates.</dd>
-<dt>The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.</dt>
-<dt>By default it's p_wins (defined in the same module), performing a binomial test.</dt>
-<dt><strong><code>axis</code></strong></dt>
-<dd>Axis of judges.</dd>
-<dt><strong><code>kwargs</code></strong></dt>
-<dd>Arguments for the comparison_func function.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def critical_difference(m, comparison_func=None, axis=1, **kwargs):
-    &#34;&#34;&#34; Computes and draws a critical difference diagram.
+    &#34;&#34;&#34; Compute and draw a critical difference diagram.
 
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
-    This function uses a comparison function (rk.p_wins by default).
-    A comparison function f(a, b) should return True if a is significantly better than b.
+    Critical difference diagrams show the average score of each candidate, and
+    link the candidates whose performances are not significantly different
+    (using pairwise statistical tests).
 
     Args:
         m: Score matrix, array-like (use pd.DataFrame to name the candidates).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
+        comparison_func: Asymmetrical function used to compare two candidates.
+            comparison_func(a, b) should return 1 (or True) if a is significantly
+            better than b and 0 otherwise. By default it is `rk.p_wins`, performing
+            a binomial test. See the `rk.duel` module for other options.
         axis: Axis of judges.
-        kwargs: Arguments for the comparison_func function.
+        **kwargs: Arguments passed to comparison_func (e.g. pval for `rk.p_wins`).
     &#34;&#34;&#34;
     m = pd.DataFrame(m) # casting if necessary
     scores = rk.score(m, axis=axis).sort_values()
     if axis == 0:
         m = m.T # if the candidates are in column, transpose the matrix
     couples = []
-    for i in range(len(scores) - 1):
-        for j in range(1, len(scores)):
-            if i &lt; j:
-                _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
-                a, b = m.loc[_i], m.loc[_j]
-                if rk.duel.declare_ties(a, b, comparison_func=comparison_func):
-                    couples.append((i, j))
+    for i, j in it.combinations(range(len(scores)), 2):
+        _i, _j = scores.index[i], scores.index[j] # do not confuse indices in couples and in scores
+        a, b = m.loc[_i], m.loc[_j]
+        if rk.declare_ties(a, b, comparison_func=comparison_func, **kwargs):
+            couples.append((i, j))
     show_critical_difference(scores, couples)</code></pre>
 </details>
+<div class="desc"><p>Compute and draw a critical difference diagram.</p>
+<p>Critical difference diagrams show the average score of each candidate, and
+link the candidates whose performances are not significantly different
+(using pairwise statistical tests).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Score matrix, array-like (use pd.DataFrame to name the candidates).</dd>
+<dt><strong><code>comparison_func</code></strong></dt>
+<dd>Asymmetrical function used to compare two candidates.
+comparison_func(a, b) should return 1 (or True) if a is significantly
+better than b and 0 otherwise. By default it is <code>rk.p_wins</code>, performing
+a binomial test. See the <code>rk.duel</code> module for other options.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>Axis of judges.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments passed to comparison_func (e.g. pval for <code>rk.p_wins</code>).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.visualization.mds"><code class="name flex">
 <span>def <span class="ident">mds</span></span>(<span>m, axis=0, dim=2, method='spearman', **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Multidimensional scaling plot from a preference matrix.</p>
-<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>preference matrix.</dd>
-<dt><strong><code>dim</code></strong></dt>
-<dd>number of dimensions to plot (2 or 3).</dd>
-<dt><strong><code>method</code></strong></dt>
-<dd>any metric method.</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for rk.scatterplot function (e.g. fontsize).</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -470,13 +130,18 @@ A comparison function f(a, b) should return True if a is significantly better th
 <pre><code class="python">def mds(m, axis=0, dim=2, method=&#39;spearman&#39;, **kwargs):
     &#34;&#34;&#34; Multidimensional scaling plot from a preference matrix.
 
+    Pairwise distances are computed with `method`, then the points are placed
+    in 2D or 3D so that their distances are preserved as much as possible.
+    Correlations are converted to distances with (1 - correlation).
+
     See: https://en.wikipedia.org/wiki/Multidimensional_scaling
 
     Args:
-        m: preference matrix.
-        dim: number of dimensions to plot (2 or 3).
-        method: any metric method.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
+        m: Preference matrix. Use a pd.DataFrame to display names.
+        axis: 0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).
+        dim: Number of dimensions to plot (2 or 3).
+        method: Distance or correlation method (see `rk.any_metric`).
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -487,30 +152,37 @@ A comparison function f(a, b) should return True if a is significantly better th
         if rk.is_dataframe(m):
             names = m.index
     else:
-        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
+        raise ValueError(&#39;axis must be 0 or 1.&#39;)
     # Compute pairwise distances
     dist_matrix = rk.distance_matrix(m, method=method)
+    if method in rk.CORR_METHODS: # higher correlation means closer
+        dist_matrix = 1 - dist_matrix
     # Call the plot functions
     mds_from_dist_matrix(dist_matrix, dim=dim, names=names, **kwargs)</code></pre>
 </details>
+<div class="desc"><p>Multidimensional scaling plot from a preference matrix.</p>
+<p>Pairwise distances are computed with <code>method</code>, then the points are placed
+in 2D or 3D so that their distances are preserved as much as possible.
+Correlations are converted to distances with (1 - correlation).</p>
+<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>Preference matrix. Use a pd.DataFrame to display names.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>Number of dimensions to plot (2 or 3).</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Distance or correlation method (see <code>rk.any_metric</code>).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments for <code>rk.scatterplot</code> (e.g. fontsize).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.visualization.mds_from_dist_matrix"><code class="name flex">
 <span>def <span class="ident">mds_from_dist_matrix</span></span>(<span>distance_matrix, dim=2, names=None, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).</p>
-<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>distance matrix.</dd>
-<dt><strong><code>dim</code></strong></dt>
-<dd>number of dimensions to plot (2 or 3).</dd>
-<dt><strong><code>names</code></strong></dt>
-<dd>names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for rk.scatterplot function (e.g. fontsize).</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -521,48 +193,66 @@ A comparison function f(a, b) should return True if a is significantly better th
     See: https://en.wikipedia.org/wiki/Multidimensional_scaling
 
     Args:
-        m: distance matrix.
-        dim: number of dimensions to plot (2 or 3).
-        names: names of objects. Will be overwritten if distance_matrix is a pd.DataFrame.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize).
+        distance_matrix: Square matrix of distances.
+        dim: Number of dimensions to plot (2 or 3).
+        names: Names of the objects. Overwritten if distance_matrix is a pd.DataFrame.
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize).
     &#34;&#34;&#34;
     if rk.is_dataframe(distance_matrix):
         names = distance_matrix.columns
-    transformer = MDS(n_components=dim, dissimilarity=&#39;precomputed&#39;)
+    if &#39;metric_mds&#39; in inspect.signature(MDS).parameters: # scikit-learn &gt;= 1.8
+        transformer = MDS(n_components=dim, metric=&#39;precomputed&#39;, init=&#39;random&#39;)
+    else:
+        transformer = MDS(n_components=dim, dissimilarity=&#39;precomputed&#39;)
     m_transformed = transformer.fit_transform(distance_matrix)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)</code></pre>
 </details>
+<div class="desc"><p>Multidimensional scaling plot from a symmetric distance matrix (pairwise distances).</p>
+<p>See: <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">https://en.wikipedia.org/wiki/Multidimensional_scaling</a></p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>distance_matrix</code></strong></dt>
+<dd>Square matrix of distances.</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>Number of dimensions to plot (2 or 3).</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>Names of the objects. Overwritten if distance_matrix is a pd.DataFrame.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments for <code>rk.scatterplot</code> (e.g. fontsize).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.visualization.merge_couples"><code class="name flex">
 <span>def <span class="ident">merge_couples</span></span>(<span>couples)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def merge_couples(couples):
-    # Used by critical difference
+    &#34;&#34;&#34; Keep only the couples that are not contained in a longer one.
+
+    Used by `show_critical_difference`.
+    &#34;&#34;&#34;
     longest = [(i, j) for i, j in couples if not overlaps((i, j), couples)]
     return longest</code></pre>
 </details>
+<div class="desc"><p>Keep only the couples that are not contained in a longer one.</p>
+<p>Used by <code><a title="ranky.visualization.show_critical_difference" href="#ranky.visualization.show_critical_difference">show_critical_difference()</a></code>.</p></div>
 </dd>
 <dt id="ranky.visualization.overlaps"><code class="name flex">
 <span>def <span class="ident">overlaps</span></span>(<span>pos, couples)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Used by critical difference.</p>
-<p>Checks if the horizontal line overlaps any existing horizontal line.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def overlaps(pos, couples):
-    &#34;&#34;&#34; Used by critical difference.
+    &#34;&#34;&#34; Check if the horizontal line `pos` is contained in a line of `couples`.
 
-    Checks if the horizontal line overlaps any existing horizontal line.
+    Used by `show_critical_difference`.
     &#34;&#34;&#34;
     i, j = pos
     for i1, j1 in couples:
@@ -570,34 +260,13 @@ A comparison function f(a, b) should return True if a is significantly better th
             return True
     return False</code></pre>
 </details>
+<div class="desc"><p>Check if the horizontal line <code>pos</code> is contained in a line of <code>couples</code>.</p>
+<p>Used by <code><a title="ranky.visualization.show_critical_difference" href="#ranky.visualization.show_critical_difference">show_critical_difference()</a></code>.</p></div>
 </dd>
 <dt id="ranky.visualization.scatterplot"><code class="name flex">
-<span>def <span class="ident">scatterplot</span></span>(<span>m, dim=2, names=None, colors=None, fontsize=8, pointsize=60, big_display=True, legend=False, legend_loc='best')</span>
+<span>def <span class="ident">scatterplot</span></span>(<span>m,<br>dim=2,<br>names=None,<br>colors=None,<br>fontsize=8,<br>pointsize=60,<br>big_display=True,<br>legend=False,<br>legend_loc='best')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>2D or 3D scatterplot.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>m</code></strong></dt>
-<dd>data</dd>
-<dt><strong><code>dim</code></strong></dt>
-<dd>2 or 3.</dd>
-<dt><strong><code>names</code></strong></dt>
-<dd>vector of names to display on each point.</dd>
-<dt><strong><code>colors</code></strong></dt>
-<dd>vector of numbers or categories of the size of the number of points.
-If None it will be replaced by names.</dd>
-<dt><strong><code>fontsize</code></strong></dt>
-<dd>text font size (integer).</dd>
-<dt><strong><code>pointsize</code></strong></dt>
-<dd>size of data points (integer).</dd>
-<dt><strong><code>big_display</code></strong></dt>
-<dd>plot the figure in a big format if True.</dd>
-<dt><strong><code>legend</code></strong></dt>
-<dd>if True, add legend of colors.</dd>
-<dt><strong><code>legend_loc</code></strong></dt>
-<dd>location of legend. See matplotlib.pyplot.legend for details.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -606,93 +275,97 @@ If None it will be replaced by names.</dd>
     &#34;&#34;&#34; 2D or 3D scatterplot.
 
     Args:
-        m: data
+        m: np.ndarray of shape (n_points, dim).
         dim: 2 or 3.
-        names: vector of names to display on each point.
-        colors: vector of numbers or categories of the size of the number of points.
-                If None it will be replaced by names.
-        fontsize: text font size (integer).
-        pointsize: size of data points (integer).
-        big_display: plot the figure in a big format if True.
-        legend: if True, add legend of colors.
-        legend_loc: location of legend. See matplotlib.pyplot.legend for details.
+        names: Names to display next to each point.
+        colors: Numbers or categories, one per point, used to color the points.
+            If None, names are used (2D only).
+        fontsize: Font size of the names.
+        pointsize: Size of the points.
+        big_display: If True, plot the figure in a big format.
+        legend: If True, add a legend of the colors (2D only).
+        legend_loc: Location of the legend. See matplotlib.pyplot.legend for details.
     &#34;&#34;&#34;
+    m = np.asarray(m)
     if colors is None:
         colors = names
     if dim == 2: # 2 dimensions
-        x, y = [m[:, i] for i in range(m.shape[1])] # take columns
-        scat = sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;))
+        x, y = m[:, 0], m[:, 1]
+        fig, ax = plt.subplots()
+        sns.scatterplot(x=x, y=y, hue=colors, s=pointsize, legend=(legend and &#39;brief&#39;), ax=ax)
         if names is not None: # TEXT #
             for line in range(0, m.shape[0]):
-                scat.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
-                         fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
-        #if legend:
-        #    plt.legend(colors, loc=legend_loc)
+                ax.text(x[line]+0.01, y[line], names[line], horizontalalignment=&#39;left&#39;,
+                        fontsize=fontsize, color=&#39;black&#39;, weight=&#39;semibold&#39;)
+        if legend and colors is not None:
+            ax.legend(loc=legend_loc)
+        # Put back old matplotlib grid
+        ax.set_facecolor(&#39;#EAEAF2&#39;)
+        ax.grid(True, color=&#39;white&#39;)
     elif dim == 3: # 3 dimensions
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection = &#39;3d&#39;)
-        x, y, z = [m[:, i] for i in range(m.shape[1])] # take columns
-        ax.scatter(x, y, z) #, c=range(len(names)))
+        ax = fig.add_subplot(111, projection=&#39;3d&#39;)
+        x, y, z = m[:, 0], m[:, 1], m[:, 2]
+        ax.scatter(x, y, z, s=pointsize)
+        if names is not None:
+            for line in range(0, m.shape[0]):
+                ax.text(x[line], y[line], z[line], names[line], fontsize=fontsize)
     else:
-        raise Exception(&#39;dim must be 2 or 3.&#39;)
+        raise ValueError(&#39;dim must be 2 or 3.&#39;)
     if big_display:
-        fi = plt.gcf()
-        fi.set_size_inches(12, 8) # change plot size
-    # Put back old matplotlib grid
-    scat.set_facecolor(&#39;#EAEAF2&#39;) 
-    scat.grid(True, color=&#39;white&#39;)
+        plt.gcf().set_size_inches(12, 8) # change plot size
     plt.show()</code></pre>
 </details>
-</dd>
-<dt id="ranky.visualization.show"><code class="name flex">
-<span>def <span class="ident">show</span></span>(<span>m, rotation=90, title=None, size=2, annot=False, ylabel=None, xlabel=None, round=2, color='royalblue', cmap=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Display a ranking or a prefrence matrix.</p>
-<p>If m is 1D: show ballot (bar plot).
-If m is 2D: show preferences (heatmap).</p>
+<div class="desc"><p>2D or 3D scatterplot.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>rotation</code></strong></dt>
-<dd>x labels rotation.</dd>
-<dt><strong><code>title</code></strong></dt>
-<dd>string - title of the figure.</dd>
-<dt><strong><code>size</code></strong></dt>
-<dd>integer - higher value for a smaller figure.</dd>
-<dt><strong><code>annot</code></strong></dt>
-<dd>If True, write the values.</dd>
-<dt><strong><code>ylabel</code></strong></dt>
-<dd>string - y axis label.</dd>
-<dt><strong><code>xlabel</code></strong></dt>
-<dd>string - x axis label.</dd>
-<dt><strong><code>round</code></strong></dt>
-<dd>Number of decimals to display if annot is True.</dd>
-<dt><strong><code>color</code></strong></dt>
-<dd>Color for 1D bar plot.</dd>
-<dt><strong><code>cmap</code></strong></dt>
-<dd>Color map for 2D heatmap.</dd>
+<dt><strong><code>m</code></strong></dt>
+<dd>np.ndarray of shape (n_points, dim).</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>2 or 3.</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>Names to display next to each point.</dd>
+<dt><strong><code>colors</code></strong></dt>
+<dd>Numbers or categories, one per point, used to color the points.
+If None, names are used (2D only).</dd>
+<dt><strong><code>fontsize</code></strong></dt>
+<dd>Font size of the names.</dd>
+<dt><strong><code>pointsize</code></strong></dt>
+<dd>Size of the points.</dd>
+<dt><strong><code>big_display</code></strong></dt>
+<dd>If True, plot the figure in a big format.</dd>
+<dt><strong><code>legend</code></strong></dt>
+<dd>If True, add a legend of the colors (2D only).</dd>
+<dt><strong><code>legend_loc</code></strong></dt>
+<dd>Location of the legend. See matplotlib.pyplot.legend for details.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.visualization.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>m,<br>rotation=90,<br>title=None,<br>size=2,<br>annot=False,<br>ylabel=None,<br>xlabel=None,<br>round=2,<br>color='royalblue',<br>cmap=None)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show(m, rotation=90, title=None, size=2, annot=False,
          ylabel=None, xlabel=None, round=2, color=&#39;royalblue&#39;, cmap=None):
-    &#34;&#34;&#34; Display a ranking or a prefrence matrix.
+    &#34;&#34;&#34; Display a ranking or a preference matrix.
 
-    If m is 1D: show ballot (bar plot).
-    If m is 2D: show preferences (heatmap).
+    If m is 1D: show the ballot as a bar plot.
+    If m is 2D: show the preferences as a heatmap.
 
     Args:
-        rotation: x labels rotation.
-        title: string - title of the figure.
-        size: integer - higher value for a smaller figure.
+        m: 1D or 2D array-like. Use pd.Series or pd.DataFrame to display names.
+        rotation: Rotation of the x labels.
+        title: Title of the figure.
+        size: Higher value for a smaller figure (2D only).
         annot: If True, write the values.
-        ylabel: string - y axis label.
-        xlabel: string - x axis label.
+        ylabel: Label of the y axis.
+        xlabel: Label of the x axis.
         round: Number of decimals to display if annot is True.
-        color: Color for 1D bar plot.
-        cmap: Color map for 2D heatmap.
+        color: Color of the bars (1D only).
+        cmap: Color map of the heatmap (2D only).
     &#34;&#34;&#34;
     if isinstance(m, list): # convert to np.ndarray if needed
         m = np.array(m)
@@ -710,11 +383,11 @@ If m is 2D: show preferences (heatmap).</p>
     elif dim == 2: # 2D
         fig, ax = plt.subplots(figsize=(m.shape[1]/size, m.shape[0]/size))
         sns.heatmap(m, ax=ax, annot=annot, linewidths=.2, fmt=&#39;0.&#39;+str(round), cmap=cmap)
-        x = np.arange(m.shape[1])
+        x = np.arange(m.shape[1]) + 0.5 # heatmap cells are centered on x + 0.5
         if rk.is_dataframe(m):
             plt.xticks(x, m.columns, rotation=rotation)
     else:
-        raise(Exception(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim)))
+        raise ValueError(&#39;Passed array must have only 1 or 2 dimension, not {}.&#39;.format(dim))
     if title is not None:
         plt.title(title)
     if xlabel is not None:
@@ -723,42 +396,45 @@ If m is 2D: show preferences (heatmap).</p>
         plt.ylabel(ylabel)
     plt.show()</code></pre>
 </details>
+<div class="desc"><p>Display a ranking or a preference matrix.</p>
+<p>If m is 1D: show the ballot as a bar plot.
+If m is 2D: show the preferences as a heatmap.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>1D or 2D array-like. Use pd.Series or pd.DataFrame to display names.</dd>
+<dt><strong><code>rotation</code></strong></dt>
+<dd>Rotation of the x labels.</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>Title of the figure.</dd>
+<dt><strong><code>size</code></strong></dt>
+<dd>Higher value for a smaller figure (2D only).</dd>
+<dt><strong><code>annot</code></strong></dt>
+<dd>If True, write the values.</dd>
+<dt><strong><code>ylabel</code></strong></dt>
+<dd>Label of the y axis.</dd>
+<dt><strong><code>xlabel</code></strong></dt>
+<dd>Label of the x axis.</dd>
+<dt><strong><code>round</code></strong></dt>
+<dd>Number of decimals to display if annot is True.</dd>
+<dt><strong><code>color</code></strong></dt>
+<dd>Color of the bars (1D only).</dd>
+<dt><strong><code>cmap</code></strong></dt>
+<dd>Color map of the heatmap (2D only).</dd>
+</dl></div>
 </dd>
 <dt id="ranky.visualization.show_critical_difference"><code class="name flex">
 <span>def <span class="ident">show_critical_difference</span></span>(<span>scores, couples, arrow_vgap=0.2, link_voffset=0.15, link_vgap=0.1, xlabel=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Draws a critical difference diagram.</p>
-<p>The goal of critical difference diagrams is to show the average scores of
-different candidates, and to group if their performance are not significantly
-different (using pairwise statistical tests).</p>
-<p>Forked from <a href="https://github.com/mbatchkarov/critical_difference">https://github.com/mbatchkarov/critical_difference</a></p>
-<p>Critical difference diagrams can be seen in the following publications:
-- Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1&ndash;30, 2006.
-- H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>scores</code></strong></dt>
-<dd>List of average methods' scores, array-like. If scores is a pd.Series, the index will be used as names.</dd>
-<dt><strong><code>couples</code></strong></dt>
-<dd>list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.</dd>
-<dt><strong><code>arrow_vgap</code></strong></dt>
-<dd>vertical space between the arrows that point to method names, between 0 and 1.</dd>
-<dt><strong><code>link_vgap</code></strong></dt>
-<dd>vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size</dd>
-<dt><strong><code>link_voffset</code></strong></dt>
-<dd>offset from the axis of the links that connect non-significant methods</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_critical_difference(scores, couples, arrow_vgap=.2, link_voffset=.15, link_vgap=.1, xlabel=None):
-    &#34;&#34;&#34; Draws a critical difference diagram.
+    &#34;&#34;&#34; Draw a critical difference diagram from precomputed scores and ties.
 
-    The goal of critical difference diagrams is to show the average scores of
-    different candidates, and to group if their performance are not significantly
-    different (using pairwise statistical tests).
+    See `critical_difference` to compute the ties automatically.
 
     Forked from https://github.com/mbatchkarov/critical_difference
 
@@ -767,11 +443,14 @@ different (using pairwise statistical tests).</p>
     - H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.
 
     Args:
-        scores: List of average methods&#39; scores, array-like. If scores is a pd.Series, the index will be used as names.
-        couples: list of tuples representing the equivalence between neighbors (once sorted) e.g. [(0, 1), (1, 2), (4, 5)], based on indices in the array scores.
-        arrow_vgap: vertical space between the arrows that point to method names, between 0 and 1.
-        link_vgap: vertical space between the lines that connect methods that are not significantly different. Scale is 0 to 1, fraction of axis size
-        link_voffset: offset from the axis of the links that connect non-significant methods
+        scores: Average score of each method, array-like. If scores is a pd.Series, its index is used as names.
+        couples: List of tuples of indices (in the sorted scores) of methods that are not
+            significantly different, e.g. [(0, 1), (1, 2), (4, 5)].
+        arrow_vgap: Vertical space between the arrows that point to method names, between 0 and 1.
+        link_voffset: Offset from the axis of the links that connect non-significant methods.
+        link_vgap: Vertical space between the lines that connect methods that are not
+            significantly different. Fraction of the axis size, between 0 and 1.
+        xlabel: Optional label of the x axis.
     &#34;&#34;&#34;
     size = len(scores)
     names = list(range(size)) # default names: [0, 1, ...]
@@ -822,27 +501,34 @@ different (using pairwise statistical tests).</p>
         used_endpoints.add((x2, y))
     plt.show()</code></pre>
 </details>
-</dd>
-<dt id="ranky.visualization.show_graph"><code class="name flex">
-<span>def <span class="ident">show_graph</span></span>(<span>matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight='bold', arrowsize=10)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Show a directed graph represented by a binary matrix.</p>
+<div class="desc"><p>Draw a critical difference diagram from precomputed scores and ties.</p>
+<p>See <code><a title="ranky.visualization.critical_difference" href="#ranky.visualization.critical_difference">critical_difference()</a></code> to compute the ties automatically.</p>
+<p>Forked from <a href="https://github.com/mbatchkarov/critical_difference">https://github.com/mbatchkarov/critical_difference</a></p>
+<p>Critical difference diagrams can be seen in the following publications:
+- Janez Demsar, Statistical Comparisons of Classifiers over Multiple Data Sets, 7(Jan):1&ndash;30, 2006.
+- H. Ismail Fawaz, G. Forestier, J. Weber, L. Idoumghar, P. Muller, Deep learning for time series classification: a review, Data Mining and Knowledge Discovery, 2018.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>matrix</code></strong></dt>
-<dd>binary matrix. matrix[i, j] = 1 indicates an edge from i to j.</dd>
-<dt><strong><code>names</code></strong></dt>
-<dd>list representing the names of the vertices.</dd>
-<dt><strong><code>with_labels</code></strong></dt>
-<dd>Display names if True.</dd>
-<dt><strong><code>node_size</code></strong></dt>
-<dd>Size of the nodes.</dd>
-<dt><strong><code>font_size</code></strong></dt>
-<dd>Size of the font to display names.</dd>
-<dt><strong><code>font_weight</code></strong></dt>
-<dd>'bold' for bold, else refer to networkx documentation.</dd>
+<dt><strong><code>scores</code></strong></dt>
+<dd>Average score of each method, array-like. If scores is a pd.Series, its index is used as names.</dd>
+<dt><strong><code>couples</code></strong></dt>
+<dd>List of tuples of indices (in the sorted scores) of methods that are not
+significantly different, e.g. [(0, 1), (1, 2), (4, 5)].</dd>
+<dt><strong><code>arrow_vgap</code></strong></dt>
+<dd>Vertical space between the arrows that point to method names, between 0 and 1.</dd>
+<dt><strong><code>link_voffset</code></strong></dt>
+<dd>Offset from the axis of the links that connect non-significant methods.</dd>
+<dt><strong><code>link_vgap</code></strong></dt>
+<dd>Vertical space between the lines that connect methods that are not
+significantly different. Fraction of the axis size, between 0 and 1.</dd>
+<dt><strong><code>xlabel</code></strong></dt>
+<dd>Optional label of the x axis.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.visualization.show_graph"><code class="name flex">
+<span>def <span class="ident">show_graph</span></span>(<span>matrix,<br>names=None,<br>with_labels=True,<br>node_size=2500,<br>font_size=8,<br>font_weight='bold',<br>arrowsize=10)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -850,13 +536,16 @@ different (using pairwise statistical tests).</p>
 <pre><code class="python">def show_graph(matrix, names=None, with_labels=True, node_size=2500, font_size=8, font_weight=&#39;bold&#39;, arrowsize=10):
     &#34;&#34;&#34; Show a directed graph represented by a binary matrix.
 
+    Can be used to display the graph returned by `rk.pairwise(m, return_graph=True)`.
+
     Args:
-        matrix: binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
-        names: list representing the names of the vertices.
+        matrix: Binary matrix. matrix[i, j] = 1 indicates an edge from i to j.
+        names: Names of the vertices.
         with_labels: Display names if True.
         node_size: Size of the nodes.
         font_size: Size of the font to display names.
         font_weight: &#39;bold&#39; for bold, else refer to networkx documentation.
+        arrowsize: Size of the arrows.
     &#34;&#34;&#34;
     G = nx.DiGraph()
     n = len(matrix)
@@ -871,58 +560,69 @@ different (using pairwise statistical tests).</p>
     nx.draw_circular(G, with_labels=with_labels, node_size=node_size, font_size=font_size, font_weight=font_weight, arrowsize=arrowsize)
     plt.show()</code></pre>
 </details>
+<div class="desc"><p>Show a directed graph represented by a binary matrix.</p>
+<p>Can be used to display the graph returned by <code>rk.pairwise(m, return_graph=True)</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>matrix</code></strong></dt>
+<dd>Binary matrix. matrix[i, j] = 1 indicates an edge from i to j.</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>Names of the vertices.</dd>
+<dt><strong><code>with_labels</code></strong></dt>
+<dd>Display names if True.</dd>
+<dt><strong><code>node_size</code></strong></dt>
+<dd>Size of the nodes.</dd>
+<dt><strong><code>font_size</code></strong></dt>
+<dd>Size of the font to display names.</dd>
+<dt><strong><code>font_weight</code></strong></dt>
+<dd>'bold' for bold, else refer to networkx documentation.</dd>
+<dt><strong><code>arrowsize</code></strong></dt>
+<dd>Size of the arrows.</dd>
+</dl></div>
 </dd>
 <dt id="ranky.visualization.show_learning_curve"><code class="name flex">
 <span>def <span class="ident">show_learning_curve</span></span>(<span>h)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Display learning curve.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>h</code></strong></dt>
-<dd>list representing the history of scores.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_learning_curve(h):
-    &#34;&#34;&#34; Display learning curve.
+    &#34;&#34;&#34; Display a learning curve (score as a function of epochs).
 
     Args:
-        h: list representing the history of scores.
+        h: List of scores, one per epoch.
     &#34;&#34;&#34;
     plt.plot(range(len(h)), h)
     plt.xlabel(&#39;epochs&#39;)
     plt.ylabel(&#39;score&#39;)
     plt.show()</code></pre>
 </details>
-</dd>
-<dt id="ranky.visualization.tsne"><code class="name flex">
-<span>def <span class="ident">tsne</span></span>(<span>m, axis=0, dim=2, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.</p>
+<div class="desc"><p>Display a learning curve (score as a function of epochs).</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>axis</code></strong></dt>
-<dd>axis of dimensionality reduction.</dd>
-<dt><strong><code>dim</code></strong></dt>
-<dd>number of dimensions. 2 for 2D plot, 3 for 3D plot.</dd>
-<dt><strong><code>**kwargs</code></strong></dt>
-<dd>arguments for rk.scatterplot function (e.g. fontsize, pointsize).</dd>
+<dt><strong><code>h</code></strong></dt>
+<dd>List of scores, one per epoch.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.visualization.tsne"><code class="name flex">
+<span>def <span class="ident">tsne</span></span>(<span>m, axis=0, dim=2, perplexity=None, **kwargs)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def tsne(m, axis=0, dim=2, **kwargs):
-    &#34;&#34;&#34; Use T-SNE algorithm to show the matrix m in a 2 or 3 dimensions space.
+<pre><code class="python">def tsne(m, axis=0, dim=2, perplexity=None, **kwargs):
+    &#34;&#34;&#34; Plot the rows or columns of m in 2D or 3D, using t-SNE.
 
     Args:
-        axis: axis of dimensionality reduction.
-        dim: number of dimensions. 2 for 2D plot, 3 for 3D plot.
-        **kwargs: arguments for rk.scatterplot function (e.g. fontsize, pointsize).
+        m: 2D matrix. Use a pd.DataFrame to display names.
+        axis: 0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).
+        dim: Number of dimensions. 2 for 2D plot, 3 for 3D plot.
+        perplexity: t-SNE perplexity. By default min(30, n_points - 1).
+        **kwargs: Arguments for `rk.scatterplot` (e.g. fontsize, pointsize).
     &#34;&#34;&#34;
     names = None
     if axis == 0:
@@ -933,11 +633,28 @@ different (using pairwise statistical tests).</p>
         if rk.is_dataframe(m):
             names = m.index
     else:
-        raise Excpetion(&#39;axis must be 0 or 1.&#39;)
-    m_transformed = TSNE(n_components=dim).fit_transform(m)
+        raise ValueError(&#39;axis must be 0 or 1.&#39;)
+    m = np.asarray(m)
+    if perplexity is None:
+        perplexity = min(30, m.shape[0] - 1) # must be lower than the number of points
+    m_transformed = TSNE(n_components=dim, perplexity=perplexity).fit_transform(m)
     # Display
     scatterplot(m_transformed, dim=dim, names=names, **kwargs)</code></pre>
 </details>
+<div class="desc"><p>Plot the rows or columns of m in 2D or 3D, using t-SNE.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>m</code></strong></dt>
+<dd>2D matrix. Use a pd.DataFrame to display names.</dd>
+<dt><strong><code>axis</code></strong></dt>
+<dd>0 to plot the columns (e.g. judges), 1 to plot the rows (e.g. candidates).</dd>
+<dt><strong><code>dim</code></strong></dt>
+<dd>Number of dimensions. 2 for 2D plot, 3 for 3D plot.</dd>
+<dt><strong><code>perplexity</code></strong></dt>
+<dd>t-SNE perplexity. By default min(30, n_points - 1).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments for <code>rk.scatterplot</code> (e.g. fontsize, pointsize).</dd>
+</dl></div>
 </dd>
 </dl>
 </section>
@@ -945,7 +662,6 @@ different (using pairwise statistical tests).</p>
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -975,7 +691,7 @@ different (using pairwise statistical tests).</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

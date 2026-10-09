@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>ranky.duel API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -22,156 +36,6 @@
 <h1 class="title">Module <code>ranky.duel</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python"># Module for pairwise comparison of performances of algorithm
-
-################################################
-####     Metrics for pairwise methods       ####
-####       and significance tests           ####
-################################################
-
-# TODO: clarify names, add scored version of NHST and more.
-
-import numpy as np
-from scipy.stats import binomtest
-from baycomp import two_on_single, two_on_multiple
-
-def declare_ties(a, b, comparison_func=None, **kwargs):
-    &#34;&#34;&#34; Declare ties between a and b using an assymetrical boolean comparison function in both directions.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
-        reverse: If True, a and b are considered equivalent.
-        kwargs: Argument of the comparison function.
-    &#34;&#34;&#34;
-    if comparison_func is None:
-        comparison_func = p_wins
-    return comparison_func(a, b, **kwargs) == comparison_func(b, a, **kwargs)
-
-def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b in a majority vote.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    return Wa &gt; Wb  # hard comparisons
-
-def copeland_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
-
-    Useful for to compute Copeland&#39;s method.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    if Wa &gt; Wb: # hard comparisons
-        return 1
-    elif Wb &gt; Wa:
-        return 0
-    else: # Copeland&#39;s method
-        return 0.5
-
-def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a significantly wins against b (binomial test).
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    Wa, Wb = np.sum(a &gt; b), np.sum(b &gt; a)
-    if reverse:
-        Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
-    significant = binomtest(Wa, n=len(a), p=0.5).pvalue &lt;= pval
-    wins = Wa &gt; Wb
-    return significant and wins # count only significant wins
-
-def bayes_wins(a, b, width=0.1, independant=False, score=False):
-    &#34;&#34;&#34; Compare a and b using a Bayesian signed-ranks test.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-        score: If True, returns the probability of winning instead of a boolean.
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    if independant:
-        p_a, p_tie, p_b = two_on_multiple(a, b, rope=width)
-    else:
-        p_a, p_tie, p_b = two_on_single(a, b, rope=width)
-    if score:
-        res = p_a
-    else:
-        res = p_a == max([p_a, p_tie, p_b])
-    return res
-
-def bayes_score(a, b, **kwargs):
-    &#34;&#34;&#34; Alias for bayes_wins but returning probability of winning.
-    &#34;&#34;&#34;
-    return bayes_wins(a, b, score=True, **kwargs)
-
-def success_rate(a, b, reverse=False, ties=False):
-    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-        ties: If True, ties are taken into account (with value 0.5) instead of hard comparisons
-    &#34;&#34;&#34;
-    a, b = np.array(a), np.array(b)
-    if not reverse: # normal behavior
-        Wa = np.sum(a &gt; b)
-    else:
-        Wa = np.sum(a &lt; b)
-    if ties:
-        Eq = np.sum(a == b)
-        Wa = Wa + Eq * 0.5
-    return Wa / len(a) # hard comparisons
-
-def relative_difference(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the mean relative difference between a and b.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        reverse: If True, lower is better.
-    &#34;&#34;&#34;
-    a, b = np.array(a, dtype=&#39;float&#39;), np.array(b, dtype=&#39;float&#39;)
-    if reverse:
-        num = b - a
-    else:
-        num = a - b
-    denom = a + b
-    s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
-    return np.mean(s)
-################################################
-################################################</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -184,48 +48,40 @@ def relative_difference(a, b, reverse=False):
 <span>def <span class="ident">bayes_score</span></span>(<span>a, b, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Alias for bayes_wins but returning probability of winning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def bayes_score(a, b, **kwargs):
-    &#34;&#34;&#34; Alias for bayes_wins but returning probability of winning.
+    &#34;&#34;&#34; Probability that a wins against b. Alias of `bayes_wins(a, b, score=True)`.
     &#34;&#34;&#34;
     return bayes_wins(a, b, score=True, **kwargs)</code></pre>
 </details>
+<div class="desc"><p>Probability that a wins against b. Alias of <code>bayes_wins(a, b, score=True)</code>.</p></div>
 </dd>
 <dt id="ranky.duel.bayes_wins"><code class="name flex">
 <span>def <span class="ident">bayes_wins</span></span>(<span>a, b, width=0.1, independant=False, score=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compare a and b using a Bayesian signed-ranks test.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>width</code></strong></dt>
-<dd>the width of the region of practical equivalence.</dd>
-<dt><strong><code>independant</code></strong></dt>
-<dd>True if the different scores are correlated (e.g. bootstraps or cross-validation scores).</dd>
-<dt><strong><code>score</code></strong></dt>
-<dd>If True, returns the probability of winning instead of a boolean.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def bayes_wins(a, b, width=0.1, independant=False, score=False):
-    &#34;&#34;&#34; Compare a and b using a Bayesian signed-ranks test.
+    &#34;&#34;&#34; Compare a and b with a Bayesian test (using the `baycomp` package).
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-        score: If True, returns the probability of winning instead of a boolean.
+        width: Width of the region of practical equivalence (rope).
+        independant: If True, the scores are considered independent (e.g. scores on
+            different datasets) and a Bayesian signed-rank test is used. If False,
+            they are considered correlated (e.g. cross-validation folds on the
+            same dataset) and a Bayesian correlated t-test is used.
+        score: If True, return the probability that a wins instead of a boolean.
+
+    Returns:
+        True if &#34;a wins&#34; is the most probable outcome (among a wins, tie and b wins).
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     if independant:
@@ -238,30 +94,38 @@ def relative_difference(a, b, reverse=False):
         res = p_a == max([p_a, p_tie, p_b])
     return res</code></pre>
 </details>
-</dd>
-<dt id="ranky.duel.copeland_wins"><code class="name flex">
-<span>def <span class="ident">copeland_wins</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.</p>
-<p>Useful for to compute Copeland's method.</p>
+<div class="desc"><p>Compare a and b with a Bayesian test (using the <code>baycomp</code> package).</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
 <dt><strong><code>b</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, lower is better.</dd>
-</dl></div>
+<dt><strong><code>width</code></strong></dt>
+<dd>Width of the region of practical equivalence (rope).</dd>
+<dt><strong><code>independant</code></strong></dt>
+<dd>If True, the scores are considered independent (e.g. scores on
+different datasets) and a Bayesian signed-rank test is used. If False,
+they are considered correlated (e.g. cross-validation folds on the
+same dataset) and a Bayesian correlated t-test is used.</dd>
+<dt><strong><code>score</code></strong></dt>
+<dd>If True, return the probability that a wins instead of a boolean.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if "a wins" is the most probable outcome (among a wins, tie and b wins).</p></div>
+</dd>
+<dt id="ranky.duel.copeland_wins"><code class="name flex">
+<span>def <span class="ident">copeland_wins</span></span>(<span>a, b, reverse=False)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def copeland_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
+    &#34;&#34;&#34; Return 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
 
-    Useful for to compute Copeland&#39;s method.
+    Used to compute Copeland&#39;s method.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -279,53 +143,8 @@ def relative_difference(a, b, reverse=False):
     else: # Copeland&#39;s method
         return 0.5</code></pre>
 </details>
-</dd>
-<dt id="ranky.duel.declare_ties"><code class="name flex">
-<span>def <span class="ident">declare_ties</span></span>(<span>a, b, comparison_func=None, **kwargs)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Declare ties between a and b using an assymetrical boolean comparison function in both directions.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>a</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>b</code></strong></dt>
-<dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>comparison_func</code></strong></dt>
-<dd>Assymetrical function used to compare two candidates.</dd>
-<dt>The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.</dt>
-<dt>By default it's p_wins (defined in the same module), performing a binomial test.</dt>
-<dt><strong><code>reverse</code></strong></dt>
-<dd>If True, a and b are considered equivalent.</dd>
-<dt><strong><code>kwargs</code></strong></dt>
-<dd>Argument of the comparison function.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def declare_ties(a, b, comparison_func=None, **kwargs):
-    &#34;&#34;&#34; Declare ties between a and b using an assymetrical boolean comparison function in both directions.
-
-    Args:
-        a: Ballot representing one candidate (array-like).
-        b: Ballot representing one candidate (array-like).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it&#39;s p_wins (defined in the same module), performing a binomial test.
-        reverse: If True, a and b are considered equivalent.
-        kwargs: Argument of the comparison function.
-    &#34;&#34;&#34;
-    if comparison_func is None:
-        comparison_func = p_wins
-    return comparison_func(a, b, **kwargs) == comparison_func(b, a, **kwargs)</code></pre>
-</details>
-</dd>
-<dt id="ranky.duel.hard_wins"><code class="name flex">
-<span>def <span class="ident">hard_wins</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Function returning True if a wins against b in a majority vote.</p>
+<div class="desc"><p>Return 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.</p>
+<p>Used to compute Copeland's method.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
@@ -335,12 +154,60 @@ def relative_difference(a, b, reverse=False):
 <dt><strong><code>reverse</code></strong></dt>
 <dd>If True, lower is better.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.duel.declare_ties"><code class="name flex">
+<span>def <span class="ident">declare_ties</span></span>(<span>a, b, comparison_func=None, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def declare_ties(a, b, comparison_func=None, **kwargs):
+    &#34;&#34;&#34; Return True if a and b are tied according to the comparison function.
+
+    They are tied if comparison_func(a, b) == comparison_func(b, a), i.e. if
+    neither beats the other (or, in theory, both do).
+
+    Args:
+        a: Ballot representing one candidate (array-like).
+        b: Ballot representing one candidate (array-like).
+        comparison_func: Asymmetrical function used to compare two candidates.
+            comparison_func(a, b) should return 1 (or True) if a beats b and 0 otherwise.
+            By default it is `p_wins`, performing a binomial test.
+        **kwargs: Arguments passed to the comparison function.
+    &#34;&#34;&#34;
+    if comparison_func is None:
+        comparison_func = p_wins
+    return comparison_func(a, b, **kwargs) == comparison_func(b, a, **kwargs)</code></pre>
+</details>
+<div class="desc"><p>Return True if a and b are tied according to the comparison function.</p>
+<p>They are tied if comparison_func(a, b) == comparison_func(b, a), i.e. if
+neither beats the other (or, in theory, both do).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>comparison_func</code></strong></dt>
+<dd>Asymmetrical function used to compare two candidates.
+comparison_func(a, b) should return 1 (or True) if a beats b and 0 otherwise.
+By default it is <code><a title="ranky.duel.p_wins" href="#ranky.duel.p_wins">p_wins()</a></code>, performing a binomial test.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Arguments passed to the comparison function.</dd>
+</dl></div>
+</dd>
+<dt id="ranky.duel.hard_wins"><code class="name flex">
+<span>def <span class="ident">hard_wins</span></span>(<span>a, b, reverse=False)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def hard_wins(a, b, reverse=False):
-    &#34;&#34;&#34; Function returning True if a wins against b in a majority vote.
+    &#34;&#34;&#34; Return True if a wins against b in a majority vote.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -353,36 +220,33 @@ def relative_difference(a, b, reverse=False):
         Wa, Wb = np.sum(a &lt; b), np.sum(b &lt; a)
     return Wa &gt; Wb  # hard comparisons</code></pre>
 </details>
-</dd>
-<dt id="ranky.duel.p_wins"><code class="name flex">
-<span>def <span class="ident">p_wins</span></span>(<span>a, b, pval=0.05, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Function returning True if a significantly wins against b (binomial test).</p>
+<div class="desc"><p>Return True if a wins against b in a majority vote.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
 <dt><strong><code>b</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
-<dt><strong><code>pval</code></strong></dt>
-<dd>A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 <dt><strong><code>reverse</code></strong></dt>
 <dd>If True, lower is better.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.duel.p_wins"><code class="name flex">
+<span>def <span class="ident">p_wins</span></span>(<span>a, b, pval=0.05, reverse=False)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def p_wins(a, b, pval=0.05, reverse=False):
-    &#34;&#34;&#34; Function returning True if a significantly wins against b (binomial test).
+    &#34;&#34;&#34; Return True if a significantly wins against b (two-sided binomial test).
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
+        pval: A win is counted only if the p-value of the test is lower than or equal to pval.
+            With pval=1, p_wins is equivalent to `hard_wins`.
         reverse: If True, lower is better.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
@@ -393,27 +257,32 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
     wins = Wa &gt; Wb
     return significant and wins # count only significant wins</code></pre>
 </details>
-</dd>
-<dt id="ranky.duel.relative_difference"><code class="name flex">
-<span>def <span class="ident">relative_difference</span></span>(<span>a, b, reverse=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the mean relative difference between a and b.</p>
+<div class="desc"><p>Return True if a significantly wins against b (two-sided binomial test).</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
 <dt><strong><code>b</code></strong></dt>
 <dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>pval</code></strong></dt>
+<dd>A win is counted only if the p-value of the test is lower than or equal to pval.
+With pval=1, p_wins is equivalent to <code><a title="ranky.duel.hard_wins" href="#ranky.duel.hard_wins">hard_wins()</a></code>.</dd>
 <dt><strong><code>reverse</code></strong></dt>
 <dd>If True, lower is better.</dd>
 </dl></div>
+</dd>
+<dt id="ranky.duel.relative_difference"><code class="name flex">
+<span>def <span class="ident">relative_difference</span></span>(<span>a, b, reverse=False)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def relative_difference(a, b, reverse=False):
-    &#34;&#34;&#34; Returns the mean relative difference between a and b.
+    &#34;&#34;&#34; Return the mean relative difference between a and b, (a - b) / (a + b).
+
+    Pairs where a + b == 0 count as 0.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -429,12 +298,8 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
     s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
     return np.mean(s)</code></pre>
 </details>
-</dd>
-<dt id="ranky.duel.success_rate"><code class="name flex">
-<span>def <span class="ident">success_rate</span></span>(<span>a, b, reverse=False, ties=False)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the frequency (rate) of a &gt; b.</p>
+<div class="desc"><p>Return the mean relative difference between a and b, (a - b) / (a + b).</p>
+<p>Pairs where a + b == 0 count as 0.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>a</code></strong></dt>
@@ -443,21 +308,24 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 <dd>Ballot representing one candidate (array-like).</dd>
 <dt><strong><code>reverse</code></strong></dt>
 <dd>If True, lower is better.</dd>
-<dt><strong><code>ties</code></strong></dt>
-<dd>If True, ties are taken into account (with value 0.5) instead of hard comparisons</dd>
 </dl></div>
+</dd>
+<dt id="ranky.duel.success_rate"><code class="name flex">
+<span>def <span class="ident">success_rate</span></span>(<span>a, b, reverse=False, ties=False)</span>
+</code></dt>
+<dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def success_rate(a, b, reverse=False, ties=False):
-    &#34;&#34;&#34; Returns the frequency (rate) of a &gt; b.
+    &#34;&#34;&#34; Return the frequency of a &gt; b.
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
-        ties: If True, ties are taken into account (with value 0.5) instead of hard comparisons
+        ties: If True, ties count as half a win.
     &#34;&#34;&#34;
     a, b = np.array(a), np.array(b)
     if not reverse: # normal behavior
@@ -469,6 +337,18 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
         Wa = Wa + Eq * 0.5
     return Wa / len(a) # hard comparisons</code></pre>
 </details>
+<div class="desc"><p>Return the frequency of a &gt; b.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>a</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>b</code></strong></dt>
+<dd>Ballot representing one candidate (array-like).</dd>
+<dt><strong><code>reverse</code></strong></dt>
+<dd>If True, lower is better.</dd>
+<dt><strong><code>ties</code></strong></dt>
+<dd>If True, ties count as half a win.</dd>
+</dl></div>
 </dd>
 </dl>
 </section>
@@ -476,7 +356,6 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -502,7 +381,7 @@ If pval is set to 1, then p_wins is equivalent to hard_wins function.</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

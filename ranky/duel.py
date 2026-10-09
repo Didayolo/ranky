@@ -1,9 +1,11 @@
-# Module for pairwise comparison of performances of algorithm
-
 ################################################
 ####     Metrics for pairwise methods       ####
 ####       and significance tests           ####
 ################################################
+
+# Functions f(a, b) comparing two candidates, where a and b are the scores of
+# each candidate given by the same judges. They can be passed as the `wins`
+# argument of `rk.pairwise` or as `comparison_func` of `rk.critical_difference`.
 
 # TODO: clarify names, add scored version of NHST and more.
 
@@ -12,23 +14,25 @@ from scipy.stats import binomtest
 from baycomp import two_on_single, two_on_multiple
 
 def declare_ties(a, b, comparison_func=None, **kwargs):
-    """ Declare ties between a and b using an assymetrical boolean comparison function in both directions.
+    """ Return True if a and b are tied according to the comparison function.
+
+    They are tied if comparison_func(a, b) == comparison_func(b, a), i.e. if
+    neither beats the other (or, in theory, both do).
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
-        comparison_func: Assymetrical function used to compare two candidates.
-        The function comparison_func(a, b) should return 1 if a beats b and 0 otherwise.
-        By default it's p_wins (defined in the same module), performing a binomial test.
-        reverse: If True, a and b are considered equivalent.
-        kwargs: Argument of the comparison function.
+        comparison_func: Asymmetrical function used to compare two candidates.
+            comparison_func(a, b) should return 1 (or True) if a beats b and 0 otherwise.
+            By default it is `p_wins`, performing a binomial test.
+        **kwargs: Arguments passed to the comparison function.
     """
     if comparison_func is None:
         comparison_func = p_wins
     return comparison_func(a, b, **kwargs) == comparison_func(b, a, **kwargs)
 
 def hard_wins(a, b, reverse=False):
-    """ Function returning True if a wins against b in a majority vote.
+    """ Return True if a wins against b in a majority vote.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -42,9 +46,9 @@ def hard_wins(a, b, reverse=False):
     return Wa > Wb  # hard comparisons
 
 def copeland_wins(a, b, reverse=False):
-    """ Function returning 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
+    """ Return 1 if a wins against b in a majority vote, 0.5 in case of a tie and 0 otherwise.
 
-    Useful for to compute Copeland's method.
+    Used to compute Copeland's method.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -63,13 +67,13 @@ def copeland_wins(a, b, reverse=False):
         return 0.5
 
 def p_wins(a, b, pval=0.05, reverse=False):
-    """ Function returning True if a significantly wins against b (binomial test).
+    """ Return True if a significantly wins against b (two-sided binomial test).
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
-        pval: A win is counted only if the probability of the null hypothesis (tie) is equal or smaller than pval.
-                     If pval is set to 1, then p_wins is equivalent to hard_wins function.
+        pval: A win is counted only if the p-value of the test is lower than or equal to pval.
+            With pval=1, p_wins is equivalent to `hard_wins`.
         reverse: If True, lower is better.
     """
     a, b = np.array(a), np.array(b)
@@ -81,14 +85,20 @@ def p_wins(a, b, pval=0.05, reverse=False):
     return significant and wins # count only significant wins
 
 def bayes_wins(a, b, width=0.1, independant=False, score=False):
-    """ Compare a and b using a Bayesian signed-ranks test.
+    """ Compare a and b with a Bayesian test (using the `baycomp` package).
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
-        width: the width of the region of practical equivalence.
-        independant: True if the different scores are correlated (e.g. bootstraps or cross-validation scores).
-        score: If True, returns the probability of winning instead of a boolean.
+        width: Width of the region of practical equivalence (rope).
+        independant: If True, the scores are considered independent (e.g. scores on
+            different datasets) and a Bayesian signed-rank test is used. If False,
+            they are considered correlated (e.g. cross-validation folds on the
+            same dataset) and a Bayesian correlated t-test is used.
+        score: If True, return the probability that a wins instead of a boolean.
+
+    Returns:
+        True if "a wins" is the most probable outcome (among a wins, tie and b wins).
     """
     a, b = np.array(a), np.array(b)
     if independant:
@@ -102,18 +112,18 @@ def bayes_wins(a, b, width=0.1, independant=False, score=False):
     return res
 
 def bayes_score(a, b, **kwargs):
-    """ Alias for bayes_wins but returning probability of winning.
+    """ Probability that a wins against b. Alias of `bayes_wins(a, b, score=True)`.
     """
     return bayes_wins(a, b, score=True, **kwargs)
 
 def success_rate(a, b, reverse=False, ties=False):
-    """ Returns the frequency (rate) of a > b.
+    """ Return the frequency of a > b.
 
     Args:
         a: Ballot representing one candidate (array-like).
         b: Ballot representing one candidate (array-like).
         reverse: If True, lower is better.
-        ties: If True, ties are taken into account (with value 0.5) instead of hard comparisons
+        ties: If True, ties count as half a win.
     """
     a, b = np.array(a), np.array(b)
     if not reverse: # normal behavior
@@ -126,7 +136,9 @@ def success_rate(a, b, reverse=False, ties=False):
     return Wa / len(a) # hard comparisons
 
 def relative_difference(a, b, reverse=False):
-    """ Returns the mean relative difference between a and b.
+    """ Return the mean relative difference between a and b, (a - b) / (a + b).
+
+    Pairs where a + b == 0 count as 0.
 
     Args:
         a: Ballot representing one candidate (array-like).
@@ -141,5 +153,3 @@ def relative_difference(a, b, reverse=False):
     denom = a + b
     s = np.divide(num, denom, out=np.zeros_like(num), where=denom!=0)
     return np.mean(s)
-################################################
-################################################

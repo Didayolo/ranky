@@ -1,9 +1,11 @@
 .ipynb_checkpoints/
 __pycache__/
+.pytest_cache/
 figures/
 *.zip
 update.sh
 dist/
 build/
+html/
 ranky.egg-info/
 .DS_Store
